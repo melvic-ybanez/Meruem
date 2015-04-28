@@ -1,4 +1,4 @@
-package builtins
+package meruem.builtins
 
 import meruem._
 import Constants.LispTypeStrings

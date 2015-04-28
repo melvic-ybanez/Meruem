@@ -5,7 +5,6 @@ import meruem.LispSymbol
  */
 object Main {
   def main(args: Array[String]): Unit = {
-    case object Foo
-    println(LispSymbol)
+    
   }
 }
