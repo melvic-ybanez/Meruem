@@ -35,20 +35,21 @@ object Utils {
     case _ => f
   }
 
-  def sanitizeAll(args: LispValueList)(f: LispValue => LispValue) =  
+  def sanitizeAll[A <: LispValue](args: LispValueList)(f: LispList[A] => LispValue) =  
     whenValid(args.foldLeft[LispValue](EmptyLispList) { (acc, lval) =>
       whenValid(acc) {
         case llist: LispList => whenValid(lval.evaluate)(_ :: llist)
         case _ => 
       }
-    })(f)
+    }) {
+      case lval: LispList[A] => f(lval)
+      case lval => Errors.invalidType(LispTypeStrings.List, lval)
+    }
   
-  def withListArg(args: LispValueList)(f: LispValueList => LispValue) = 
-    checkArgsCount(args, 1)(sanitizeAll(args) match {
-      case llist: LispList => llist.head match {
-        case llist: LispList[LispValue] => f(llist)
-        case error: LispError => error
-      }
-      case error: LispError => error
-    })
+  def isListArg(args: LispValueList)(f: LispValueList => LispValue) = checkArgsCount(args, 1) {
+    whenValid(args.head) {
+      case llist: LispList[LispValue] => f(llist)
+      case lval => Errors.invalidType(LispTypeStrings.List, lval)
+    }
+  }
 }

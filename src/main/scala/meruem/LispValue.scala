@@ -1,17 +1,13 @@
 package meruem
 
 import meruem.Utils.Aliases._
+import meruem.Utils._
 
 /**
  * Created by ybamelcash on 4/26/2015.
  */
 sealed trait LispValue {
   def evaluate: LispValue
-  
-  def postEvaluation(f: LispValue => LispValue): LispValue = this match {
-    case error: LispError => error
-    case  lval: LispValue => f(lval)
-  }
 }
 
 sealed trait LispAtom[A] extends LispValue {
@@ -153,16 +149,6 @@ case class LispCustomFunction(symbol: LispSymbol,
                               body: LispValue,
                               environment: Environment) extends LispFunction {
   def evaluate = {
-    def evaluateArgs: LispValueList = {
-      def recurse(args: LispValueList, acc: LispValueList): LispValueList = args match {
-        case EmptyLispList => acc
-        case error: LispError => error
-        case ConsLispList(h, t) => recurse(t, h :: acc)
-      }
-      
-      recurse(args, EmptyLispList).reverse
-    }
-    
     def checkVarArgs(args: LispValueList): LispValue = 
       if (params.size != 2)
         Errors.invalidFormat(s"Symbol ${Constants.VarArgsChar} is not followed by a single symbol.")
@@ -172,7 +158,7 @@ case class LispCustomFunction(symbol: LispSymbol,
         environment = environment + (params.tail.head, args)
       ).evaluate
     
-    sanitizeAll(args) match {
+    sanitizeAll(args) {
       case EmptyLispList => params match {   
         case EmptyLispList => body match {    
           case builtinFunc @ LispBuiltinFunction(_, _, _, NonEmptyEnvironment(vm, _)) =>
