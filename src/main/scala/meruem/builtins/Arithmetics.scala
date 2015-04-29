@@ -1,8 +1,8 @@
 package meruem.builtins
 
+import meruem.Utils.Aliases.LispValueList
 import meruem._
 import Constants.LispTypeStrings
-import Utils.Aliases.LispValueList
 
 /**
  * Created by ybamelcash on 4/28/2015.
@@ -13,7 +13,7 @@ object Arithmetics {
     def recurse(valueList: LispValueList, acc: Long): LispValue = 
       valueList match {
         case EmptyLispList => LispNumber(acc)
-        case ConsLispList(h: LispNumber, t) => recurse(t, compute(acc, h))
+        case ConsLispList(h: LispNumber, t) => recurse(t, compute(acc, h.value))
         case ConsLispList(h, _) => Errors.invalidType(LispTypeStrings.Number, h)
       }
     
