@@ -18,8 +18,6 @@ sealed trait LispAtom[A] extends LispValue {
   override def toString = value.toString
 }
 
-case class LispString(value: String) extends LispAtom[String]
-
 case class LispNumber(value: Long) extends LispAtom[Long]
 
 case class LispBoolean(value: Boolean) extends LispAtom[Boolean]
