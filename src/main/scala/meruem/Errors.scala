@@ -9,6 +9,9 @@ object Errors {
   def extraArgs(extraCount: Int) = 
     LispError(s"Extra number of arguments: $extraCount")
   
+  def notEnoughArguments(count: Int) = 
+    LispError(s"Not enough arguments. Expected $count more.")
+  
   def invalidType(expectedTypeString: String, actual: LispValue) = 
     LispError("Invalid Type. " +
       s"Expected: $expectedTypeString. " +

@@ -146,38 +146,45 @@ case class LispCustomFunction(symbol: LispSymbol,
                               args: LispValueList,
                               body: LispValue,
                               environment: Environment) extends LispFunction {
-  def evaluate = {
-    def checkVarArgs(args: LispValueList): LispValue = 
-      if (params.size != 2)
-        Errors.invalidFormat(s"Symbol ${Constants.VarArgsChar} is not followed by a single symbol.")
-      else updated(
-        params = EmptyLispList,
-        args = EmptyLispList,
-        environment = environment + (params.tail.head, args)
-      ).evaluate
-    
-    sanitizeAll(args) {
-      case EmptyLispList => params match {   
-        case EmptyLispList => body match {    
-          case builtinFunc @ LispBuiltinFunction(_, _, _, NonEmptyEnvironment(vm, _)) =>
-            builtinFunc.updated(environment = NonEmptyEnvironment(vm, environment)).evaluate
-          case customFunc @ LispCustomFunction(_, _, _, _, NonEmptyEnvironment(vm, _)) =>
-            customFunc.updated(environment = NonEmptyEnvironment(vm, environment)).evaluate
-          case _ => body.evaluate
-        }
-        case ConsLispList(param @ LispSymbol(Constants.VarArgsChar), _) => checkVarArgs(EmptyLispList)
-        case p: ConsLispList => p   
+  def evaluate = sanitizeAll(args) {
+    case EmptyLispList => params match {
+      // If each of the arguments are have been assigned to each of the params, 
+      // perform the evaluation.  
+      case EmptyLispList => body match {
+        // If the body is a function, set the parent of the body's environment 
+        // to the current environment and evalutae.
+        case builtinFunc @ LispBuiltinFunction(_, _, _, NonEmptyEnvironment(vm, _)) =>
+          builtinFunc.updated(environment = NonEmptyEnvironment(vm, environment)).evaluate
+        case customFunc @ LispCustomFunction(_, _, _, _, NonEmptyEnvironment(vm, _)) =>
+          customFunc.updated(environment = NonEmptyEnvironment(vm, environment)).evaluate
+          
+        // If the body is not a function, no need for environment updates.  
+        case _ => body.evaluate
       }
-      case ConsLispList(arg, argsTail) => params match {
-        case EmptyLispList => Errors.extraArgs(params.size)
-        case ConsLispList(param @ LispSymbol(Constants.VarArgsChar), _) => checkVarArgs(args)
-        case ConsLispList(param, paramsTail) =>
-          updated(
-            params = paramsTail,
-            args = argsTail,
-            environment = environment + (param, arg)
-          ).evaluate
-      }
+        
+      // If some parameters remained unbound...  
+      case _ => Errors.notEnoughArguments(params.size)   
+    }
+    case ConsLispList(arg, argsTail) => params match {
+      // Too many arguments provided, return an error  
+      case EmptyLispList => Errors.extraArgs(params.size)
+        
+      // If parameter contains the '&' character...  
+      case ConsLispList(param @ LispSymbol(Constants.VarArgsChar), _) =>
+        if (params.size != 2)
+          Errors.invalidFormat(s"Symbol ${Constants.VarArgsChar} is not followed by a single symbol.")
+        else updated(
+          params = EmptyLispList,
+          args = EmptyLispList,
+          environment = environment + (params.tail.head, args)
+        ).evaluate
+        
+      case ConsLispList(param, paramsTail) =>
+        updated(
+          params = paramsTail,
+          args = argsTail,
+          environment = environment + (param, arg)
+        ).evaluate
     }
   }
   

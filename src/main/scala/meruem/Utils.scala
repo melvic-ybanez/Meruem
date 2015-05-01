@@ -12,12 +12,13 @@ object Utils {
     type LispValueList = LispList[LispValue]
     type LispSymbolList = LispList[LispSymbol]
     type LispNumberList = LispList[LispNumber]
+    type LispString = LispList[Char]
   }
   
   def typeString(lval: LispValue) = lval match {
     case _: LispSymbol => LispTypeStrings.Symbol
-    case _: LispString => LispTypeStrings.String
     case _: LispNumber => LispTypeStrings.Number
+    case _: LispString => LispTypeStrings.String
     case _: LispList => LispTypeStrings.List
     case _: LispError => LispTypeStrings.Error
   }
@@ -41,7 +42,7 @@ object Utils {
       case lval => Errors.invalidType(LispTypeStrings.List, lval)
     }
   
-  def isListArg(args: LispValueList)(f: LispValueList => LispValue) = checkArgsCount(args)(_ == 1) {
+  def hasListArg(args: LispValueList)(f: LispValueList => LispValue) = checkArgsCount(args)(_ == 1) {
     whenValid(args.head) {
       case llist: LispList[LispValue] => f(llist)
       case lval => Errors.invalidType(LispTypeStrings.List, lval)
