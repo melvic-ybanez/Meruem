@@ -1,25 +1,16 @@
 package meruem
 
 import meruem.Constants.LispTypeStrings
-import meruem.Utils.Aliases._
 
 /**
  * Created by ybamelcash on 4/27/2015.
  */
 
 object Utils {
-  object Aliases {
-    type LispValueList = LispList[LispValue]
-    type LispSymbolList = LispList[LispSymbol]
-    type LispNumberList = LispList[LispNumber]
-    //type LispString = LispList[LispAtom[Char]]
-  }
-  
   def typeString(lval: LispValue) = lval match {
     case _: LispSymbol => LispTypeStrings.Symbol
     case _: LispNumber => LispTypeStrings.Number
-    //case _: LispString => LispTypeStrings.String
-    case _: LispList[_] => LispTypeStrings.List
+    case _: LispList => LispTypeStrings.List
     case _: LispError => LispTypeStrings.Error
   }
   
@@ -28,22 +19,22 @@ object Utils {
     case lval => f(lval)
   }
 
-  def checkArgsCount(args: LispValueList)(p: Int => Boolean)(f: => LispValue) =
+  def checkArgsCount(args: LispList)(p: Int => Boolean)(f: => LispValue) =
     if (p(args.size)) Errors.incorrectArgCount(args.size) else f
 
-  def sanitizeAll[A <: LispValue](args: LispValueList)(f: LispList[A] => LispValue) =  
+  def sanitizeAll(args: LispList)(f: LispList => LispValue) =  
     whenValid(args.foldLeft[LispValue](EmptyLispList) { (acc, lval) =>
       whenValid(acc) {
-        case llist: LispList[_] => whenValid(lval.evaluate)(_ :: llist)
+        case llist: LispList => whenValid(lval.evaluate)(_ :: llist)
       }
     }) {
-      case lval: LispList[A] => f(lval)
+      case lval: LispList => f(lval)
       case lval => Errors.invalidType(LispTypeStrings.List, lval)
     }
   
-  def hasListArg(args: LispValueList)(f: LispValueList => LispValue) = checkArgsCount(args)(_ == 1) {
+  def hasListArg(args: LispList)(f: LispList => LispValue) = checkArgsCount(args)(_ == 1) {
     whenValid(args.head) {
-      case llist: LispList[LispValue] => f(llist)
+      case llist: LispList => f(llist)
       case lval => Errors.invalidType(LispTypeStrings.List, lval)
     }
   }

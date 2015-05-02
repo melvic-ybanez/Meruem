@@ -1,6 +1,5 @@
 package meruem
 
-import meruem.Utils.Aliases._
 import meruem.Utils._
 
 /**
@@ -10,7 +9,7 @@ sealed trait LispValue {
   def evaluate: LispValue
 }
 
-sealed trait LispAtom[A] extends LispValue {
+sealed trait LispAtom[+A] extends LispValue {
   def value: A
   
   def evaluate = this
@@ -32,20 +31,20 @@ case class LispSymbol(value: String) extends LispAtom[String] {
   override def evaluate = ??? 
 }
 
-sealed trait LispList[+A <: LispValue] extends LispValue {
-  def head: A
-  def tail: LispList[A]
+sealed trait LispList extends LispValue {
+  def head: LispValue
+  def tail: LispList
   
-  def ::[B >: A <: LispValue](lval: B): LispList[B] = this match {
+  def ::(lval: LispValue): LispList = this match {
     case EmptyLispList => LispList(lval)
-    case _: ConsLispList[A] => ConsLispList(lval, this) 
+    case _: ConsLispList => ConsLispList(lval, this) 
   }
   
-  def ++[B >: A <: LispValue](llist: LispList[B]): LispList[B] = 
+  def ++(llist: LispList): LispList = 
     reverse.foldLeft(llist)((acc, h) => h :: acc)
   
-  def find(p: A => Boolean): Option[A] = {
-    def recurse(llist: LispList[A]): Option[A] = llist match {
+  def find(p: LispValue => Boolean): Option[LispValue] = {
+    def recurse(llist: LispList): Option[LispValue] = llist match {
       case EmptyLispList => None
       case ConsLispList(h, t) => 
         if (p(h)) Some(h) else recurse(t)
@@ -59,16 +58,16 @@ sealed trait LispList[+A <: LispValue] extends LispValue {
     case ConsLispList(h, t) => 1 + t.size
   }
 
-  def exists(p: A => Boolean) = find(p).nonEmpty
+  def exists(p: LispValue => Boolean) = find(p).nonEmpty
   
-  def forAll(p: A => Boolean) = !exists(!p(_))
+  def forAll(p: LispValue => Boolean) = !exists(!p(_))
   
-  def filter(p: A => Boolean): LispList[A] = foldLeft(LispList[A]()) { (acc, h) =>
+  def filter(p: LispValue => Boolean): LispList = foldLeft(LispList()) { (acc, h) =>
     if (p(h)) h :: acc else acc
   }
 
-  def map[B <: LispValue](f: A => B): LispList[B] = {
-    def recurse(llist: LispList[A], acc: LispList[B]): LispList[B] = llist match {
+  def map(f: LispValue => LispValue): LispList = {
+    def recurse(llist: LispList, acc: LispList): LispList = llist match {
       case EmptyLispList => acc
       case ConsLispList(h, t) => recurse(t, f(h) :: acc)
     }
@@ -76,8 +75,8 @@ sealed trait LispList[+A <: LispValue] extends LispValue {
     recurse(this, EmptyLispList).reverse
   }
   
-  def foldLeft[B <: LispValue](initialValue: B)(f: (B, A) => B) = {
-    def recurse(llist: LispList[A], acc: B): B = llist match {
+  def foldLeft[A <: LispValue](initialValue: A)(f: (A, LispValue) => A) = {
+    def recurse(llist: LispList, acc: A): A = llist match {
       case EmptyLispList => acc
       case ConsLispList(h, t) => recurse(t, f(acc, h))
     }
@@ -85,10 +84,10 @@ sealed trait LispList[+A <: LispValue] extends LispValue {
     recurse(this, initialValue)
   }
   
-  def reverse: LispList[A] = foldLeft(LispList[A]())((acc, h) => h :: acc)
+  def reverse: LispList = foldLeft(LispList())((acc, h) => h :: acc)
   
   override def toString = {
-    def recurse(xs: LispList[A], acc: List[String]): List[String] = xs match {
+    def recurse(xs: LispList, acc: List[String]): List[String] = xs match {
       case EmptyLispList => acc
       case ConsLispList(h, t) => recurse(t, h.toString :: acc)
     } 
@@ -98,7 +97,7 @@ sealed trait LispList[+A <: LispValue] extends LispValue {
   }
 }
 
-case object EmptyLispList extends LispList[Nothing] {
+case object EmptyLispList extends LispList {
   def head = throw new IllegalAccessException("Empty lisp list has no head.")
   
   def tail = throw new IllegalAccessException("Empty lisp list has no tail.")
@@ -106,7 +105,7 @@ case object EmptyLispList extends LispList[Nothing] {
   def evaluate = this
 }
 
-case class ConsLispList[A <: LispValue](head: A, tail: LispList[A]) extends LispList[A] {
+case class ConsLispList(head: LispValue, tail: LispList) extends LispList {
   def evaluate = head.evaluate match {
     case builtinFunc: LispBuiltinFunction => builtinFunc.updated(args = tail).evaluate
     case customFunc: LispCustomFunction => customFunc.updated(args = tail).evaluate
@@ -115,35 +114,35 @@ case class ConsLispList[A <: LispValue](head: A, tail: LispList[A]) extends Lisp
 }
 
 object LispList {
-  def apply[A <: LispValue](lval: A*): LispList[A] = 
+  def apply(lval: LispValue*): LispList = 
     if (lval.isEmpty) EmptyLispList
-    else lval.foldLeft(LispList[A]())((llist, h) => h :: llist)
+    else lval.foldLeft(LispList())((llist, h) => h :: llist)
 }
 
 sealed trait LispFunction extends LispValue {
   def symbol: LispSymbol
-  def args: LispValueList
+  def args: LispList
   def environment: Environment
   
   override def toString = s"<function ${symbol.value}>"
 }
 
 case class LispBuiltinFunction(symbol: LispSymbol, 
-                               args: LispValueList, 
-                               func: LispValueList => LispValue,
+                               args: LispList, 
+                               func: LispList => LispValue,
                                environment: Environment) extends LispFunction {
   def evaluate = func(args)
   
   def updated(symbol: LispSymbol = symbol,
-               args: LispValueList = args,
-               func: LispValueList => LispValue = func,
+               args: LispList = args,
+               func: LispList => LispValue = func,
                environment: Environment = environment) =
     LispBuiltinFunction(symbol, args, func, environment)
 }
 
 case class LispCustomFunction(symbol: LispSymbol, 
-                              params: LispSymbolList, 
-                              args: LispValueList,
+                              params: LispList, 
+                              args: LispList,
                               body: LispValue,
                               environment: Environment) extends LispFunction {
   def evaluate = sanitizeAll(args) {
@@ -189,8 +188,8 @@ case class LispCustomFunction(symbol: LispSymbol,
   }
   
   def updated(symbol: LispSymbol = symbol,
-               params: LispSymbolList = params,
-               args: LispValueList = args,
+               params: LispList = params,
+               args: LispList = args,
                body: LispValue = body,
                environment: Environment = environment): LispValue = 
     LispCustomFunction(symbol, params, args, body, environment)
