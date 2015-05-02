@@ -43,7 +43,7 @@ object Functions {
   }
   
   def atom(args: LispValue) = args match {
-    case _: LispList => false
+    case _: LispList[_] => false
     case _ => true
   }
 }

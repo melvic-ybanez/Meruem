@@ -12,20 +12,20 @@ object Utils {
     type LispValueList = LispList[LispValue]
     type LispSymbolList = LispList[LispSymbol]
     type LispNumberList = LispList[LispNumber]
-    type LispString = LispList[Char]
+    //type LispString = LispList[LispAtom[Char]]
   }
   
   def typeString(lval: LispValue) = lval match {
     case _: LispSymbol => LispTypeStrings.Symbol
     case _: LispNumber => LispTypeStrings.Number
-    case _: LispString => LispTypeStrings.String
-    case _: LispList => LispTypeStrings.List
+    //case _: LispString => LispTypeStrings.String
+    case _: LispList[_] => LispTypeStrings.List
     case _: LispError => LispTypeStrings.Error
   }
   
   def whenValid[A <: LispValue, B <: LispValue](args: A)(f: A => B) = args match {
     case error: LispError => error
-    case lval: A => f(lval)
+    case lval => f(lval)
   }
 
   def checkArgsCount(args: LispValueList)(p: Int => Boolean)(f: => LispValue) =
@@ -34,8 +34,7 @@ object Utils {
   def sanitizeAll[A <: LispValue](args: LispValueList)(f: LispList[A] => LispValue) =  
     whenValid(args.foldLeft[LispValue](EmptyLispList) { (acc, lval) =>
       whenValid(acc) {
-        case llist: LispList => whenValid(lval.evaluate)(_ :: llist)
-        case _ => 
+        case llist: LispList[_] => whenValid(lval.evaluate)(_ :: llist)
       }
     }) {
       case lval: LispList[A] => f(lval)

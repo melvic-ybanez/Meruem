@@ -38,7 +38,7 @@ sealed trait LispList[+A <: LispValue] extends LispValue {
   
   def ::[B >: A <: LispValue](lval: B): LispList[B] = this match {
     case EmptyLispList => LispList(lval)
-    case _: ConsLispList => ConsLispList(lval, this) 
+    case _: ConsLispList[A] => ConsLispList(lval, this) 
   }
   
   def ++[B >: A <: LispValue](llist: LispList[B]): LispList[B] = 
