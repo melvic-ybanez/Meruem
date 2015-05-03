@@ -21,7 +21,9 @@ case class LispNumber(value: Long) extends LispAtom[Long]
 
 case class LispBoolean(value: Boolean) extends LispAtom[Boolean]
 
-case class LispChar(value: Char) extends LispAtom[Char]
+case class LispChar(value: Char) extends LispAtom[Char] {
+  override def toString = raw"""\$value"""
+}
 
 case class LispError(value: String) extends LispValue {
   def evaluate = this
@@ -38,7 +40,7 @@ sealed trait LispList extends LispValue {
   def tail: LispList
   
   def ::(lval: LispValue): LispList = this match {
-    case EmptyLispList => LispList(lval)
+    case EmptyLispList => ConsLispList(lval, EmptyLispList)
     case _: ConsLispList => ConsLispList(lval, this) 
   }
   
@@ -94,7 +96,7 @@ sealed trait LispList extends LispValue {
       case ConsLispList(h, t) => recurse(t, h.toString :: acc)
     } 
     
-    val str = recurse(this, Nil).reverse.mkString
+    val str = recurse(this, Nil).reverse.mkString(" ")
     Constants.ListOpenParen + str + Constants.ListCloseParen  
   }
 }
@@ -118,7 +120,7 @@ case class ConsLispList(head: LispValue, tail: LispList) extends LispList {
 object LispList {
   def apply(lval: LispValue*): LispList = 
     if (lval.isEmpty) EmptyLispList
-    else lval.foldLeft(LispList())((llist, h) => h :: llist)
+    else lval.foldLeft[LispList](EmptyLispList)((llist, h) => h :: llist)
 }
 
 sealed trait LispFunction extends LispValue {

@@ -1,29 +1,30 @@
 package meruem
 
 import scala.util.parsing.combinator.RegexParsers
-import scala.util.parsing.combinator.lexical.StdLexical
-import scala.util.parsing.combinator.syntactical.StdTokenParsers
 
 /**
  * Created by ybamelcash on 5/1/2015.
  */
 object LispParser extends RegexParsers {
-  
   def number: Parser[LispNumber] = """-?[0-9]+""".r ^^ (x => LispNumber(x.toLong))
   
-  def symbol: Parser[LispSymbol] = """[^()0-9]""".r ^^ (sym => LispSymbol(sym))
+  def symbol: Parser[LispSymbol] = """[a-zA-Z_+\-\*\/\\=<>!@#\$%\^&*\|?\.,]+""".r ^^ (sym => LispSymbol(sym))
   
-  def char: Parser[LispChar] = """\\.""".r ^^ (c => LispChar(c.head))
+  def character: Parser[LispChar] = """\\.""".r ^^ (c => LispChar(c.tail.head))
   
-  def string: Parser[LispList] = """"([^\\"]|\\.)*"""".r ^^ {  
-    _.map(LispChar(_)).foldLeft(LispList())((acc, h) => h :: acc) 
+  def string: Parser[LispList] = "\"".r ~ """([^\\"]|\\.)*""".r ~ "\"".r ^^ { case _ ~ str ~ _ =>  
+    str.toList.map(LispChar(_)).foldRight(LispList())(_ :: _) 
   }
   
   def comment: Parser[String] = """;[^\r\n]*""".r ^^ (_.toString)
   
-  def list: Parser[LispValue] = """\(""" ~ expr ~ """\)""" ^^ { case _ ~ expr ~ _ => expr }
+  def list: Parser[LispList] = "(" ~ rep(expression) ~ ")" ^^ { case _ ~ expr ~ _ => 
+    expr.foldLeft(LispList())((acc, h) => h :: acc).reverse
+  }
   
-  def expr: Parser[LispValue] = (number | symbol | char | string | comment | list) ^^ {
+  def expression: Parser[LispValue] = (number | symbol | character | string | comment | list) ^^ {
     case lval: LispValue => lval
   } 
-}
+  
+  def meruem: Parser[List[LispValue]] = "^".r ~ rep(expression) ~ "$".r ^^ { case _ ~ exprs ~ _ => exprs }
+} 
