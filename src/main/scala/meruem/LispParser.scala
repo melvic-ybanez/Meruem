@@ -22,9 +22,9 @@ object LispParser extends RegexParsers {
     expr.foldLeft(LispList())((acc, h) => h :: acc).reverse
   }
   
-  def expression: Parser[LispValue] = (number | symbol | character | string | comment | list) ^^ {
+  def expression: Parser[LispValue] = (number | symbol | character | string | list) ^^ {
     case lval: LispValue => lval
   } 
   
-  def meruem: Parser[List[LispValue]] = "^".r ~ rep(expression) ~ "$".r ^^ { case _ ~ exprs ~ _ => exprs }
+  def meruem: Parser[List[LispValue]] = rep(expression)
 } 

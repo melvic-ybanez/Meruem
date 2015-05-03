@@ -1,6 +1,9 @@
 /**
  * Created by ybamelcash on 4/27/2015.
  */
+
+import java.io.EOFException
+
 import meruem.LispParser._
 
 import io.StdIn.readLine
@@ -11,7 +14,8 @@ object Main {
       val input = readLine("meruem>")
       
       parse(meruem, input) match {
-        case Success(matched, _) => println(matched)
+        case Success(Nil, _) => throw new EOFException("EOF while reading")
+        case Success(lval, _) => println(lval.mkString)
         case Failure(msg, _) => println("Failure: " + msg)
         case Error(msg, _) => println("Error: " + msg)
       }

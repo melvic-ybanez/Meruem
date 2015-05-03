@@ -7,13 +7,6 @@ import meruem.Constants.LispTypeStrings
  */
 
 object Utils {
-  def typeString(lval: LispValue) = lval match {
-    case _: LispSymbol => LispTypeStrings.Symbol
-    case _: LispNumber => LispTypeStrings.Number
-    case _: LispList => LispTypeStrings.List
-    case _: LispError => LispTypeStrings.Error
-  }
-  
   def whenValid[A <: LispValue, B <: LispValue](args: A)(f: A => B) = args match {
     case error: LispError => error
     case lval => f(lval)
@@ -37,5 +30,12 @@ object Utils {
       case llist: LispList => f(llist)
       case lval => Errors.invalidType(LispTypeStrings.List, lval)
     }
+  }
+
+  def typeString(lval: LispValue) = lval match {
+    case _: LispSymbol => LispTypeStrings.Symbol
+    case _: LispNumber => LispTypeStrings.Number
+    case _: LispList => LispTypeStrings.List
+    case _: LispError => LispTypeStrings.Error
   }
 }
