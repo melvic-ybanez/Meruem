@@ -14,7 +14,7 @@ object Main {
       val input = readLine("meruem>")
       
       parse(meruem, input) match {
-        case Success(Nil, _) => throw new EOFException("EOF while reading")
+        case Success(Nil, _) => println("Error: EOF while reading")
         case Success(lval, _) => println(lval.mkString)
         case Failure(msg, _) => println("Failure: " + msg)
         case Error(msg, _) => println("Error: " + msg)

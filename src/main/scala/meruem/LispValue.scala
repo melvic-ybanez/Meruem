@@ -12,7 +12,7 @@ sealed trait LispValue {
 sealed trait LispAtom[+A] extends LispValue {
   def value: A
   
-  def evaluate = this
+  def evaluate: LispValue = this
   
   override def toString = value.toString
 }
@@ -31,8 +31,9 @@ case class LispError(value: String) extends LispValue {
   override def toString = "Error: " + value
 }
 
-case class LispSymbol(value: String) extends LispAtom[String] {
-  override def evaluate = ??? 
+case class LispSymbol(value: String, 
+                      environment: Environment = EmptyEnvironment) extends LispAtom[String] {
+  override def evaluate = environment.get(this)
 }
 
 sealed trait LispList extends LispValue {
@@ -161,7 +162,10 @@ case class LispCustomFunction(symbol: LispSymbol,
         case customFunc @ LispCustomFunction(_, _, _, _, NonEmptyEnvironment(vm, _)) =>
           customFunc.updated(environment = NonEmptyEnvironment(vm, environment)).evaluate
           
-        // If the body is not a function, no need for environment updates.  
+        // If it is a symbol, get it's value from the environment
+        case sym: LispSymbol => LispSymbol(sym.value, environment).evaluate  
+          
+        // If the body is neither a function nor a symbol, there is no need for the environment.  
         case _ => body.evaluate
       }
         
