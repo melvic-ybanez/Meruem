@@ -21,6 +21,8 @@ case class LispNumber(value: Long) extends LispAtom[Long]
 
 case class LispBoolean(value: Boolean) extends LispAtom[Boolean]
 
+case class LispChar(value: Char) extends LispAtom[Char]
+
 case class LispError(value: String) extends LispValue {
   def evaluate = this
   
@@ -147,7 +149,7 @@ case class LispCustomFunction(symbol: LispSymbol,
                               environment: Environment) extends LispFunction {
   def evaluate = sanitizeAll(args) {
     case EmptyLispList => params match {
-      // If each of the arguments are have been assigned to each of the params, 
+      // If each of the arguments have been assigned to each of the params, 
       // perform the evaluation.  
       case EmptyLispList => body match {
         // If the body is a function, set the parent of the body's environment 
