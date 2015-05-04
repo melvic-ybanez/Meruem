@@ -1,6 +1,7 @@
 package meruem
 
 import meruem.Utils._
+import meruem.builtins.Functions._
 
 /**
  * Created by ybamelcash on 5/4/2015.
@@ -12,6 +13,7 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
     case atom: LispAtom[_] => atom
     case EmptyLispList => lispValue
     case ConsLispList(head, tail) => Evaluate(head, environment) match {
+      case LispQuote => quote(tail)
       case builtinFunc: LispBuiltinFunction =>
         Evaluate(builtinFunc.updated(
           args = tail,

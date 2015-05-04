@@ -31,6 +31,8 @@ case class LispError(value: String) extends LispValue {
 
 case class LispSymbol(value: String) extends LispAtom[String]
 
+case object LispQuote extends LispValue 
+
 sealed trait LispList extends LispValue {
   def head: LispValue
   def tail: LispList
@@ -138,3 +140,4 @@ case class LispCustomFunction(params: LispList,
               environment: Environment = environment): LispValue = 
     LispCustomFunction(params, args, body, environment)
 }
+
