@@ -1,7 +1,5 @@
 package meruem
 
-import meruem.Utils._
-
 /**
  * Created by ybamelcash on 4/26/2015.
  */
@@ -31,7 +29,7 @@ case class LispError(value: String) extends LispValue {
 
 case class LispSymbol(value: String) extends LispAtom[String]
 
-case object LispQuote extends LispValue 
+case object LispQuote extends LispValue
 
 sealed trait LispList extends LispValue {
   def head: LispValue
@@ -110,7 +108,7 @@ case class ConsLispList(head: LispValue, tail: LispList) extends LispList
 object LispList {
   def apply(lval: LispValue*): LispList = 
     if (lval.isEmpty) EmptyLispList
-    else lval.foldLeft[LispList](EmptyLispList)((llist, h) => h :: llist)
+    else lval.foldLeft[LispList](EmptyLispList)((llist, h) => h :: llist).reverse
 }
 
 sealed trait LispFunction extends LispValue {

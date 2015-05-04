@@ -14,13 +14,15 @@ object LispParser extends RegexParsers {
   
   def string: Parser[LispString] = "\"".r ~ """([^\\"]|\\.)*""".r ~ "\"".r ^^ { case _ ~ str ~ _ => LispString(str) }
   
-  def comment: Parser[String] = """;[^\r\n]*""".r ^^ (_.toString)
+  def quote: Parser[LispValue] = "'" ~ expression ^^ { case _ ~ expr => LispList(LispSymbol("quote"), expr) }
+  
+  def comment: Parser[String] = """;[^\r\n]*""".r
   
   def list: Parser[LispList] = "(" ~ rep(expression) ~ ")" ^^ { case _ ~ expr ~ _ => 
     expr.foldLeft(LispList())((acc, h) => h :: acc).reverse
   }
   
-  def expression: Parser[LispValue] = (number | symbol | character | string | list) ^^ {
+  def expression: Parser[LispValue] = (number | symbol | character | quote | string | list) ^^ {
     case lval: LispValue => lval
   } 
   
