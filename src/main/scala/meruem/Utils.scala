@@ -13,7 +13,7 @@ object Utils {
   }
 
   def checkArgsCount(args: LispList)(p: Int => Boolean)(f: => LispValue) =
-    if (p(args.size)) Errors.incorrectArgCount(args.size) else f
+    if (!p(args.size)) Errors.incorrectArgCount(args.size) else f
 
   def sanitizeAll(args: LispList, environment: Environment)(f: LispList => LispValue) =  
     whenValid(args.foldLeft[LispValue](EmptyLispList) { (acc, lval) =>
@@ -21,11 +21,11 @@ object Utils {
         case llist: LispList => whenValid(Evaluate(lval, environment))(_ :: llist)
       }
     }) {
-      case lval: LispList => f(lval)
+      case lval: LispList => f(lval.reverse)
       case lval => Errors.invalidType(LispTypeStrings.List, lval)
     }
   
-  def isLisArg(args: LispList)(f: LispList => LispValue) = checkArgsCount(args)(_ == 1) {
+  def isListArg(args: LispList)(f: LispList => LispValue) = checkArgsCount(args)(_ == 1) {
     whenValid(args.head) {
       case llist: LispList => f(llist)
       case lval => Errors.invalidType(LispTypeStrings.List, lval)

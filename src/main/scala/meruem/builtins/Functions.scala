@@ -7,16 +7,16 @@ import meruem.Utils._
  * Created by ybamelcash on 4/28/2015.
  */
 object Functions {
-  def head(args: LispList) = isLisArg(args)(_.head)
+  def head(args: LispList) = isListArg(args)(_.head)
   
-  def tail(args: LispList) = isLisArg(args)(_.tail)
+  def tail(args: LispList) = isListArg(args)(_.tail)
   
   def equal(args: LispList) = checkArgsCount(args)(_ > 0)(args match {
     case llist @ ConsLispList(h, _) => LispBoolean(llist.forAll(_ == h))
   })
   
   def cons(args: LispList) = checkArgsCount(args)(_ == 2)(whenValid(args.head) { h =>
-    isLisArg(args.tail)(h :: _)
+    isListArg(args.tail)(h :: _)
   })
   
   def cond(args: LispList) = checkArgsCount(args)(_ > 0) {
@@ -43,4 +43,6 @@ object Functions {
     case _: LispList => LispBoolean(false)
     case _ => LispBoolean(true)
   }
+  
+  def list(args: LispValue) = args
 }

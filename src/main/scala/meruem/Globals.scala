@@ -19,6 +19,7 @@ object Globals {
       ("cons", LispBuiltinFunction(cons)),
       ("cond", LispBuiltinFunction(cond)),
       ("quote", LispBuiltinFunction(quote)),
+      ("list", LispBuiltinFunction(list)),
       ("atom?", LispBuiltinFunction(atom))
     ), 
     EmptyEnvironment
