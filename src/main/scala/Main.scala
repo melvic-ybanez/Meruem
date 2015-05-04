@@ -4,6 +4,7 @@
 
 import java.io.EOFException
 
+import meruem.{Globals, Evaluate}
 import meruem.LispParser._
 
 import io.StdIn.readLine
@@ -15,7 +16,7 @@ object Main {
       
       parse(meruem, input) match {
         case Success(Nil, _) => println("Error: EOF while reading")
-        case Success(lval, _) => println(lval.mkString)
+        case Success(lvals, _) => lvals.foreach(lval => println(Evaluate(lval, Globals.environment))) 
         case Failure(msg, _) => println("Failure: " + msg)
         case Error(msg, _) => println("Error: " + msg)
       }

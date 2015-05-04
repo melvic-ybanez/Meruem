@@ -8,13 +8,11 @@ import scala.util.parsing.combinator.RegexParsers
 object LispParser extends RegexParsers {
   def number: Parser[LispNumber] = """-?[0-9]+""".r ^^ (x => LispNumber(x.toLong))
   
-  def symbol: Parser[LispSymbol] = """[a-zA-Z_+\-\*\/\\=<>!@#\$%\^&*\|?\.,]+""".r ^^ (sym => LispSymbol(sym))
+  def symbol: Parser[LispSymbol] = """[a-zA-Z_+\-\*\/=<>!@#\$%\^&*\|?\.,]+""".r ^^ (sym => LispSymbol(sym))
   
   def character: Parser[LispChar] = """\\.""".r ^^ (c => LispChar(c.tail.head))
   
-  def string: Parser[LispList] = "\"".r ~ """([^\\"]|\\.)*""".r ~ "\"".r ^^ { case _ ~ str ~ _ =>  
-    str.toList.map(LispChar(_)).foldRight(LispList())(_ :: _) 
-  }
+  def string: Parser[LispString] = "\"".r ~ """([^\\"]|\\.)*""".r ~ "\"".r ^^ { case _ ~ str ~ _ => LispString(str) }
   
   def comment: Parser[String] = """;[^\r\n]*""".r ^^ (_.toString)
   

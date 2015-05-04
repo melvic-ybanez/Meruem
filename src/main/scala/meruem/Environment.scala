@@ -5,7 +5,7 @@ package meruem
  */
 trait Environment {
   def parent: Environment
-  def valueMap: Map[LispSymbol, LispValue]
+  def valueMap: Map[String, LispValue]
   def +(key: LispValue, lvalue: LispValue): Environment
   def get(key: LispSymbol): LispValue
 }
@@ -16,20 +16,20 @@ case object EmptyEnvironment extends Environment {
   def valueMap = Map()
   
   def +(key: LispValue, lvalue: LispValue): Environment = key match {
-    case sym: LispSymbol => NonEmptyEnvironment(Map(sym -> lvalue), EmptyEnvironment)
+    case LispSymbol(sym) => NonEmptyEnvironment(Map(sym -> lvalue), EmptyEnvironment)
   } 
   
   def get(key: LispSymbol) = Errors.unboundSymbol(key)
 } 
 
-case class NonEmptyEnvironment(valueMap: Map[LispSymbol, LispValue], parent: Environment) extends Environment {
-  def updated(newValueMap: Map[LispSymbol, LispValue] = valueMap,
+case class NonEmptyEnvironment(valueMap: Map[String, LispValue], parent: Environment) extends Environment {
+  def updated(newValueMap: Map[String, LispValue] = valueMap,
               newParent: Environment = parent) =
     NonEmptyEnvironment(newValueMap, newParent)
   
   def +(key: LispValue, lvalue: LispValue) = key match {
-    case sym: LispSymbol => updated(newValueMap = valueMap + (sym -> lvalue))
+    case LispSymbol(sym) => updated(newValueMap = valueMap + (sym -> lvalue))
   }
   
-  def get(key: LispSymbol): LispValue = valueMap.getOrElse(key, parent.get(key))
+  def get(key: LispSymbol): LispValue = valueMap.getOrElse(key.value, parent.get(key))
 }

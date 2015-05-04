@@ -15,17 +15,17 @@ object Utils {
   def checkArgsCount(args: LispList)(p: Int => Boolean)(f: => LispValue) =
     if (p(args.size)) Errors.incorrectArgCount(args.size) else f
 
-  def sanitizeAll(args: LispList)(f: LispList => LispValue) =  
+  def sanitizeAll(args: LispList, environment: Environment)(f: LispList => LispValue) =  
     whenValid(args.foldLeft[LispValue](EmptyLispList) { (acc, lval) =>
       whenValid(acc) {
-        case llist: LispList => whenValid(lval.evaluate)(_ :: llist)
+        case llist: LispList => whenValid(Evaluate(lval, environment))(_ :: llist)
       }
     }) {
       case lval: LispList => f(lval)
       case lval => Errors.invalidType(LispTypeStrings.List, lval)
     }
   
-  def hasListArg(args: LispList)(f: LispList => LispValue) = checkArgsCount(args)(_ == 1) {
+  def isLisArg(args: LispList)(f: LispList => LispValue) = checkArgsCount(args)(_ == 1) {
     whenValid(args.head) {
       case llist: LispList => f(llist)
       case lval => Errors.invalidType(LispTypeStrings.List, lval)

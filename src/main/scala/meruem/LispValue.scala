@@ -5,14 +5,10 @@ import meruem.Utils._
 /**
  * Created by ybamelcash on 4/26/2015.
  */
-sealed trait LispValue {
-  def evaluate: LispValue
-}
+sealed trait LispValue
 
 sealed trait LispAtom[+A] extends LispValue {
   def value: A
-  
-  def evaluate: LispValue = this
   
   override def toString = value.toString
 }
@@ -25,16 +21,15 @@ case class LispChar(value: Char) extends LispAtom[Char] {
   override def toString = raw"""\$value"""
 }
 
+case class LispString(value: String) extends LispAtom[String] {
+  override def toString = raw""""$value""""
+}
+
 case class LispError(value: String) extends LispValue {
-  def evaluate = this
-  
   override def toString = "Error: " + value
 }
 
-case class LispSymbol(value: String, 
-                      environment: Environment = EmptyEnvironment) extends LispAtom[String] {
-  override def evaluate = environment.get(this)
-}
+case class LispSymbol(value: String) extends LispAtom[String]
 
 sealed trait LispList extends LispValue {
   def head: LispValue
@@ -106,17 +101,9 @@ case object EmptyLispList extends LispList {
   def head = throw new IllegalAccessException("Empty lisp list has no head.")
   
   def tail = throw new IllegalAccessException("Empty lisp list has no tail.")
-  
-  def evaluate = this
 }
 
-case class ConsLispList(head: LispValue, tail: LispList) extends LispList {
-  def evaluate = head.evaluate match {
-    case builtinFunc: LispBuiltinFunction => builtinFunc.updated(args = tail).evaluate
-    case customFunc: LispCustomFunction => customFunc.updated(args = tail).evaluate
-    case lval => Errors.nonFunction(lval) 
-  }
-}
+case class ConsLispList(head: LispValue, tail: LispList) extends LispList 
 
 object LispList {
   def apply(lval: LispValue*): LispList = 
@@ -125,80 +112,29 @@ object LispList {
 }
 
 sealed trait LispFunction extends LispValue {
-  def symbol: LispSymbol
   def args: LispList
   def environment: Environment
   
-  override def toString = s"<function ${symbol.value}>"
+  override def toString = "<function>"
 }
 
-case class LispBuiltinFunction(symbol: LispSymbol, 
-                               args: LispList, 
-                               func: LispList => LispValue,
-                               environment: Environment) extends LispFunction {
-  def evaluate = func(args)
+case class LispBuiltinFunction(func: LispList => LispValue,
+                               args: LispList = EmptyLispList,
+                               environment: Environment = EmptyEnvironment) extends LispFunction {
   
-  def updated(symbol: LispSymbol = symbol,
-               args: LispList = args,
-               func: LispList => LispValue = func,
-               environment: Environment = environment) =
-    LispBuiltinFunction(symbol, args, func, environment)
+  def updated(args: LispList = args,
+              func: LispList => LispValue = func,
+              environment: Environment = environment) =
+    LispBuiltinFunction(func, args, environment)
 }
 
-case class LispCustomFunction(symbol: LispSymbol, 
-                              params: LispList, 
+case class LispCustomFunction(params: LispList, 
                               args: LispList,
                               body: LispValue,
                               environment: Environment) extends LispFunction {
-  def evaluate = sanitizeAll(args) {
-    case EmptyLispList => params match {
-      // If each of the arguments have been assigned to each of the params, 
-      // perform the evaluation.  
-      case EmptyLispList => body match {
-        // If the body is a function, set the parent of the body's environment 
-        // to the current environment and evalutae.
-        case builtinFunc @ LispBuiltinFunction(_, _, _, NonEmptyEnvironment(vm, _)) =>
-          builtinFunc.updated(environment = NonEmptyEnvironment(vm, environment)).evaluate
-        case customFunc @ LispCustomFunction(_, _, _, _, NonEmptyEnvironment(vm, _)) =>
-          customFunc.updated(environment = NonEmptyEnvironment(vm, environment)).evaluate
-          
-        // If it is a symbol, get it's value from the environment
-        case sym: LispSymbol => LispSymbol(sym.value, environment).evaluate  
-          
-        // If the body is neither a function nor a symbol, there is no need for the environment.  
-        case _ => body.evaluate
-      }
-        
-      // If some parameters remained unbound...  
-      case _ => Errors.notEnoughArguments(params.size)   
-    }
-    case ConsLispList(arg, argsTail) => params match {
-      // Too many arguments provided, return an error  
-      case EmptyLispList => Errors.extraArgs(params.size)
-        
-      // If parameter contains the '&' character...  
-      case ConsLispList(param @ LispSymbol(Constants.VarArgsChar), _) =>
-        if (params.size != 2)
-          Errors.invalidFormat(s"Symbol ${Constants.VarArgsChar} is not followed by a single symbol.")
-        else updated(
-          params = EmptyLispList,
-          args = EmptyLispList,
-          environment = environment + (params.tail.head, args)
-        ).evaluate
-        
-      case ConsLispList(param, paramsTail) =>
-        updated(
-          params = paramsTail,
-          args = argsTail,
-          environment = environment + (param, arg)
-        ).evaluate
-    }
-  }
-  
-  def updated(symbol: LispSymbol = symbol,
-               params: LispList = params,
-               args: LispList = args,
-               body: LispValue = body,
-               environment: Environment = environment): LispValue = 
-    LispCustomFunction(symbol, params, args, body, environment)
+  def updated(params: LispList = params,
+              args: LispList = args,
+              body: LispValue = body,
+              environment: Environment = environment): LispValue = 
+    LispCustomFunction(params, args, body, environment)
 }
