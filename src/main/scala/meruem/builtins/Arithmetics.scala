@@ -1,6 +1,7 @@
 package meruem.builtins
 
-import meruem._
+  import meruem._
+import meruem.Utils._
 import Constants.LispTypeStrings
 
 /**
@@ -8,16 +9,16 @@ import Constants.LispTypeStrings
  */
 object Arithmetics {
   def withNumericArgs(args: LispList, initialValue: Long)
-                     (compute: (Long, Long) => Long): LispValue = {
-    def recurse(valueList: LispList, acc: Long): LispValue = 
-      valueList match {
-        case EmptyLispList => LispNumber(acc)
-        case ConsLispList(h: LispNumber, t) => recurse(t, compute(acc, h.value))
-        case ConsLispList(h, _) => Errors.invalidType(LispTypeStrings.Number, h)
-      }
-    
-    recurse(args, initialValue)
-  }
+                     (compute: (Long, Long) => Long): LispValue = { 
+      def recurse(valueList: LispList, acc: Long): LispValue = 
+        valueList match {
+          case EmptyLispList => LispNumber(acc)
+          case ConsLispList(h: LispNumber, t) => recurse(t, compute(acc, h.value))
+          case ConsLispList(h, _) => Errors.invalidType(LispTypeStrings.Number, h)
+        }
+      
+      recurse(args, initialValue)
+    }
   
   def add(args: LispList) = withNumericArgs(args, 0)(_ + _)
   

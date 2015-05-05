@@ -9,18 +9,21 @@ import meruem.builtins.Functions._
 object Globals {
   lazy val environment = NonEmptyEnvironment(
     Map(
-      ("+", LispBuiltinFunction(add)),
-      ("-", LispBuiltinFunction(subtract)),
-      ("*", LispBuiltinFunction(multiply)),
-      ("/", LispBuiltinFunction(divide)),
-      ("head", LispBuiltinFunction(head)),
-      ("tail", LispBuiltinFunction(tail)),
-      ("=", LispBuiltinFunction(equal)),
-      ("cons", LispBuiltinFunction(cons)),
-      ("cond", LispBuiltinFunction(cond)),
-      ("quote", LispQuote),
-      ("list", LispBuiltinFunction(list)),
-      ("atom?", LispBuiltinFunction(atom))
+      "+" -> LispBuiltinFunction(add),
+      "-" -> LispBuiltinFunction(subtract),
+      "*" -> LispBuiltinFunction(multiply),
+      "/" -> LispBuiltinFunction(divide),
+      "head" -> LispBuiltinFunction(head),
+      "tail" -> LispBuiltinFunction(tail),
+      "=" -> LispBuiltinFunction(equal),
+      "cons" -> LispBuiltinFunction(cons),
+      "cond"-> LispBuiltinFunction(cond),
+      "quote" -> LispQuote,
+      "list" -> LispBuiltinFunction(list),
+      "atom?" -> LispBuiltinFunction(atom),
+      "nil" -> LispNil,
+      "true" -> LispBoolean(true),
+      "false" -> LispBoolean(false)
     ), 
     EmptyEnvironment
   )

@@ -23,6 +23,12 @@ case class LispString(value: String) extends LispAtom[String] {
   override def toString = raw""""$value""""
 }
 
+case object LispNil extends LispAtom[Nothing] {
+  def value = throw new NullPointerException("reading from nil")
+  
+  override def toString = "nil"
+}
+
 case class LispError(value: String) extends LispValue {
   override def toString = "Error: " + value
 }
@@ -119,13 +125,13 @@ sealed trait LispFunction extends LispValue {
 }
 
 case class LispBuiltinFunction(func: LispList => LispValue,
-                               args: LispList = EmptyLispList,
-                               environment: Environment = EmptyEnvironment) extends LispFunction {
+                               args: LispList = EmptyLispList) extends LispFunction {
+  
+  def environment: Environment = EmptyEnvironment
   
   def updated(args: LispList = args,
-              func: LispList => LispValue = func,
-              environment: Environment = environment) =
-    LispBuiltinFunction(func, args, environment)
+              func: LispList => LispValue = func) =
+    LispBuiltinFunction(func, args)
 }
 
 case class LispCustomFunction(params: LispList, 

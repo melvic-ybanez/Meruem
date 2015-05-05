@@ -39,10 +39,13 @@ object Functions {
     case ConsLispList(h, t) => h
   }
   
-  def atom(args: LispValue) = args match {
-    case _: LispList => LispBoolean(false)
-    case _ => LispBoolean(true)
+  def atom(args: LispList) = checkArgsCount(args)(_ == 1) {
+    args match {
+      case EmptyLispList => LispBoolean(false)
+      case ConsLispList(_: LispList, t) => LispBoolean(false)
+      case _ => LispBoolean(true)
+    }
   }
   
-  def list(args: LispValue) = args
+  def list(args: LispList) = args
 }

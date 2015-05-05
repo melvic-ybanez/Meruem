@@ -11,6 +11,7 @@ object Constants {
     final val String = "String"
     final val Error = "Error"
     final val List = "List"
+    final val Nil = "Nil"
   }
   
   final val VarArgsChar = "&"

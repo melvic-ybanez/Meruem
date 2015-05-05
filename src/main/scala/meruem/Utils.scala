@@ -37,5 +37,7 @@ object Utils {
     case _: LispNumber => LispTypeStrings.Number
     case _: LispList => LispTypeStrings.List
     case _: LispError => LispTypeStrings.Error
+    case _: LispString => LispTypeStrings.String
+    case LispNil => LispTypeStrings.Nil
   }
 }
