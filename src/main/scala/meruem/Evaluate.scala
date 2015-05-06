@@ -13,7 +13,8 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
     case atom: LispAtom[_] => atom
     case EmptyLispList => lispValue
     case ConsLispList(head, tail) => Evaluate(head, environment) match {
-      case LispQuote => quote(tail)
+      case LispSymbol("quote") => quote(tail)
+      case LispSymbol("cond") => cond(tail, environment)
       case builtinFunc: LispBuiltinFunction => Evaluate(builtinFunc.updated(args = tail), environment)
       case customFunc: LispCustomFunction => Evaluate(customFunc.updated(args = tail), environment)
       case error: LispError => error

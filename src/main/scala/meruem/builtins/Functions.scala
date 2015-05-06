@@ -15,19 +15,22 @@ object Functions {
     case llist @ ConsLispList(h, _) => LispBoolean(llist.forAll(_ == h))
   })
   
-  def cons(args: LispList) = checkArgsCount(args)(_ == 2)(whenValid(args.head) { h =>
+  def cons(args: LispList) = checkArgsCount(args)(_ == 2)(validated(args.head) { h =>
     isListArg(args.tail)(h :: _)
   })
   
-  def cond(args: LispList) = checkArgsCount(args)(_ > 0) {
-    args.find {
-      case ConsLispList(_, ConsLispList(_, _)) => false
+  def cond(args: LispList, environment: Environment) = checkArgsCount(args)(_ > 0) {
+    args.find {   // all arguments must be pairs
+      case ConsLispList(_, ConsLispList(_, EmptyLispList)) => false
       case  _ => true
     } map (_ => Errors.invalidFormat("Cond accepts only a list of pairs.")) getOrElse {
       def recurse(llist: LispList): LispValue = llist match {
-        case EmptyLispList => LispError("All predicates return false")
-        case ConsLispList(ConsLispList(EmptyLispList, _), t) => recurse(t)
-        case ConsLispList(ConsLispList(_, result), _) => result 
+        case EmptyLispList => LispNil   // if all conditions yield false, return nil
+        case ConsLispList(ConsLispList(condition, ConsLispList(result, _)), tail) => 
+          validated(Evaluate(condition, environment)) {
+            case LispBoolean(false) | LispNil => recurse(tail)
+            case _ => validated(Evaluate(result, environment))(_ => result)
+          }
       }
       
       recurse(args)
