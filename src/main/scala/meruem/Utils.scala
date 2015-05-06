@@ -25,12 +25,14 @@ object Utils {
       case lval => Errors.invalidType(LispTypeStrings.List, lval)
     }
   
-  def isListArg(args: LispList)(f: LispList => LispValue) = checkArgsCount(args)(_ == 1) {
-    validated(args.head) {
-      case llist: LispList => f(llist)
-      case lval => Errors.invalidType(LispTypeStrings.List, lval)
+  def withCollArg(args: LispList)(f: LispList => LispValue)(g: LispString => LispValue) = 
+    checkArgsCount(args)(_ == 1) {
+      args.head match {
+        case llist: LispList => f(llist)
+        case str: LispString => g(str)
+        case lval => Errors.invalidType(LispTypeStrings.List, lval)
+      }
     }
-  }
 
   def typeString(lval: LispValue) = lval match {
     case _: LispSymbol => LispTypeStrings.Symbol
