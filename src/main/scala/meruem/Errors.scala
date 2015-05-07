@@ -24,4 +24,6 @@ object Errors {
   def incorrectArgCount(count: Int) = LispError(s"Incorrect number of arguments: $count")
   
   def divisionByZero = LispError("Division by zero")
+  
+  def nonPair(arg: LispValue) = invalidFormat("Not a pair: " + arg)
 }

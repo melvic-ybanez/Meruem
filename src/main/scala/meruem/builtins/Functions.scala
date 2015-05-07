@@ -25,16 +25,13 @@ object Functions {
   })
   
   def cond(args: LispList, environment: Environment) = checkArgsCount(args)(_ > 0) {
-    args.find {   // all arguments must be pairs
-      case ConsLispList(_, ConsLispList(_, EmptyLispList)) => false
-      case  _ => true
-    } map (_ => Errors.invalidFormat("Cond accepts only a list of pairs.")) getOrElse {
+    args.find(!isPair(_)).map(lval => Errors.nonPair(lval)) getOrElse {
       def recurse(llist: LispList): LispValue = llist match {
-        case EmptyLispList => LispNil   // if all conditions yield false, return nil
+        case EmptyLispList => LispNil    // if all conditions yield false, return nil
         case ConsLispList(ConsLispList(condition, ConsLispList(result, _)), tail) => 
-          validated(Evaluate(condition, environment)) {
+          whenValid(Evaluate(condition, environment)) {
             case LispBoolean(false) | LispNil => recurse(tail)
-            case _ => validated(Evaluate(result, environment))(_ => result)
+            case _ => whenValid(Evaluate(result, environment))(_ => result)
           }
       }
       
