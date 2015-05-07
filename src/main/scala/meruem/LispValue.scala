@@ -116,20 +116,14 @@ object LispList {
 }
 
 sealed trait LispFunction extends LispValue {
-  def args: LispList
   def environment: Environment
   
   override def toString = "<function>"
 }
 
-case class LispBuiltinFunction(func: LispList => LispValue,
-                               args: LispList = EmptyLispList) extends LispFunction {
+case class LispBuiltinFunction(func: LispList => LispValue) extends LispFunction {
   
   def environment: Environment = EmptyEnvironment
-  
-  def updated(args: LispList = args,
-              func: LispList => LispValue = func) =
-    LispBuiltinFunction(func, args)
 }
 
 case class LispCustomFunction(params: LispList, 

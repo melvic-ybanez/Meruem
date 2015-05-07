@@ -15,12 +15,11 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
     case ConsLispList(head, tail) => Evaluate(head, environment) match {
       case LispSymbol("quote") => quote(tail)
       case LispSymbol("cond") => cond(tail, environment)
-      case builtinFunc: LispBuiltinFunction => Evaluate(builtinFunc.updated(args = tail), environment)
+      case LispBuiltinFunction(func) => sanitizeAll(tail, environment)(func(_)) 
       case customFunc: LispCustomFunction => Evaluate(customFunc.updated(args = tail), environment)
       case error: LispError => error
       case lval => Errors.nonFunction(lval)
     }
-    case LispBuiltinFunction(func, args) => sanitizeAll(args, environment)(func(_))
     case customFunc @ LispCustomFunction(params, args, body, environ @ NonEmptyEnvironment(vm, _)) => sanitizeAll(args, environment) {
       case EmptyLispList => params match {
         // If each of the arguments have been assigned to each of the params, 
