@@ -1,12 +1,19 @@
 package meruem
 
 import meruem.Constants.LispTypeStrings
+import meruem.LispParser._
 
 /**
  * Created by ybamelcash on 4/27/2015.
  */
 
 object Utils {
+  def read(str: String): LispValue = parse(expression, str) match {
+    case Success(expr, _) => Evaluate(expr, Globals.environment)
+    case Failure(msg, _) => LispError(msg)
+    case Error(msg, _) => LispError(msg)
+  }
+  
   def whenValid[A <: LispValue, B <: LispValue](args: A)(f: A => B) = args match {
     case error: LispError => error
     case lval => f(lval)

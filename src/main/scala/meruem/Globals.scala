@@ -23,7 +23,8 @@ object Globals {
       "atom?" -> LispBuiltinFunction(atom),
       "nil" -> LispNil,
       "true" -> LispBoolean(true),
-      "false" -> LispBoolean(false)
+      "false" -> LispBoolean(false),
+      "read" -> LispBuiltinFunction(read)
     ), 
     EmptyEnvironment
   )

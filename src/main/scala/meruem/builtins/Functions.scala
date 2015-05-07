@@ -1,12 +1,19 @@
 package meruem.builtins
 
+import meruem.Constants.LispTypeStrings
 import meruem._
 import meruem.Utils._
+import meruem.LispParser._
 
 /**
  * Created by ybamelcash on 4/28/2015.
  */
 object Functions {
+  def read(args: LispList) = checkArgsCount(args)(_ == 1)(args.head match {
+    case LispString(str) => Utils.read(str) 
+    case lval => Errors.invalidType(LispTypeStrings.String, lval)
+  }) 
+  
   def head(args: LispList) = withCollArg(args)(_.head)(lstr => LispChar(lstr.value.head))
   
   def tail(args: LispList) = withCollArg(args)(_.tail)(lstr => LispString(lstr.value.tail))
