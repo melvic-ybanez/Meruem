@@ -9,12 +9,12 @@ import meruem.LispParser._
  * Created by ybamelcash on 4/28/2015.
  */
 object Functions {
-  def lambda(args: LispList) = checkArgsCount(args)(_ == 2)(args match {
+  def lambda(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
     case ConsLispList(llist: LispList, ConsLispList(body, _)) => llist.find {
       case _: LispSymbol => false
       case _ => true
     } map(lval => Errors.invalidType(LispTypeStrings.Symbol, lval)) getOrElse {
-      LispCustomFunction(llist, EmptyLispList, body, NonEmptyEnvironment(Map(), EmptyEnvironment))
+      LispCustomFunction(llist, EmptyLispList, body, NonEmptyEnvironment(Map(), environment))
     }  
   })
   

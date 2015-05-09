@@ -8,7 +8,7 @@ import scala.util.parsing.combinator.RegexParsers
 object LispParser extends RegexParsers {
   def number: Parser[LispNumber] = """-?[0-9]+""".r ^^ (x => LispNumber(x.toLong))
   
-  def symbol: Parser[LispSymbol] = """[a-zA-Z_+\-\*\/=<>!@#\$%\^&*\|\?\.,]+""".r ^^ (sym => LispSymbol(sym))
+  def symbol: Parser[LispSymbol] = """[a-zA-Z0-9_+\-\*\/=<>!@#\$%\^&*\|\?\.,]+""".r ^^ (sym => LispSymbol(sym))
   
   def character: Parser[LispChar] = """\\.""".r ^^ (c => LispChar(c.tail.head))
   

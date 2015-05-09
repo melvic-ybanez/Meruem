@@ -29,6 +29,7 @@ object Utils {
       }
     }) {
       case lval: LispList => f(lval.reverse)
+      case error: LispError => error
       case lval => Errors.invalidType(LispTypeStrings.List, lval)
     }
   
