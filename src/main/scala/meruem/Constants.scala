@@ -23,4 +23,5 @@ object Constants {
   final val LispCondSymbol = LispSymbol("cond")
   final val LispDefSymbol = LispSymbol("def")
   final val LispReadSymbol = LispSymbol("read")
+  final val LispLambdaSymbol = LispSymbol("lambda")
 }

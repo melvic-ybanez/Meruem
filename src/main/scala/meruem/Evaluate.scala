@@ -19,6 +19,7 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
       case LispCondSymbol => cond(tail, environment)
       case LispReadSymbol => Functions.read(tail, environment)
       case LispDefSymbol => define(tail, environment)
+      case LispLambdaSymbol => lambda(tail)
       case LispBuiltinFunction(func) => sanitizeAll(tail, environment)(func) 
       case customFunc: LispCustomFunction => Evaluate(customFunc.updated(args = tail), environment)
       case error: LispError => error
@@ -35,7 +36,7 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
       }
       case ConsLispList(arg, argsTail) => params match {
         // Too many arguments provided, return an error  
-        case EmptyLispList => Errors.extraArgs(params.size)
+        case EmptyLispList => Errors.extraArgs(args.size)
 
         // If parameter contains the '&' character...  
         case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(LispSymbol(xs), EmptyLispList)) =>

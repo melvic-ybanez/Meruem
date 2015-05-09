@@ -26,7 +26,8 @@ object Globals {
       "true" -> LispBoolean(true),
       "false" -> LispBoolean(false),
       "read" -> LispReadSymbol,
-      "def" -> LispDefSymbol
+      "def" -> LispDefSymbol,
+      "lambda" -> LispLambdaSymbol
     ), 
     EmptyEnvironment
   )

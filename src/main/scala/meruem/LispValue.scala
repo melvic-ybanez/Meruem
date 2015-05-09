@@ -30,7 +30,7 @@ case object LispNil extends LispAtom[Nothing] {
 }
 
 case class LispError(value: String) extends LispValue {
-  override def toString = "Error: " + value
+  override def toString = "Error. " + value
 }
 
 case class LispSymbol(value: String) extends LispAtom[String]
