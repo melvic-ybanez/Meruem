@@ -9,8 +9,8 @@ import meruem.LispParser._
  * Created by ybamelcash on 4/28/2015.
  */
 object Functions {
-  def read(args: LispList) = checkArgsCount(args)(_ == 1)(args.head match {
-    case LispString(str) => Utils.read(str) 
+  def read(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 1)(args.head match {
+    case LispString(str) => Utils.read(str, environment) 
     case lval => Errors.invalidType(LispTypeStrings.String, lval)
   }) 
   
@@ -31,19 +31,17 @@ object Functions {
     }
   })
   
-  def cond(args: LispList, environment: Environment) = checkArgsCount(args)(_ > 0) {
-    args.find(!isPair(_)).map(lval => Errors.nonPair(lval)) getOrElse {
-      def recurse(llist: LispList): LispValue = llist match {
-        case EmptyLispList => LispNil    // if all conditions yield false, return nil
-        case ConsLispList(ConsLispList(condition, ConsLispList(result, _)), tail) => 
-          whenValid(Evaluate(condition, environment)) {
-            case LispBoolean(false) | LispNil => recurse(tail)
-            case _ => whenValid(Evaluate(result, environment))(_ => result)
-          }
-      }
-      
-      recurse(args)
+  def cond(args: LispList, environment: Environment) = withPairListArgs(args) {
+    def recurse(llist: LispList): LispValue = llist match {
+      case EmptyLispList => LispNil    // if all conditions yield false, return nil
+      case ConsLispList(ConsLispList(condition, ConsLispList(result, _)), tail) => 
+        whenValid(Evaluate(condition, environment)) {
+          case LispBoolean(false) | LispNil => recurse(tail)
+          case _ => whenValid(Evaluate(result, environment))(_ => result)
+        }
     }
+    
+    recurse(args)
   }
   
   def quote(args: LispList) = args match {
@@ -60,4 +58,20 @@ object Functions {
   }
   
   def list(args: LispList) = args
+  
+  def define(args: LispList, environment: Environment) = withPairListArgs(args) {
+    def recurse(llist: LispList, result: LispDef): LispValue = llist match {
+      case EmptyLispList => result
+      case ConsLispList(ConsLispList(sym: LispSymbol, ConsLispList(value, _)), tail) =>
+        // Check whether the symbol has already been defined or not
+        if (!environment.hasSymbol(sym)) 
+          whenValid(Evaluate(value, environment)) {
+            case lval => recurse(tail, LispDef(result.environment + (sym, lval))) 
+          } 
+        else Errors.alreadyDefined(sym)
+      case ConsLispList(ConsLispList(lval, _), _) => Errors.invalidType(LispTypeStrings.Symbol, lval)
+    }
+    
+    recurse(args, LispDef(environment))
+  } 
 }

@@ -4,7 +4,7 @@
 
 import java.io.EOFException
 
-import meruem.{Utils, Globals, Evaluate}
+import meruem._
 import meruem.LispParser._
 
 import io.StdIn.readLine
@@ -12,9 +12,18 @@ import io.StdIn.readLine
 object Main {
   def main(args: Array[String]): Unit = {
     // READ-EVAL-PRINT-LOOP
-    while (true) {
+    def repl(environment: Environment) {
       val input = readLine("meruem>")
-      println(Utils.read(input))
+      Utils.read(input, environment) match {
+        case ldef @ LispDef(newEnvironment) => 
+          println(ldef)
+          repl(newEnvironment)
+        case lval => 
+          println(lval)
+          repl(environment)
+      } 
     }  
+    
+    repl(Globals.environment)
   }
 }

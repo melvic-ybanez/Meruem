@@ -35,6 +35,10 @@ case class LispError(value: String) extends LispValue {
 
 case class LispSymbol(value: String) extends LispAtom[String]
 
+case class LispDef(environment: Environment) extends LispValue {
+  override def toString = LispNil.toString
+}
+
 sealed trait LispList extends LispValue {
   def head: LispValue
   def tail: LispList

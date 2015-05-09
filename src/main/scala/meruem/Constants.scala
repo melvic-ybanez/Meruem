@@ -12,9 +12,15 @@ object Constants {
     final val Error = "Error"
     final val List = "List"
     final val Nil = "Nil"
+    final val Pair = "Pair"
   }
   
   final val VarArgsChar = "&"
   final val ListOpenParen = "("
   final val ListCloseParen = ")"
+  
+  final val LispQuoteSymbol = LispSymbol("quote")
+  final val LispCondSymbol = LispSymbol("cond")
+  final val LispDefSymbol = LispSymbol("def")
+  final val LispReadSymbol = LispSymbol("read")
 }

@@ -8,8 +8,8 @@ import meruem.LispParser._
  */
 
 object Utils {
-  def read(str: String): LispValue = parse(expression, str) match {
-    case Success(expr, _) => Evaluate(expr, Globals.environment)
+  def read(str: String, environment: Environment): LispValue = parse(expression, str) match {
+    case Success(expr, _) => Evaluate(expr, environment)
     case Failure(msg, _) => LispError(msg)
     case Error(msg, _) => LispError(msg)
   }
@@ -41,17 +41,12 @@ object Utils {
       }
     }
   
-  def isPair(lval: LispValue) = lval match {
+  def isPair(expr: LispValue) = expr match {
     case ConsLispList(_, ConsLispList(_, EmptyLispList)) => true
     case _ => false
   }
-
-  def typeString(lval: LispValue) = lval match {
-    case _: LispSymbol => LispTypeStrings.Symbol
-    case _: LispNumber => LispTypeStrings.Number
-    case _: LispList => LispTypeStrings.List
-    case _: LispError => LispTypeStrings.Error
-    case _: LispString => LispTypeStrings.String
-    case LispNil => LispTypeStrings.Nil
+  
+  def withPairListArgs(args: LispList)(f: => LispValue) = checkArgsCount(args)(_ > 0) {
+    args.find(!isPair(_)).map(expr => Errors.invalidType(LispTypeStrings.Pair, expr)) getOrElse f 
   }
 }

@@ -8,6 +8,7 @@ trait Environment {
   def valueMap: Map[String, LispValue]
   def +(key: LispValue, lvalue: LispValue): Environment
   def get(key: LispSymbol): LispValue
+  def hasSymbol(key: LispSymbol): Boolean
 }
 
 case object EmptyEnvironment extends Environment {
@@ -20,6 +21,8 @@ case object EmptyEnvironment extends Environment {
   } 
   
   def get(key: LispSymbol) = Errors.unboundSymbol(key)
+  
+  def hasSymbol(key: LispSymbol) = false
 } 
 
 case class NonEmptyEnvironment(valueMap: Map[String, LispValue], parent: Environment) extends Environment {
@@ -32,4 +35,9 @@ case class NonEmptyEnvironment(valueMap: Map[String, LispValue], parent: Environ
   }
   
   def get(key: LispSymbol): LispValue = valueMap.getOrElse(key.value, parent.get(key))
+  
+  def hasSymbol(key: LispSymbol) = get(key) match {
+    case error: LispError => false
+    case _ => true
+  }
 }

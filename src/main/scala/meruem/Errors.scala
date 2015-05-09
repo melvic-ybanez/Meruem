@@ -13,9 +13,7 @@ object Errors {
     LispError(s"Not enough arguments. Expected $count more.")
   
   def invalidType(expectedTypeString: String, actual: LispValue) = 
-    LispError("Invalid Type. " +
-      s"Expected: $expectedTypeString. " +
-      s"Actual: ${Utils.typeString(actual)}")
+    LispError(s"Invalid Type. Not a $expectedTypeString: $actual")
   
   def invalidFormat(msg: String) = LispError(msg)
   
@@ -25,5 +23,5 @@ object Errors {
   
   def divisionByZero = LispError("Division by zero")
   
-  def nonPair(arg: LispValue) = invalidFormat("Not a pair: " + arg)
+  def alreadyDefined(sym: LispSymbol) = LispError(s"$sym is already defined.") 
 }

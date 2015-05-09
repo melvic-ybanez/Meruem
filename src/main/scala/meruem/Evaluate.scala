@@ -1,7 +1,9 @@
 package meruem
 
 import meruem.Utils._
+import meruem.builtins.Functions
 import meruem.builtins.Functions._
+import meruem.Constants._
 
 /**
  * Created by ybamelcash on 5/4/2015.
@@ -13,9 +15,11 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
     case atom: LispAtom[_] => atom
     case EmptyLispList => lispValue
     case ConsLispList(head, tail) => Evaluate(head, environment) match {
-      case LispSymbol("quote") => quote(tail)
-      case LispSymbol("cond") => cond(tail, environment)
-      case LispBuiltinFunction(func) => sanitizeAll(tail, environment)(func(_)) 
+      case LispQuoteSymbol => quote(tail)
+      case LispCondSymbol => cond(tail, environment)
+      case LispReadSymbol => Functions.read(tail, environment)
+      case LispDefSymbol => define(tail, environment)
+      case LispBuiltinFunction(func) => sanitizeAll(tail, environment)(func) 
       case customFunc: LispCustomFunction => Evaluate(customFunc.updated(args = tail), environment)
       case error: LispError => error
       case lval => Errors.nonFunction(lval)
@@ -51,5 +55,5 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
           ), environment)
       }
     }
-  }
+  } 
 }
