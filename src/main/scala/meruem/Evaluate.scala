@@ -31,46 +31,53 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
       case lval => Errors.nonFunction(lval)
     }
       
-    case customFunc @ LispCustomFunction(params, args, body, environ @ NonEmptyEnvironment(vm, _)) => args match {
-      case EmptyLispList => params match {
-        // If each of the arguments have been assigned to each of the params, 
-        // perform evaluation on the body.  
-        case EmptyLispList => Evaluate(body, environ)
-
-        // If some parameters remained unbound...  
-        case _ => Errors.notEnoughArguments(params.size)
-      }
-      case ConsLispList(arg, argsTail) => params match {
-        // Too many arguments provided, return an error  
-        case EmptyLispList => Errors.extraArgs(args.size)
-
-        // If parameter contains the '&' character...  
-        case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(LispSymbol(xs), EmptyLispList)) =>
-          val newArgs = args.map(Evaluate(_, environment))
-          
-          // make sure there are no errors in the arguments
-          newArgs.find {
-            case error: LispError => true
-            case _ => false
-          } getOrElse {
-            // if all the arguments are valid, bind them to the symbol following the '&' character
+    case customFunc @ LispCustomFunction(params, args, body, environ @ NonEmptyEnvironment(vm, _)) => 
+      def processVarArg(sym: String, xs: LispList) = Evaluate(customFunc.updated(
+        params = EmptyLispList,
+        args = EmptyLispList,
+        environment = environ.updated(newValueMap = vm + (sym -> xs))
+      ), environment)
+      
+      args match {
+        case EmptyLispList => params match {
+          // If each of the arguments have been assigned to each of the params, 
+          // perform evaluation on the body.  
+          case EmptyLispList => Evaluate(body, environ)
+  
+          // If parameter contains the '&' character...  
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(LispSymbol(sym), EmptyLispList)) =>
+            processVarArg(sym, EmptyLispList)   // bind the variable follwing the '&' character to empty list
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArragsCountError
+  
+          // If some parameters remained unbound...  
+          case _ => Errors.notEnoughArgs(params)
+        }
+        case ConsLispList(arg, argsTail) => params match {
+          // Too many arguments provided, return an error  
+          case EmptyLispList => Errors.extraArgs(args)
+  
+          // If parameter contains the '&' character...  
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(LispSymbol(sym), EmptyLispList)) =>
+            val newArgs = args.map(Evaluate(_, environment))
+            
+            // make sure there are no errors in the arguments
+            newArgs.find {
+              case error: LispError => true
+              case _ => false
+            } getOrElse {
+              // if all the arguments are valid, bind them to the symbol following the '&' character
+              processVarArg(sym, newArgs)
+            }
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArragsCountError
+  
+          case ConsLispList(param, paramsTail) => whenValid(Evaluate(arg, environment)) { arg =>
             Evaluate(customFunc.updated(
-              params = EmptyLispList,
-              args = EmptyLispList,
-              environment = environ.updated(newValueMap = vm + (xs -> newArgs))
+              params = paramsTail,
+              args = argsTail,
+              environment = environ + (param, arg)
             ), environment)
           }
-        case ConsLispList(param @ LispSymbol(Constants.VarArgsChar), _) =>
-          Errors.invalidFormat(s"Symbol ${Constants.VarArgsChar} is not followed by a single symbol.")
-
-        case ConsLispList(param, paramsTail) => whenValid(Evaluate(arg, environment)) { arg =>
-          Evaluate(customFunc.updated(
-            params = paramsTail,
-            args = argsTail,
-            environment = environ + (param, arg)
-          ), environment)
         }
       }
-    }
   } 
 }

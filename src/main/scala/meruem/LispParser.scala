@@ -1,6 +1,7 @@
 package meruem
 
 import scala.util.parsing.combinator.RegexParsers
+import meruem.Constants.LispQuoteSymbol
 
 /**
  * Created by ybamelcash on 5/1/2015.
@@ -14,7 +15,7 @@ object LispParser extends RegexParsers {
   
   def string: Parser[LispString] = "\"".r ~ """([^\\"]|\\.)*""".r ~ "\"".r ^^ { case _ ~ str ~ _ => LispString(str) }
   
-  def quote: Parser[LispValue] = "'" ~ expression ^^ { case _ ~ expr => LispList(LispSymbol("quote"), expr) }
+  def quote: Parser[LispValue] = "'" ~ expression ^^ { case _ ~ expr => LispList(LispQuoteSymbol, expr) }
   
   def comment: Parser[String] = """;[^\r\n]*""".r
   

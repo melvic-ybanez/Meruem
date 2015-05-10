@@ -6,11 +6,11 @@ package meruem
 object Errors {
   def unboundSymbol(symbol: LispSymbol) = LispError(s"Unbound symbol: $symbol.")
   
-  def extraArgs(extraCount: Int) = 
-    LispError(s"Extra number of arguments: $extraCount")
+  def extraArgs(args: LispList) = 
+    LispError(s"Extra arguments: $args")
   
-  def notEnoughArguments(count: Int) = 
-    LispError(s"Not enough arguments. Expected $count more.")
+  def notEnoughArgs(params: LispList) = 
+    LispError(s"Not enough arguments. Expected values for $params.")
   
   def invalidType(expectedTypeString: String, actual: LispValue) = 
     LispError(s"Invalid Type. Not a $expectedTypeString: $actual")
@@ -23,5 +23,8 @@ object Errors {
   
   def divisionByZero = LispError("Division by zero")
   
-  def alreadyDefined(sym: LispSymbol) = LispError(s"$sym is already defined.") 
+  def alreadyDefined(sym: LispSymbol) = LispError(s"$sym is already defined.")
+  
+  def varArragsCountError = 
+    Errors.invalidFormat(s"Symbol ${Constants.VarArgsChar} is not followed by a single symbol.")
 }
