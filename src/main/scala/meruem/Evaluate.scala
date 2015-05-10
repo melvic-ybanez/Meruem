@@ -31,12 +31,15 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
       case lval => Errors.nonFunction(lval)
     }
       
-    case customFunc @ LispCustomFunction(params, args, body, environ @ NonEmptyEnvironment(vm, _)) => 
-      def processVarArg(sym: String, xs: LispList) = Evaluate(customFunc.updated(
-        params = EmptyLispList,
-        args = EmptyLispList,
-        environment = environ.updated(newValueMap = vm + (sym -> xs))
-      ), environment)
+    case customFunc @ LispCustomFunction(params, args, body, environ @ NonEmptyEnvironment(vm, _)) =>
+      def evaluateRest(sym: LispValue, lval: LispValue, 
+                       params: LispList = EmptyLispList,
+                       args: LispList = EmptyLispList) = 
+        Evaluate(customFunc.updated(
+          params = params,
+          args = args,
+          environment = environ + (sym, lval)
+        ), environment)
       
       args match {
         case EmptyLispList => params match {
@@ -45,8 +48,8 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
           case EmptyLispList => Evaluate(body, environ)
   
           // If parameter contains the '&' character...  
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(LispSymbol(sym), EmptyLispList)) =>
-            processVarArg(sym, EmptyLispList)   // bind the variable follwing the '&' character to empty list
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(sym, EmptyLispList)) =>
+            evaluateRest(sym, EmptyLispList)   // bind the variable follwing the '&' character to empty list
           case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArragsCountError
   
           // If some parameters remained unbound...  
@@ -57,7 +60,7 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
           case EmptyLispList => Errors.extraArgs(args)
   
           // If parameter contains the '&' character...  
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(LispSymbol(sym), EmptyLispList)) =>
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(sym, EmptyLispList)) =>
             val newArgs = args.map(Evaluate(_, environment))
             
             // make sure there are no errors in the arguments
@@ -66,16 +69,17 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
               case _ => false
             } getOrElse {
               // if all the arguments are valid, bind them to the symbol following the '&' character
-              processVarArg(sym, newArgs)
+              evaluateRest(sym, newArgs)
             }
           case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArragsCountError
   
           case ConsLispList(param, paramsTail) => whenValid(Evaluate(arg, environment)) { arg =>
-            Evaluate(customFunc.updated(
+            evaluateRest(
+              sym = param, 
+              lval = arg,
               params = paramsTail,
-              args = argsTail,
-              environment = environ + (param, arg)
-            ), environment)
+              args = argsTail
+            )
           }
         }
       }
