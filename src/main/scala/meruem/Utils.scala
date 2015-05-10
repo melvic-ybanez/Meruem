@@ -50,4 +50,9 @@ object Utils {
   def withPairListArgs(args: LispList)(f: => LispValue) = checkArgsCount(args)(_ > 0) {
     args.find(!isPair(_)).map(expr => Errors.invalidType(LispTypeStrings.Pair, expr)) getOrElse f 
   }
+  
+  def allSymbols(llist: LispList)(f: => LispValue) = llist.find {
+    case _: LispSymbol => false
+    case _ => true
+  } map(lval => Errors.invalidType(LispTypeStrings.Symbol, lval)) getOrElse f
 }

@@ -9,34 +9,22 @@ import meruem.LispParser._
  * Created by ybamelcash on 4/28/2015.
  */
 object Functions {
-  /*def defun(args: LispList) = checkArgsCount(args)(_ == 3)(args match {
-    case ConsLispList(name: LispSymbol, params: LispList, ConsLispList(body, _)) => 
-  })*/
-  
   def lambda(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
-    case ConsLispList(llist: LispList, ConsLispList(body, _)) => llist.find {
-      case _: LispSymbol => false
-      case _ => true
-    } map(lval => Errors.invalidType(LispTypeStrings.Symbol, lval)) getOrElse {
+    case ConsLispList(llist: LispList, ConsLispList(body, _)) => allSymbols(llist) {
       LispCustomFunction(llist, EmptyLispList, body, NonEmptyEnvironment(Map(), environment))
-    }  
-  })
-
-  def define(args: LispList, environment: Environment) = withPairListArgs(args) {
-    def recurse(llist: LispList, result: LispDef): LispValue = llist match {
-      case EmptyLispList => result
-      case ConsLispList(ConsLispList(sym: LispSymbol, ConsLispList(value, _)), tail) =>
-        // Check whether the symbol has already been defined or not
-        if (!environment.hasSymbol(sym))
-          whenValid(Evaluate(value, environment)) {
-            case lval => recurse(tail, LispDef(result.environment + (sym, lval)))
-          }
-        else Errors.alreadyDefined(sym)
-      case ConsLispList(ConsLispList(lval, _), _) => Errors.invalidType(LispTypeStrings.Symbol, lval)
     }
-
-    recurse(args, LispDef(environment))
-  }
+  })
+  
+  def define(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
+    case ConsLispList(sym: LispSymbol, ConsLispList(value, _)) => 
+      // Check whether the symbol has already been defined or not
+      if (!environment.hasSymbol(sym))
+        whenValid(Evaluate(value, environment)) {
+          case lval => LispDef(environment + (sym, lval))
+        }
+      else Errors.alreadyDefined(sym)
+    case ConsLispList(lval, _) => Errors.invalidType(LispTypeStrings.Symbol, lval)
+  })
   
   def read(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 1)(args.head match {
     case LispString(str) => Utils.read(str, environment) 
