@@ -26,7 +26,7 @@ object Arithmetics {
   
   def subtract(args: LispList) = args match {
     case EmptyLispList => Errors.incorrectArgCount(0)
-    case ConsLispList(LispNumber(x), _) => LispNumber(-x)
+    case ConsLispList(LispNumber(x), EmptyLispList) => LispNumber(-x)
     case ConsLispList(LispNumber(x), tail) => withNumericArgs(tail, x)(_ - _)
   }
 
