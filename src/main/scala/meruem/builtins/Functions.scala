@@ -54,7 +54,7 @@ object Functions {
       case ConsLispList(ConsLispList(condition, ConsLispList(result, _)), tail) => 
         whenValid(Evaluate(condition, environment)) {
           case LispBoolean(false) | LispNil => recurse(tail)
-          case _ => whenValid(Evaluate(result, environment))(_ => result)
+          case _ => whenValid(Evaluate(result, environment))(res => res)
         }
     }
     
