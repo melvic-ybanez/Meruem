@@ -6,7 +6,7 @@ package meruem
 trait Environment {
   def parent: Environment
   def valueMap: Map[String, LispValue]
-  def +(key: LispValue, lvalue: LispValue): Environment
+  def +(key: LispValue, lvalue: => LispValue): Environment
   def get(key: LispSymbol): LispValue
   def hasSymbol(key: LispSymbol): Boolean
 }
@@ -16,8 +16,8 @@ case object EmptyEnvironment extends Environment {
   
   def valueMap = Map()
   
-  def +(key: LispValue, lvalue: LispValue): Environment = key match {
-    case LispSymbol(sym) => NonEmptyEnvironment(Map(sym -> lvalue), EmptyEnvironment)
+  def +(key: LispValue, lvalue: => LispValue): Environment = key match {
+    case LispSymbol(sym) => new NonEmptyEnvironment(Map(sym -> lvalue), EmptyEnvironment)
   } 
   
   def get(key: LispSymbol) = Errors.unboundSymbol(key)
@@ -25,12 +25,14 @@ case object EmptyEnvironment extends Environment {
   def hasSymbol(key: LispSymbol) = false
 } 
 
-case class NonEmptyEnvironment(valueMap: Map[String, LispValue], parent: Environment) extends Environment {
-  def updated(newValueMap: Map[String, LispValue] = valueMap,
-              newParent: Environment = parent) =
-    NonEmptyEnvironment(newValueMap, newParent)
+class NonEmptyEnvironment(values: => Map[String, LispValue], val parent: Environment) extends Environment {
+  lazy val valueMap = values
   
-  def +(key: LispValue, lvalue: LispValue) = key match {
+  def updated(newValueMap: => Map[String, LispValue] = valueMap,
+              newParent: Environment = parent) =
+    new NonEmptyEnvironment(newValueMap, newParent)
+  
+  def +(key: LispValue, lvalue: => LispValue) = key match {
     case LispSymbol(sym) => updated(newValueMap = valueMap + (sym -> lvalue))
   }
   
@@ -40,4 +42,11 @@ case class NonEmptyEnvironment(valueMap: Map[String, LispValue], parent: Environ
     case error: LispError => false
     case _ => true
   }
+}
+
+case object NonEmptyEnvironment {
+  def apply(values: => Map[String, LispValue], parent: Environment) = 
+    new NonEmptyEnvironment(values, parent)
+  
+  def unapply(environment: NonEmptyEnvironment) = Some(environment.valueMap, environment.parent)
 }

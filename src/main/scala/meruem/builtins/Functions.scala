@@ -20,6 +20,12 @@ object Functions {
       // Check whether the symbol has already been defined or not
       if (!environment.hasSymbol(sym))
         whenValid(Evaluate(value, environment)) {
+          // If the value is a lambda, make sure the lambda gets accessed to the name
+          // defined via the def operator
+          case lambda: LispCustomFunction =>
+            def ldef: LispDef = LispDef(environment + (sym, llambda))
+            def llambda = lambda.updated(environment = ldef match { case LispDef(envi) => envi })
+            ldef
           case lval => LispDef(environment + (sym, lval))
         }
       else Errors.alreadyDefined(sym)

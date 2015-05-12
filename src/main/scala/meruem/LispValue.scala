@@ -130,14 +130,23 @@ case class LispBuiltinFunction(func: LispList => LispValue) extends LispFunction
   def environment: Environment = EmptyEnvironment
 }
 
-case class LispCustomFunction(params: LispList, 
-                              args: LispList,
-                              body: LispValue,
-                              environment: Environment) extends LispFunction {
+class LispCustomFunction(val params: LispList, 
+                         val args: LispList,
+                         val body: LispValue,
+                         environ: => Environment) extends LispFunction {
+  lazy val environment = environ
+  
   def updated(params: LispList = params,
               args: LispList = args,
               body: LispValue = body,
-              environment: Environment = environment): LispValue = 
-    LispCustomFunction(params, args, body, environment)
+              environment: => Environment = environment): LispValue = 
+    new LispCustomFunction(params, args, body, environment)
+}
+
+case object LispCustomFunction {
+  def apply(params: LispList, args: LispList, body: LispValue, environment: => Environment) =
+    new LispCustomFunction(params, args, body, environment)
+  
+  def unapply(lambda: LispCustomFunction) = Some(lambda.params, lambda.args, lambda.body, lambda.environment)
 }
 
