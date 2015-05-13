@@ -27,15 +27,20 @@ object Functions {
   })
   
   def defun(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 3)(args match {
-    case ConsLispList(name, ConsLispList(params, ConsLispList(body, _))) => 
+    case ConsLispList(name: LispSymbol, ConsLispList(params, ConsLispList(body, _))) => 
       whenValid(lambda(params :: body :: EmptyLispList, environment)) {
-        case lambda: LispCustomFunction =>
-          def ldef: LispDef = LispDef(environment + (name, llambda))
-          
-          def llambda = lambda.updated(environment = ldef match { case LispDef(envi) => envi })
-          
-          ldef
+        case lambda: LispCustomFunction => 
+          if (!environment.hasSymbol(name)) {
+            def ldef: LispValue = LispDef(environment +(name, llambda))
+
+            def llambda = lambda.updated(environment = ldef match {
+              case LispDef(envi) => envi
+            })
+
+            whenValid(ldef)(_ => ldef)
+          } else Errors.alreadyDefined(name)
       }
+    case ConsLispList(name, _) => Errors.invalidType(LispTypeStrings.Symbol, name)
   })
   
   def read(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 1)(args.head match {
