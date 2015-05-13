@@ -20,16 +20,22 @@ object Functions {
       // Check whether the symbol has already been defined or not
       if (!environment.hasSymbol(sym))
         whenValid(Evaluate(value, environment)) {
-          // If the value is a lambda, make sure the lambda gets accessed to the name
-          // defined via the def operator
-          case lambda: LispCustomFunction =>
-            def ldef: LispDef = LispDef(environment + (sym, llambda))
-            def llambda = lambda.updated(environment = ldef match { case LispDef(envi) => envi })
-            ldef
           case lval => LispDef(environment + (sym, lval))
         }
       else Errors.alreadyDefined(sym)
     case ConsLispList(lval, _) => Errors.invalidType(LispTypeStrings.Symbol, lval)
+  })
+  
+  def defun(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 3)(args match {
+    case ConsLispList(name, ConsLispList(params, ConsLispList(body, _))) => 
+      whenValid(lambda(params :: body :: EmptyLispList, environment)) {
+        case lambda: LispCustomFunction =>
+          def ldef: LispDef = LispDef(environment + (name, llambda))
+          
+          def llambda = lambda.updated(environment = ldef match { case LispDef(envi) => envi })
+          
+          ldef
+      }
   })
   
   def read(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 1)(args.head match {

@@ -24,6 +24,7 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
       case LispCondSymbol => cond(tail, environment)
       case LispReadSymbol => Functions.read(tail, environment)
       case LispDefSymbol => define(tail, environment)
+      case LispDefunSymbol => defun(tail, environment)
       case LispLambdaSymbol => lambda(tail, environment)
       case LispBuiltinFunction(func) => sanitizeAll(tail, environment)(func) 
       case customFunc: LispCustomFunction => Evaluate(customFunc.updated(args = tail), environment)
