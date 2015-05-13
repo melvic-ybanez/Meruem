@@ -9,6 +9,9 @@ trait Environment {
   def +(key: LispValue, lvalue: => LispValue): Environment
   def get(key: LispSymbol): LispValue
   def hasSymbol(key: LispSymbol): Boolean
+  
+  def whenNotdefined(sym: LispSymbol)(f: => LispValue): LispValue = 
+    if (hasSymbol(sym)) Errors.alreadyDefined(sym) else f
 }
 
 case object EmptyEnvironment extends Environment {

@@ -18,27 +18,26 @@ object Functions {
   def define(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
     case ConsLispList(sym: LispSymbol, ConsLispList(value, _)) => 
       // Check whether the symbol has already been defined or not
-      if (!environment.hasSymbol(sym))
+      environment.whenNotdefined(sym) {
         whenValid(Evaluate(value, environment)) {
-          case lval => LispDef(environment + (sym, lval))
+          case lval => LispDef(environment +(sym, lval))
         }
-      else Errors.alreadyDefined(sym)
+      }
     case ConsLispList(lval, _) => Errors.invalidType(LispTypeStrings.Symbol, lval)
   })
   
   def defun(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 3)(args match {
     case ConsLispList(name: LispSymbol, ConsLispList(params, ConsLispList(body, _))) => 
       whenValid(lambda(params :: body :: EmptyLispList, environment)) {
-        case lambda: LispCustomFunction => 
-          if (!environment.hasSymbol(name)) {
-            def ldef: LispValue = LispDef(environment +(name, llambda))
+        case lambda: LispCustomFunction => environment.whenNotdefined(name) {
+          def ldef: LispValue = LispDef(environment +(name, llambda))
 
-            def llambda = lambda.updated(environment = ldef match {
-              case LispDef(envi) => envi
-            })
+          def llambda = lambda.updated(environment = ldef match {
+            case LispDef(envi) => envi
+          })
 
-            whenValid(ldef)(_ => ldef)
-          } else Errors.alreadyDefined(name)
+          whenValid(ldef)(_ => ldef)
+        } 
       }
     case ConsLispList(name, _) => Errors.invalidType(LispTypeStrings.Symbol, name)
   })
