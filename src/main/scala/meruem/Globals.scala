@@ -20,6 +20,8 @@ object Globals {
       "cons" -> LispBuiltinFunction(cons),
       "cond"-> LispCondSymbol,
       "quote" -> LispQuoteSymbol,
+      "quasiquote" -> LispQuasiQuoteSymbol,
+      "unquote" -> LispUnquoteSymbol,
       "list" -> LispBuiltinFunction(list),
       "atom?" -> LispBuiltinFunction(atom),
       "nil" -> LispNil,

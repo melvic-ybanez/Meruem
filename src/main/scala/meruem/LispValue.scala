@@ -150,3 +150,7 @@ case object LispCustomFunction {
   def unapply(lambda: LispCustomFunction) = Some(lambda.params, lambda.args, lambda.body, lambda.environment)
 }
 
+/*case class LispMacro(params: LispList, args: LispList, body: LispValue) extends LispFunction {
+  
+}*/
+

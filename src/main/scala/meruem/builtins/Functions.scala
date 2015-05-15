@@ -1,6 +1,7 @@
 package meruem.builtins
 
 import meruem.Constants.LispTypeStrings
+import meruem.Constants._
 import meruem._
 import meruem.Utils._
 import meruem.LispParser._
@@ -79,8 +80,42 @@ object Functions {
   
   def quote(args: LispList) = args match {
     case EmptyLispList => EmptyLispList
-    case ConsLispList(h, t) => h
+    case ConsLispList(h, _) => h
   }
+  
+  def quasiquote(args: LispList, environment: Environment): LispValue = {
+    def quasiquote(args: LispList, level: Int): LispValue = args match {
+      case EmptyLispList => EmptyLispList
+      case ConsLispList(error: LispError, _) => error
+      case ConsLispList(atom: LispAtom[_], _) => atom
+        
+      case ConsLispList(llist: LispList, _) => 
+        def recurse(xs: LispList, acc: LispList): LispValue = xs match {
+          case EmptyLispList => acc.reverse
+          case ConsLispList(error: LispError, _) => error
+          case ConsLispList(atom: LispAtom[_], tail) => atom match {
+              case LispQuasiQuoteSymbol => whenValid(quasiquote(tail, level + 1))(LispList(LispQuasiQuoteSymbol, _))
+              case LispUnquoteSymbol =>
+                if (level == 1) tail match {
+                  case EmptyLispList => EmptyLispList
+                  case ConsLispList(h, _) => 
+                    Evaluate(h, environment)
+                } else whenValid(quasiquote(tail, level - 1))(LispList(LispUnquoteSymbol, _))
+              case _ => whenValid(atom) { a => recurse(tail, a :: acc) }
+            }
+          case ConsLispList(EmptyLispList, tail) => recurse(tail, EmptyLispList :: acc)
+          case ConsLispList(llist: LispList, tail) => whenValid(recurse(llist, EmptyLispList)) { res =>
+            recurse(tail, res :: acc)
+          }
+        }
+        
+        recurse(llist, EmptyLispList)
+    }
+    
+    quasiquote(args, 1)
+  }
+  
+  def unquote(args: LispList) = Errors.unquoteNotAllowed 
   
   def atom(args: LispList) = checkArgsCount(args)(_ == 1) {
     args match {

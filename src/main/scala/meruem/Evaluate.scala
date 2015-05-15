@@ -21,6 +21,8 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
     // The first item of the list must be a symbol that corresponds to a function name  
     case ConsLispList(head, tail) => Evaluate(head, environment) match {
       case LispQuoteSymbol => quote(tail)
+      case LispQuasiQuoteSymbol => quasiquote(tail, environment)
+      case LispUnquoteSymbol => unquote(tail)
       case LispCondSymbol => cond(tail, environment)
       case LispReadSymbol => Functions.read(tail, environment)
       case LispDefSymbol => define(tail, environment)
@@ -51,7 +53,7 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
           // If parameter contains the '&' character...  
           case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(sym, EmptyLispList)) =>
             evaluateRest(sym, EmptyLispList)   // bind the variable follwing the '&' character to empty list
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArragsCountError
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArgsCount
   
           // If some parameters remained unbound...  
           case _ => Errors.notEnoughArgs(params)
@@ -72,7 +74,7 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
               // if all the arguments are valid, bind them to the symbol following the '&' character
               evaluateRest(sym, newArgs)
             }
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArragsCountError
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArgsCount
   
           case ConsLispList(param, paramsTail) => whenValid(Evaluate(arg, environment)) { arg =>
             evaluateRest(

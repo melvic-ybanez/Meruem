@@ -13,6 +13,8 @@ object Constants {
     final val List = "List"
     final val Nil = "Nil"
     final val Pair = "Pair"
+    final val Unquote = "Unquote"
+    final val Quasiquote = "Quasiquote"
   }
   
   final val VarArgsChar = "&"
@@ -25,4 +27,6 @@ object Constants {
   final val LispDefunSymbol = LispSymbol("defun")
   final val LispReadSymbol = LispSymbol("read")
   final val LispLambdaSymbol = LispSymbol("lambda")
+  final val LispQuasiQuoteSymbol = LispSymbol("quasiquote")
+  final val LispUnquoteSymbol = LispSymbol("unquote")
 }

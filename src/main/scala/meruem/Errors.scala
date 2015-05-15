@@ -1,5 +1,7 @@
 package meruem
 
+import meruem.Constants.LispTypeStrings
+
 /**
  * Created by ybamelcash on 4/27/2015.
  */
@@ -25,6 +27,9 @@ object Errors {
   
   def alreadyDefined(sym: LispSymbol) = LispError(s"$sym is already defined.")
   
-  def varArragsCountError = 
-    Errors.invalidFormat(s"Symbol ${Constants.VarArgsChar} is not followed by a single symbol.")
+  def varArgsCount = 
+    Errors.invalidFormat(s"${LispTypeStrings.Symbol} ${Constants.VarArgsChar} is not followed by a single symbol.")
+  
+  def unquoteNotAllowed = 
+    LispError(s"${LispTypeStrings.Unquote} can only be used inside a ${LispTypeStrings.Quasiquote}") 
 }

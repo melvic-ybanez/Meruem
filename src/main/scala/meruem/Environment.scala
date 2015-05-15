@@ -6,6 +6,7 @@ package meruem
 trait Environment {
   def parent: Environment
   def valueMap: Map[String, LispValue]
+  //def macroMap: Map[String, LispValue]
   def +(key: LispValue, lvalue: => LispValue): Environment
   def get(key: LispSymbol): LispValue
   def hasSymbol(key: LispSymbol): Boolean

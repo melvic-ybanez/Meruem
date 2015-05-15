@@ -7,7 +7,7 @@
 		revision="1.0"
 		conf="test-internal"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
-		date="20150502210525"/>
+		date="20150515205941"/>
 	<dependencies>
 		<module organisation="org.scala-lang.modules" name="scala-parser-combinators_2.11">
 			<revision name="1.0.3" status="release" pubdate="20141214192104" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="1">
@@ -18,7 +18,7 @@
 					<artifact name="scala-parser-combinators_2.11" type="doc" ext="jar" extra-classifier="javadoc" status="no" details="" size="693395" time="0" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang.modules\scala-parser-combinators_2.11\docs\scala-parser-combinators_2.11-1.0.3-javadoc.jar">
 						<origin-location is-local="false" location="http://repo1.maven.org/maven2/org/scala-lang/modules/scala-parser-combinators_2.11/1.0.3/scala-parser-combinators_2.11-1.0.3-javadoc.jar"/>
 					</artifact>
-					<artifact name="scala-parser-combinators_2.11" type="jar" ext="jar" status="successful" details="" size="415523" time="6249" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang.modules\scala-parser-combinators_2.11\jars\scala-parser-combinators_2.11-1.0.3.jar">
+					<artifact name="scala-parser-combinators_2.11" type="jar" ext="jar" status="no" details="" size="415523" time="0" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang.modules\scala-parser-combinators_2.11\jars\scala-parser-combinators_2.11-1.0.3.jar">
 						<origin-location is-local="false" location="http://repo1.maven.org/maven2/org/scala-lang/modules/scala-parser-combinators_2.11/1.0.3/scala-parser-combinators_2.11-1.0.3.jar"/>
 					</artifact>
 					<artifact name="scala-parser-combinators_2.11" type="src" ext="jar" extra-classifier="sources" status="no" details="" size="42156" time="0" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang.modules\scala-parser-combinators_2.11\srcs\scala-parser-combinators_2.11-1.0.3-sources.jar">
