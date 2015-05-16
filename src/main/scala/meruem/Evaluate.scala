@@ -18,8 +18,9 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
     case atom: LispAtom[_] => atom
     case EmptyLispList => lispValue
       
-    // The first item of the list must be a symbol that corresponds to a function name  
-    case ConsLispList(head, tail) => Evaluate(head, environment) match {
+    // The first item of the list must be a symbol that corresponds to a function name,
+    // or a special operator.
+    case llist @ ConsLispList(head, tail) => Evaluate(head, environment) match {
       case LispQuoteSymbol => quote(tail)
       case LispQuasiQuoteSymbol => quasiquote(tail, environment)
       case LispUnquoteSymbol => unquote(tail)
@@ -28,6 +29,7 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
       case LispDefSymbol => define(tail, environment)
       case LispDefunSymbol => defun(tail, environment)
       case LispLambdaSymbol => lambda(tail, environment)
+      //case LispDefMacro(func) => func.updated()
       case LispBuiltinFunction(func) => sanitizeAll(tail, environment)(func) 
       case customFunc: LispCustomFunction => Evaluate(customFunc.updated(args = tail), environment)
       case error: LispError => error

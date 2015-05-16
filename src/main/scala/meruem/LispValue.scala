@@ -3,7 +3,16 @@ package meruem
 /**
  * Created by ybamelcash on 4/26/2015.
  */
-sealed trait LispValue
+sealed trait LispValue {
+  def isTrue = this match {
+    case LispBoolean(false) | LispNil | LispError(_) => false
+    case _ => true
+  }
+  
+  def or(that: => LispValue) = if (this.isTrue) this else that
+  
+  def and(that: => LispValue) = if (this.isTrue) that else this
+}
 
 sealed trait LispAtom[+A] extends LispValue {
   def value: A
@@ -150,7 +159,5 @@ case object LispCustomFunction {
   def unapply(lambda: LispCustomFunction) = Some(lambda.params, lambda.args, lambda.body, lambda.environment)
 }
 
-/*case class LispMacro(params: LispList, args: LispList, body: LispValue) extends LispFunction {
-  
-}*/
+case class LispDefMacro(func: LispCustomFunction) extends LispValue
 

@@ -6,7 +6,6 @@ package meruem
 trait Environment {
   def parent: Environment
   def valueMap: Map[String, LispValue]
-  //def macroMap: Map[String, LispValue]
   def +(key: LispValue, lvalue: => LispValue): Environment
   def get(key: LispSymbol): LispValue
   def hasSymbol(key: LispSymbol): Boolean
@@ -16,9 +15,9 @@ trait Environment {
 }
 
 case object EmptyEnvironment extends Environment {
-  def parent = throw new IllegalAccessException("Empty environment has no parent")
+  def parent = throw new IllegalAccessException("Parent of empty envirionment")
   
-  def valueMap = Map()
+  def valueMap = throw new IllegalAccessError("Value map of empty environment")
   
   def +(key: LispValue, lvalue: => LispValue): Environment = key match {
     case LispSymbol(sym) => new NonEmptyEnvironment(Map(sym -> lvalue), EmptyEnvironment)
@@ -27,6 +26,8 @@ case object EmptyEnvironment extends Environment {
   def get(key: LispSymbol) = Errors.unboundSymbol(key)
   
   def hasSymbol(key: LispSymbol) = false
+  
+  def hasMacro(name: String) = false
 } 
 
 class NonEmptyEnvironment(values: => Map[String, LispValue], val parent: Environment) extends Environment {
