@@ -1,5 +1,7 @@
 package meruem
 
+import meruem.Utils._
+
 /**
  * Created by ybamelcash on 4/26/2015.
  */
@@ -9,9 +11,9 @@ sealed trait LispValue {
     case _ => true
   }
   
-  def or(that: => LispValue) = if (this.isTrue) this else that
+  def or(that: => LispValue) = if (this) this else that
   
-  def and(that: => LispValue) = if (this.isTrue) that else this
+  def and(that: => LispValue) = if (this) that else this
 }
 
 sealed trait LispAtom[+A] extends LispValue {
@@ -148,7 +150,7 @@ class LispCustomFunction(val params: LispList,
   def updated(params: LispList = params,
               args: LispList = args,
               body: LispValue = body,
-              environment: => Environment = environment): LispValue = 
+              environment: => Environment = environment): LispCustomFunction = 
     new LispCustomFunction(params, args, body, environment)
 }
 

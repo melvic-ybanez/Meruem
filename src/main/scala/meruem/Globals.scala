@@ -26,7 +26,7 @@ object Globals {
       "atom?" -> LispBuiltinFunction(isAtom),
       "symbol?" -> LispBuiltinFunction(isSymbol),
       "list?" -> LispBuiltinFunction(isList),
-      "macro?" -> LispBuiltinFunction(isMacro),
+      "macro" -> LispBuiltinFunction(getMacro),
       "nil" -> LispNil,
       "true" -> LispBoolean(true),
       "false" -> LispBoolean(false),
@@ -34,7 +34,8 @@ object Globals {
       "def" -> LispDefSymbol,
       "defun" -> LispDefunSymbol,
       "lambda" -> LispLambdaSymbol,
-      "error" -> LispBuiltinFunction(error)
+      "error" -> LispBuiltinFunction(error),
+      "defmacro" -> LispDefMacroSymbol
     ), 
     EmptyEnvironment
   )

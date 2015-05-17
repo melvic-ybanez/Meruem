@@ -16,11 +16,11 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
     // Self-evaluating expressions
     case error: LispError => error
     case atom: LispAtom[_] => atom
-    case EmptyLispList => lispValue
+    case EmptyLispList => lispValue  
       
     // The first item of the list must be a symbol that corresponds to a function name,
-    // or a special operator.
-    case llist @ ConsLispList(head, tail) => Evaluate(head, environment) match {
+    // a special operator, or a macro.
+    case ConsLispList(head, tail) => Evaluate(head, environment) match {
       case LispQuoteSymbol => quote(tail)
       case LispQuasiQuoteSymbol => quasiquote(tail, environment)
       case LispUnquoteSymbol => unquote(tail)
@@ -29,7 +29,11 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
       case LispDefSymbol => define(tail, environment)
       case LispDefunSymbol => defun(tail, environment)
       case LispLambdaSymbol => lambda(tail, environment)
-      //case LispDefMacro(func) => func.updated()
+      case LispDefMacroSymbol => defmacro(tail, environment)
+      
+      // If the first symbol is a macro, expand it first before evaluating it.  
+      case lmacro: LispDefMacro => Evaluate(macroExpand(lmacro :: tail, environment), environment)
+        
       case LispBuiltinFunction(func) => sanitizeAll(tail, environment)(func) 
       case customFunc: LispCustomFunction => Evaluate(customFunc.updated(args = tail), environment)
       case error: LispError => error

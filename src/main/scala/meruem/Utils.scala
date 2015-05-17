@@ -55,4 +55,6 @@ object Utils {
     case _: LispSymbol => false
     case _ => true
   } map(lval => Errors.invalidType(LispTypeStrings.Symbol, lval)) getOrElse f
+  
+  implicit def lispValueToBool(lval: LispValue): Boolean = lval.isTrue
 }

@@ -10,11 +10,23 @@ import meruem.LispParser._
  * Created by ybamelcash on 4/28/2015.
  */
 object Functions {
-  def isMacro(args: LispList) = isSymbol(args) and LispBoolean(args.head match {
-    case LispDefMacro(_) => true
-    case _ => false
-  })
+  def macroExpand(lval: LispValue, environment: Environment): LispValue = lval match {
+    case ConsLispList(LispDefMacro(func), tail) =>
+      macroExpand(
+        Evaluate(func.updated(args = tail.map(x => LispList(LispQuoteSymbol, x))), environment), 
+        environment)
+    case _ => lval
+  }
   
+  def defmacro(args: LispList, environment: Environment) = defineFunction(args, environment)(LispDefMacro(_))
+  
+  def getMacro(args: LispList) = checkArgsCount(args)(_ == 1) {
+    args.head match {
+      case lmacro: LispDefMacro => lmacro
+      case _ => LispNil
+    }
+  }
+
   def lambda(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
     case ConsLispList(llist: LispList, ConsLispList(body, _)) => allSymbols(llist) {
       LispCustomFunction(llist, EmptyLispList, body, NonEmptyEnvironment(Map(), environment))
@@ -32,21 +44,7 @@ object Functions {
     case ConsLispList(lval, _) => Errors.invalidType(LispTypeStrings.Symbol, lval)
   })
   
-  def defun(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 3)(args match {
-    case ConsLispList(name: LispSymbol, ConsLispList(params, ConsLispList(body, _))) => 
-      whenValid(lambda(params :: body :: EmptyLispList, environment)) {
-        case lambda: LispCustomFunction => environment.whenNotdefined(name) {
-          def ldef: LispValue = LispDef(environment +(name, llambda))
-
-          def llambda = lambda.updated(environment = ldef match {
-            case LispDef(envi) => envi
-          })
-
-          whenValid(ldef)(_ => ldef)
-        } 
-      }
-    case ConsLispList(name, _) => Errors.invalidType(LispTypeStrings.Symbol, name)
-  })
+  def defun(args: LispList, environment: Environment) = defineFunction(args, environment)(llambda => llambda)
   
   def read(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 1)(args.head match {
     case LispString(str) => Utils.read(str, environment) 
@@ -75,7 +73,7 @@ object Functions {
       case EmptyLispList => LispNil    // if all conditions yield false, return nil
       case ConsLispList(ConsLispList(condition, ConsLispList(result, _)), tail) =>
         whenValid(Evaluate(condition, environment)) { res =>
-          if (res.isTrue) whenValid(Evaluate(result, environment))(res => res)
+          if (res) whenValid(Evaluate(result, environment))(res => res)
           else recurse(tail)
         }
     }
@@ -125,14 +123,14 @@ object Functions {
   def isAtom(args: LispList) = checkArgsCount(args)(_ == 1) {
     LispBoolean(args match {
       case EmptyLispList => false
-      case ConsLispList(_: LispList, t) => false
+      case ConsLispList(_: LispList, _) => false
       case _ => true
     })
   } 
   
   def isSymbol(args: LispList) = isAtom(args) and LispBoolean(args.head match {
-    case sym: LispSymbol => true
-    case sym => false
+    case LispSymbol(_) | LispDefMacro(_) | _: LispFunction => true
+    case _ => false
   })
   
   def isList(args: LispList) = checkArgsCount(args)(_ == 1)(LispBoolean(args match {
@@ -146,4 +144,22 @@ object Functions {
     case ConsLispList(LispString(error), _) => LispError(error)
     case lval => Errors.invalidType(LispTypeStrings.String, lval)
   })
+
+  def defineFunction(args: LispList, environment: Environment)(f: LispCustomFunction => LispValue) = 
+    checkArgsCount(args)(_ == 3)(args match {
+      case ConsLispList(name: LispSymbol, ConsLispList(params, ConsLispList(body, _))) =>
+        whenValid(lambda(params :: body :: EmptyLispList, environment)) {
+          case lambda: LispCustomFunction => environment.whenNotdefined(name) {
+            def ldef: LispDef = LispDef(environment + (name, function))
+  
+            def function = f(lambda.updated(environment = ldef match {
+              case LispDef(envi) => envi
+            }))
+            
+  
+            whenValid(ldef)(_ => ldef)
+          }
+        }
+      case ConsLispList(name, _) => Errors.invalidType(LispTypeStrings.Symbol, name)
+    })
 }
