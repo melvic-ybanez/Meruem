@@ -30,4 +30,6 @@ object LispParser extends RegexParsers {
   def expression: Parser[LispValue] = (number | symbol | character | quote | quasiquote | unquote | string | list) ^^ {
     case lval: LispValue => lval
   } 
+  
+  def meruem: Parser[List[LispValue]] = rep(expression)
 } 

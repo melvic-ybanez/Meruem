@@ -31,5 +31,11 @@ object Errors {
     Errors.invalidFormat(s"${LispTypeStrings.Symbol} ${Constants.VarArgsChar} is not followed by a single symbol.")
   
   def unquoteNotAllowed = 
-    LispError(s"${LispTypeStrings.Unquote} can only be used inside a ${LispTypeStrings.Quasiquote}") 
+    LispError(s"${LispTypeStrings.Unquote} can only be used inside a ${LispTypeStrings.Quasiquote}")
+  
+  def fileNotFound(filename: String) = LispError("File Not Found: " + filename)
+  
+  def parseFailure(msg: String) = LispError("Parse Failure: " + msg)
+  
+  def parseError(msg: String) = LispError("Parse Error: " + msg)
 }

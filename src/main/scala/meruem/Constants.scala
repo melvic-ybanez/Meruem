@@ -29,6 +29,6 @@ object Constants {
   final val LispLambdaSymbol = LispSymbol("lambda")
   final val LispQuasiQuoteSymbol = LispSymbol("quasiquote")
   final val LispUnquoteSymbol = LispSymbol("unquote")
-  final val LispMacroSymbol = LispSymbol("macro")
   final val LispDefMacroSymbol = LispSymbol("defmacro")
+  final val LispLoadSymbol = LispSymbol("load")
 }

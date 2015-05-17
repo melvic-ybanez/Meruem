@@ -6,6 +6,8 @@ import meruem._
 import meruem.Utils._
 import meruem.LispParser._
 
+import scala.io.Source
+
 /**
  * Created by ybamelcash on 4/28/2015.
  */
@@ -46,10 +48,31 @@ object Functions {
   
   def defun(args: LispList, environment: Environment) = defineFunction(args, environment)(llambda => llambda)
   
-  def read(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 1)(args.head match {
-    case LispString(str) => Utils.read(str, environment) 
-    case lval => Errors.invalidType(LispTypeStrings.String, lval)
-  }) 
+  def read(args: LispList, environment: Environment) = withStringArg(args, environment)(Utils.readExpression(_, environment))
+  
+  def load(args: LispList, environment: Environment) = withStringArg(args, environment) { filename =>
+    import java.nio.file.{Paths, Files}
+    
+    if (Files.exists(Paths.get(filename)))
+      parse(meruem, Source.fromFile(filename).mkString) match {
+        case Success(exprs, _) =>
+          def recurse(exprs: List[LispValue], environment: Environment): LispValue = exprs match {
+            case Nil => LispDef(environment)
+            case expr :: tail => Evaluate(expr, environment) match {
+              case ldef @ LispDef(newEnvironment) =>
+                recurse(tail, newEnvironment)
+              case lval => 
+                println(lval)
+                recurse(tail, environment)
+            } 
+          }
+          
+          recurse(exprs, environment)
+        case Failure(msg, _) => Errors.parseFailure(msg)
+        case Error(msg, _) => Errors.parseError(msg)
+      }
+    else Errors.fileNotFound(filename)
+  }
   
   def head(args: LispList) = withCollArg(args)(_.head)(lstr => LispChar(lstr.value.head))
   
@@ -156,7 +179,6 @@ object Functions {
               case LispDef(envi) => envi
             }))
             
-  
             whenValid(ldef)(_ => ldef)
           }
         }

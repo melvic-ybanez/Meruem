@@ -8,10 +8,10 @@ import meruem.LispParser._
  */
 
 object Utils {
-  def read(str: String, environment: Environment): LispValue = parse(expression, str) match {
+  def readExpression(str: String, environment: Environment): LispValue = parse(expression, str) match {
     case Success(expr, _) => Evaluate(expr, environment)
-    case Failure(msg, _) => LispError(msg)
-    case Error(msg, _) => LispError(msg)
+    case Failure(msg, _) => Errors.parseFailure(msg)
+    case Error(msg, _) => Errors.parseError(msg)
   }
   
   def whenValid[A <: LispValue, B <: LispValue](args: A)(f: A => B) = args match {
@@ -56,5 +56,12 @@ object Utils {
     case _ => true
   } map(lval => Errors.invalidType(LispTypeStrings.Symbol, lval)) getOrElse f
   
+  def withStringArg(args: LispList, environment: Environment)(f: String => LispValue) = checkArgsCount(args)(_ == 1) {
+    whenValid(Evaluate(args.head, environment)) {
+      case LispString(str) => f(str)
+      case lval => Errors.invalidType(LispTypeStrings.String, lval)
+    }
+  }
+
   implicit def lispValueToBool(lval: LispValue): Boolean = lval.isTrue
 }

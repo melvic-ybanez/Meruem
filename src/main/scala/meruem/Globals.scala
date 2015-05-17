@@ -31,6 +31,7 @@ object Globals {
       "true" -> LispBoolean(true),
       "false" -> LispBoolean(false),
       "read" -> LispReadSymbol,
+      "load" -> LispLoadSymbol,
       "def" -> LispDefSymbol,
       "defun" -> LispDefunSymbol,
       "lambda" -> LispLambdaSymbol,
