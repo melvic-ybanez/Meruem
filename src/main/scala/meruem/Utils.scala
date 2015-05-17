@@ -8,6 +8,8 @@ import meruem.LispParser._
  */
 
 object Utils {
+  implicit def lispValueToBool(lval: LispValue): Boolean = lval.isTrue
+  
   def readExpression(str: String, environment: Environment): LispValue = parse(expression, str) match {
     case Success(expr, _) => Evaluate(expr, environment)
     case Failure(msg, _) => Errors.parseFailure(msg)
@@ -62,6 +64,4 @@ object Utils {
       case lval => Errors.invalidType(LispTypeStrings.String, lval)
     }
   }
-
-  implicit def lispValueToBool(lval: LispValue): Boolean = lval.isTrue
 }

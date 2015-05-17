@@ -1,19 +1,19 @@
 package meruem
 
-import scala.util.parsing.combinator.RegexParsers
+import scala.util.parsing.combinator._
 import meruem.Constants._
 
 /**
  * Created by ybamelcash on 5/1/2015.
  */
-object LispParser extends RegexParsers {
-  def number: Parser[LispNumber] = """-?[0-9]+""".r ^^ (x => LispNumber(x.toLong))
+object LispParser extends JavaTokenParsers {
+  def number: Parser[LispNumber] = wholeNumber ^^ (x => LispNumber(x.toLong))
   
   def symbol: Parser[LispSymbol] = """[a-zA-Z0-9_+\-\*\/=<>!@#\$%\^&*\|\?\.]+""".r ^^ (sym => LispSymbol(sym))
   
   def character: Parser[LispChar] = """\\.""".r ^^ (c => LispChar(c.tail.head))
   
-  def string: Parser[LispString] = "\"".r ~ """([^\\"]|\\.)*""".r ~ "\"".r ^^ { case _ ~ str ~ _ => LispString(str) }
+  def string: Parser[LispString] = stringLiteral ^^ { case str => LispString(str.tail.init) }
   
   def quote: Parser[LispValue] = "'" ~ expression ^^ { case _ ~ expr => LispList(LispQuoteSymbol, expr) }
   
