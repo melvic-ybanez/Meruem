@@ -59,11 +59,11 @@ object Functions {
           def recurse(exprs: List[LispValue], environment: Environment): LispValue = exprs match {
             case Nil => LispDef(environment)
             case expr :: tail => Evaluate(expr, environment) match {
-              case ldef @ LispDef(newEnvironment) =>
+              case LispDef(newEnvironment, None) =>
                 recurse(tail, newEnvironment)
-              case lval => 
-                println(lval)
-                recurse(tail, environment)
+              case ldef @ LispDef(_, Some(error)) => ldef
+              case error: LispError => LispDef(environment, Some(error))
+              case lval => recurse(tail, environment)
             } 
           }
           
@@ -176,7 +176,7 @@ object Functions {
             def ldef: LispDef = LispDef(environment + (name, function))
   
             def function = f(lambda.updated(environment = ldef match {
-              case LispDef(envi) => envi
+              case LispDef(envi, _) => envi
             }))
             
             whenValid(ldef)(_ => ldef)

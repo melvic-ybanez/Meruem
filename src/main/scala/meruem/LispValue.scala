@@ -46,7 +46,7 @@ case class LispError(value: String) extends LispValue {
 
 case class LispSymbol(value: String) extends LispAtom[String]
 
-case class LispDef(environment: Environment) extends LispValue {
+case class LispDef(environment: Environment, error: Option[LispError] = None) extends LispValue {
   override def toString = LispNil.toString
 }
 
