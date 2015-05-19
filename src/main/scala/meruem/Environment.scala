@@ -14,13 +14,13 @@ trait Environment {
     if (hasSymbol(sym)) Errors.alreadyDefined(sym) else f
 }
 
-case object EmptyEnvironment extends Environment {
+case object NilEnvironment extends Environment {
   def parent = throw new IllegalAccessException("Parent of empty envirionment")
   
   def valueMap = throw new IllegalAccessError("Value map of empty environment")
   
   def +(key: LispValue, lvalue: => LispValue): Environment = key match {
-    case LispSymbol(sym) => new NonEmptyEnvironment(Map(sym -> lvalue), EmptyEnvironment)
+    case LispSymbol(sym) => new SomeEnvironment(Map(sym -> lvalue), NilEnvironment)
   } 
   
   def get(key: LispSymbol) = Errors.unboundSymbol(key)
@@ -30,12 +30,12 @@ case object EmptyEnvironment extends Environment {
   def hasMacro(name: String) = false
 } 
 
-class NonEmptyEnvironment(values: => Map[String, LispValue], val parent: Environment) extends Environment {
+class SomeEnvironment(values: => Map[String, LispValue], val parent: Environment) extends Environment {
   lazy val valueMap = values
   
   def updated(newValueMap: => Map[String, LispValue] = valueMap,
               newParent: Environment = parent) =
-    new NonEmptyEnvironment(newValueMap, newParent)
+    new SomeEnvironment(newValueMap, newParent)
   
   def +(key: LispValue, lvalue: => LispValue) = key match {
     case LispSymbol(sym) => updated(newValueMap = valueMap + (sym -> lvalue))
@@ -49,9 +49,9 @@ class NonEmptyEnvironment(values: => Map[String, LispValue], val parent: Environ
   }
 }
 
-case object NonEmptyEnvironment {
+case object SomeEnvironment {
   def apply(values: => Map[String, LispValue], parent: Environment) = 
-    new NonEmptyEnvironment(values, parent)
+    new SomeEnvironment(values, parent)
   
-  def unapply(environment: NonEmptyEnvironment) = Some(environment.valueMap, environment.parent)
+  def unapply(environment: SomeEnvironment) = Some(environment.valueMap, environment.parent)
 }

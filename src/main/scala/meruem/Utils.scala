@@ -10,7 +10,13 @@ import meruem.LispParser._
 object Utils {
   implicit def lispValueToBool(lval: LispValue): Boolean = lval.isTrue
   
-  def readExpression(str: String, environment: Environment): LispValue = parse(expression, str) match {
+  def read(str: String): LispValue = parse(expression, str) match {
+    case Success(expr, _) => expr
+    case Failure(msg, _) => Errors.parseFailure(msg)
+    case Error(msg, _) => Errors.parseError(msg)
+  } 
+  
+  def evalExpression(str: String, environment: Environment): LispValue = parse(expression, str) match {
     case Success(expr, _) => Evaluate(expr, environment)
     case Failure(msg, _) => Errors.parseFailure(msg)
     case Error(msg, _) => Errors.parseError(msg)

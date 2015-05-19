@@ -8,7 +8,7 @@ import meruem.Constants._
  * Created by ybamelcash on 5/3/2015.
  */
 object Globals {
-  lazy val environment = NonEmptyEnvironment(
+  lazy val environment = SomeEnvironment(
     Map(
       "+" -> LispBuiltinFunction(add),
       "-" -> LispBuiltinFunction(subtract),
@@ -30,7 +30,8 @@ object Globals {
       "nil" -> LispNil,
       "true" -> LispBoolean(true),
       "false" -> LispBoolean(false),
-      "read" -> LispReadSymbol,
+      "eval" -> LispReadSymbol,
+      "read" -> LispBuiltinFunction(read),
       "load" -> LispLoadSymbol,
       "def" -> LispDefSymbol,
       "defun" -> LispDefunSymbol,
@@ -38,6 +39,6 @@ object Globals {
       "error" -> LispBuiltinFunction(error),
       "defmacro" -> LispDefMacroSymbol
     ), 
-    EmptyEnvironment
+    NilEnvironment
   )
 }

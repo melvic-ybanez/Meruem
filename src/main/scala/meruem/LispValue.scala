@@ -46,7 +46,7 @@ case class LispError(value: String) extends LispValue {
 
 case class LispSymbol(value: String) extends LispAtom[String]
 
-case class LispDef(environment: Environment, error: Option[LispError] = None) extends LispValue {
+case class LispDef(environment: Environment) extends LispValue {
   override def toString = LispNil.toString
 }
 
@@ -138,10 +138,10 @@ sealed trait LispFunction extends LispValue {
 
 case class LispBuiltinFunction(func: LispList => LispValue) extends LispFunction {
   
-  def environment: Environment = EmptyEnvironment
+  def environment: Environment = NilEnvironment
 }
 
-class LispCustomFunction(val params: LispList, 
+class LispLambda(val params: LispList, 
                          val args: LispList,
                          val body: LispValue,
                          environ: => Environment) extends LispFunction {
@@ -150,16 +150,16 @@ class LispCustomFunction(val params: LispList,
   def updated(params: LispList = params,
               args: LispList = args,
               body: LispValue = body,
-              environment: => Environment = environment): LispCustomFunction = 
-    new LispCustomFunction(params, args, body, environment)
+              environment: => Environment = environment): LispLambda = 
+    new LispLambda(params, args, body, environment)
 }
 
-case object LispCustomFunction {
+case object LispLambda {
   def apply(params: LispList, args: LispList, body: LispValue, environment: => Environment) =
-    new LispCustomFunction(params, args, body, environment)
+    new LispLambda(params, args, body, environment)
   
-  def unapply(lambda: LispCustomFunction) = Some(lambda.params, lambda.args, lambda.body, lambda.environment)
+  def unapply(lambda: LispLambda) = Some(lambda.params, lambda.args, lambda.body, lambda.environment)
 }
 
-case class LispDefMacro(func: LispCustomFunction) extends LispValue
+case class LispDefMacro(func: LispLambda) extends LispValue
 

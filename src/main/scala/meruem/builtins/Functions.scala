@@ -31,7 +31,7 @@ object Functions {
 
   def lambda(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
     case ConsLispList(llist: LispList, ConsLispList(body, _)) => allSymbols(llist) {
-      LispCustomFunction(llist, EmptyLispList, body, NonEmptyEnvironment(Map(), environment))
+      LispLambda(llist, EmptyLispList, body, SomeEnvironment(Map(), environment))
     }
   })
   
@@ -47,8 +47,25 @@ object Functions {
   })
   
   def defun(args: LispList, environment: Environment) = defineFunction(args, environment)(llambda => llambda)
+
+  def defineFunction(args: LispList, environment: Environment)(f: LispLambda => LispValue) =
+    checkArgsCount(args)(_ == 3)(args match {
+      case ConsLispList(name: LispSymbol, ConsLispList(params, ConsLispList(body, _))) =>
+        whenValid(lambda(params :: body :: EmptyLispList, environment)) {
+          case lambda: LispLambda => environment.whenNotdefined(name) {
+            def ldef: LispDef = LispDef(environment + (name, function))
+
+            def function = f(lambda.updated(environment = ldef.environment))
+
+            whenValid(ldef)(_ => ldef)
+          }
+        }
+      case ConsLispList(name, _) => Errors.invalidType(LispTypeStrings.Symbol, name)
+    })
   
-  def read(args: LispList, environment: Environment) = withStringArg(args, environment)(Utils.readExpression(_, environment))
+  def read(args: LispList) = withStringArg(args, NilEnvironment)(Utils.read(_))
+  
+  def eval(args: LispList, environment: Environment) = withStringArg(args, environment)(evalExpression(_, environment))
   
   def load(args: LispList, environment: Environment) = withStringArg(args, environment) { filename =>
     import java.nio.file.{Paths, Files}
@@ -56,18 +73,47 @@ object Functions {
     if (Files.exists(Paths.get(filename)))
       parse(meruem, Source.fromFile(filename).mkString) match {
         case Success(exprs, _) =>
-          def recurse(exprs: List[LispValue], environment: Environment): LispValue = exprs match {
-            case Nil => LispDef(environment)
-            case expr :: tail => Evaluate(expr, environment) match {
-              case LispDef(newEnvironment, None) =>
-                recurse(tail, newEnvironment)
-              case ldef @ LispDef(_, Some(error)) => ldef
-              case error: LispError => LispDef(environment, Some(error))
-              case lval => recurse(tail, environment)
-            } 
+          def recurse(exprs: List[LispValue], functions: LispList): LispValue = exprs match {
+            case Nil => functions
+            case expr :: tail => expr match {
+              case ConsLispList(LispSymbol("defun"), args) =>
+                recurse(tail, args :: functions)
+              case _ => Evaluate(expr, environment) match {
+                case error: LispError => error
+                case lval => recurse(tail, functions)
+              }
+            }
           }
           
-          recurse(exprs, environment)
+          whenValid(recurse(exprs, EmptyLispList)) {
+            case functions: LispList =>
+              def ldef: LispDef = LispDef(newEnvironment)
+              
+              lazy val (newEnvironment, errorOpt) = {
+                def recurse(functions: LispList, 
+                            values: Map[String, LispValue]): (Map[String, LispValue], Option[LispError]) = 
+                  functions match {
+                    case EmptyLispList => (values, None)
+                    case ConsLispList(ConsLispList(LispSymbol(name), ConsLispList(params, ConsLispList(body, _))), tail) =>
+                      lambda(params :: body :: EmptyLispList, environment) match {
+                        case llambda: LispLambda => 
+                          recurse(tail, values + (name -> llambda.updated(environment = ldef.environment)))
+                        case error: LispError => (values, Some(error))
+                      }
+                    case ConsLispList(llist: LispList, _) if llist.size != 3 => 
+                      (values, Some(Errors.incorrectArgCount(llist.size)))
+                    case ConsLispList(name, _) => 
+                      (values, Some(Errors.invalidType(LispTypeStrings.Symbol, name)))
+                  }
+                
+                val (valueMap, errorOpt) = recurse(functions, environment.valueMap)
+                (SomeEnvironment(valueMap, environment.parent), errorOpt)
+              }
+              
+              errorOpt.getOrElse(ldef)
+              
+            case lval => LispDef(environment)
+          }
         case Failure(msg, _) => Errors.parseFailure(msg)
         case Error(msg, _) => Errors.parseError(msg)
       }
@@ -167,21 +213,4 @@ object Functions {
     case ConsLispList(LispString(error), _) => LispError(error)
     case lval => Errors.invalidType(LispTypeStrings.String, lval)
   })
-
-  def defineFunction(args: LispList, environment: Environment)(f: LispCustomFunction => LispValue) = 
-    checkArgsCount(args)(_ == 3)(args match {
-      case ConsLispList(name: LispSymbol, ConsLispList(params, ConsLispList(body, _))) =>
-        whenValid(lambda(params :: body :: EmptyLispList, environment)) {
-          case lambda: LispCustomFunction => environment.whenNotdefined(name) {
-            def ldef: LispDef = LispDef(environment + (name, function))
-  
-            def function = f(lambda.updated(environment = ldef match {
-              case LispDef(envi, _) => envi
-            }))
-            
-            whenValid(ldef)(_ => ldef)
-          }
-        }
-      case ConsLispList(name, _) => Errors.invalidType(LispTypeStrings.Symbol, name)
-    })
 }

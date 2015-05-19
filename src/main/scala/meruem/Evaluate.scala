@@ -25,7 +25,7 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
       case LispQuasiQuoteSymbol => quasiquote(tail, environment)
       case LispUnquoteSymbol => unquote(tail)
       case LispCondSymbol => cond(tail, environment)
-      case LispReadSymbol => read(tail, environment)
+      case LispReadSymbol => eval(tail, environment)
       case LispLoadSymbol => load(tail, environment)
       case LispDefSymbol => define(tail, environment)
       case LispDefunSymbol => defun(tail, environment)
@@ -36,12 +36,12 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
       case lmacro: LispDefMacro => Evaluate(macroExpand(lmacro :: tail, environment), environment)
         
       case LispBuiltinFunction(func) => sanitizeAll(tail, environment)(func) 
-      case customFunc: LispCustomFunction => Evaluate(customFunc.updated(args = tail), environment)
+      case customFunc: LispLambda => Evaluate(customFunc.updated(args = tail), environment)
       case error: LispError => error
       case lval => Errors.nonFunction(lval)
     }
       
-    case customFunc @ LispCustomFunction(params, args, body, environ @ NonEmptyEnvironment(vm, _)) =>
+    case customFunc @ LispLambda(params, args, body, environ @ SomeEnvironment(vm, _)) =>
       def evaluateRest(sym: LispValue, lval: LispValue, 
                        params: LispList = EmptyLispList,
                        args: LispList = EmptyLispList) = 

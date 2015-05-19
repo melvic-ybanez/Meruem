@@ -14,9 +14,9 @@ object Main {
     // READ-EVAL-PRINT-LOOP
     def repl(environment: Environment) {
       val input = readLine("meruem>")
-      Utils.readExpression(input, environment) match {
-        case ldef @ LispDef(newEnvironment, errorOpt) => 
-          println(errorOpt.getOrElse(ldef))
+      Utils.evalExpression(input, environment) match {
+        case ldef @ LispDef(newEnvironment) => 
+          println(ldef)
           repl(newEnvironment)
         case lval => 
           println(lval)
