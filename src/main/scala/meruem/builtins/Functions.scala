@@ -73,6 +73,8 @@ object Functions {
     if (Files.exists(Paths.get(filename)))
       parse(meruem, Source.fromFile(filename).mkString) match {
         case Success(exprs, _) =>
+          // Check if there are function and macro declarations 
+          // (i.e list expressions that start with either "defun" or "defmacro")
           def recurse(exprs: List[LispValue], functions: LispList): LispValue = exprs match {
             case Nil => functions
             case expr :: tail => expr match {
@@ -88,8 +90,15 @@ object Functions {
           
           whenValid(recurse(exprs, EmptyLispList)) {
             case functions: LispList =>
-              def ldef: LispDef = LispDef(newEnvironment)
+              // Remember: LispDef evaluates its constructor arguments lazily.
+              def ldef: LispDef = LispDef(newEnvironment) 
               
+              // Evaluate each of the functions and macros found and register each of them to the environment.
+              // We need to update only the valueMaps at first, then pass it as an argument to the new environment.
+              // The purpose is so that we wouldn't have to create a new environment everytime we register a new function
+              // or macro, which is dangerous since an environment is immutable and we might end up having our functions
+              // and macros point to different environments. So, the map gets constructed first, then we pass it to a single
+              // environment, then have all those functions and macros point to that environment. 
               lazy val (newEnvironment, errorOpt) = {
                 def recurse(functions: LispList, 
                             values: Map[String, LispValue]): (Map[String, LispValue], Option[LispError]) = 

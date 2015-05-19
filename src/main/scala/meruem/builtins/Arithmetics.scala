@@ -28,11 +28,13 @@ object Arithmetics {
     case EmptyLispList => Errors.incorrectArgCount(0)
     case ConsLispList(LispNumber(x), EmptyLispList) => LispNumber(-x)
     case ConsLispList(LispNumber(x), tail) => withNumericArgs(tail, x)(_ - _)
+    case ConsLispList(x, _) => Errors.invalidType(LispTypeStrings.Number, x)
   }
 
   def divide(args: LispList) = args match {
     case EmptyLispList => Errors.incorrectArgCount(0)
     case ConsLispList(LispNumber(x), _) => LispNumber(1 / x)
     case ConsLispList(LispNumber(x), tail) => withNumericArgs(tail, x)(_ / _)
+    case ConsLispList(x, _) => Errors.invalidType(LispTypeStrings.Number, x)
   }
 }
