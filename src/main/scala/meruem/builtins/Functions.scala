@@ -76,8 +76,9 @@ object Functions {
           def recurse(exprs: List[LispValue], functions: LispList): LispValue = exprs match {
             case Nil => functions
             case expr :: tail => expr match {
-              case ConsLispList(LispSymbol("defun"), args) =>
-                recurse(tail, args :: functions)
+              case llist @ ConsLispList(LispSymbol(sym), _) 
+                if sym == Keywords.Defun || sym == Keywords.DefMacro =>
+                  recurse(tail, llist :: functions)
               case _ => Evaluate(expr, environment) match {
                 case error: LispError => error
                 case lval => recurse(tail, functions)
@@ -94,15 +95,20 @@ object Functions {
                             values: Map[String, LispValue]): (Map[String, LispValue], Option[LispError]) = 
                   functions match {
                     case EmptyLispList => (values, None)
-                    case ConsLispList(ConsLispList(LispSymbol(name), ConsLispList(params, ConsLispList(body, _))), tail) =>
+                    case ConsLispList(llist: LispList, _) if llist.size != 4 =>
+                      (values, Some(Errors.incorrectArgCount(llist.size - 1)))
+                    case ConsLispList(ConsLispList(LispSymbol(op), 
+                        ConsLispList(nameSym @ LispSymbol(name), ConsLispList(params, ConsLispList(body, _)))), tail) =>
                       lambda(params :: body :: EmptyLispList, environment) match {
                         case llambda: LispLambda => 
-                          recurse(tail, values + (name -> llambda.updated(environment = ldef.environment)))
+                          if (values.exists(_._1 == name)) (values, Some(Errors.alreadyDefined(nameSym)))
+                          else recurse(tail, values + (name -> {
+                            val llambda1 = llambda.updated(environment = ldef.environment)
+                            if (op == "defun") llambda1 else LispDefMacro(llambda1)
+                          }))
                         case error: LispError => (values, Some(error))
                       }
-                    case ConsLispList(llist: LispList, _) if llist.size != 3 => 
-                      (values, Some(Errors.incorrectArgCount(llist.size)))
-                    case ConsLispList(name, _) => 
+                    case ConsLispList(ConsLispList(_, ConsLispList(name, _)), _) => 
                       (values, Some(Errors.invalidType(LispTypeStrings.Symbol, name)))
                   }
                 

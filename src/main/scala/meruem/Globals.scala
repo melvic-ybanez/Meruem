@@ -34,8 +34,8 @@ object Globals {
       "read" -> LispBuiltinFunction(read),
       "load" -> LispLoadSymbol,
       "def" -> LispDefSymbol,
-      "defun" -> LispDefunSymbol,
-      "lambda" -> LispLambdaSymbol,
+      Keywords.Defun -> LispDefunSymbol,
+      Keywords.DefMacro -> LispLambdaSymbol,
       "error" -> LispBuiltinFunction(error),
       "defmacro" -> LispDefMacroSymbol
     ), 

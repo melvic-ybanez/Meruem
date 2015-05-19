@@ -31,4 +31,9 @@ object Constants {
   final val LispUnquoteSymbol = LispSymbol("unquote")
   final val LispDefMacroSymbol = LispSymbol("defmacro")
   final val LispLoadSymbol = LispSymbol("load")
+  
+  object Keywords {
+    final val Defun = "defun"
+    final val DefMacro = "defmacro"
+  }
 }
