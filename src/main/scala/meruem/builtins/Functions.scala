@@ -63,76 +63,101 @@ object Functions {
       case ConsLispList(name, _) => Errors.invalidType(LispTypeStrings.Symbol, name)
     })
   
-  def read(args: LispList) = withStringArg(args, NilEnvironment)(Utils.read(_))
+  def read(args: LispList) = withStringArg(args, NilEnvironment)(str => Utils.read(str, expression)(identity))
   
   def eval(args: LispList, environment: Environment) = withStringArg(args, environment)(evalExpression(_, environment))
   
-  def load(args: LispList, environment: Environment) = withStringArg(args, environment) { filename =>
+  def load(args: LispList, environment: Environment) = withStringArg(args, environment) { path =>
     import java.nio.file.{Paths, Files}
     
-    if (Files.exists(Paths.get(filename)))
-      parse(meruem, Source.fromFile(filename).mkString) match {
-        case Success(exprs, _) =>
-          // Check if there are function and macro declarations 
-          // (i.e list expressions that start with either "defun" or "defmacro")
-          def recurse(exprs: List[LispValue], functions: LispList): LispValue = exprs match {
-            case Nil => functions
-            case expr :: tail => expr match {
-              case llist @ ConsLispList(LispSymbol(sym), _) 
-                if sym == Keywords.Defun || sym == Keywords.DefMacro =>
-                  recurse(tail, llist :: functions)
-              case _ => Evaluate(expr, environment) match {
-                case error: LispError => error
-                case lval => recurse(tail, functions)
-              }
+    def preLoad(path: String, pathsIncluded: List[String]): LispValue = {
+      if (Files.exists(Paths.get(path))) 
+        whenValid(Utils.read(Source.fromFile(path).mkString, meruem)(identity)) {
+          case exprs: LispList =>
+            def expandLoads(xs: LispList, acc: LispList): LispValue = xs match {
+              case EmptyLispList => acc
+              
+              // If a "load" expression is found, do recursive expandsion  
+              case ConsLispList(ConsLispList(LispSymbol(Keywords.Load), ConsLispList(LispString(path1), EmptyLispList)), t) =>
+                // If a path has already been loaded, skip it, otherwise expand it.
+                if (pathsIncluded.contains(path1)) expandLoads(t, acc)
+                else whenValid(preLoad(path1, path :: pathsIncluded)) { case loadedExprs: LispList =>
+                  expandLoads(t, loadedExprs)
+                }
+                
+              case ConsLispList(expr, tail) => expandLoads(tail, expr :: acc)
+            }
+            
+            expandLoads(exprs, EmptyLispList)
+          case lval => lval  
+        }
+      else Errors.fileNotFound(path)
+    }
+    
+    whenValid(preLoad(path, Nil)) {
+      case exprs: LispList =>
+        // Check if there are function and macro declarations 
+        // (i.e list expressions that start with either "defun" or "defmacro")
+        def recurse(exprs: LispList,
+                    environment: Environment,
+                    functions: LispList): (LispValue, Environment) = exprs match {
+          case EmptyLispList => (functions, environment)
+          case ConsLispList(expr, tail) => expr match {
+            case llist @ ConsLispList(LispSymbol(sym), _)
+              if sym == Keywords.Defun || sym == Keywords.DefMacro =>
+              recurse(tail, environment, llist :: functions)
+            case _ => Evaluate(expr, environment) match {
+              case error: LispError => (error, environment)
+              case LispDef(envi) => recurse(tail, envi, functions)
+              case lval => recurse(tail, environment, functions)
             }
           }
-          
-          whenValid(recurse(exprs, EmptyLispList)) {
-            case functions: LispList =>
-              // Remember: LispDef evaluates its constructor arguments lazily.
-              def ldef: LispDef = LispDef(newEnvironment) 
-              
-              // Evaluate each of the functions and macros found and register each of them to the environment.
-              // We need to update only the valueMaps at first, then pass it as an argument to the new environment.
-              // The purpose is so that we wouldn't have to create a new environment everytime we register a new function
-              // or macro, which is dangerous since an environment is immutable and we might end up having our functions
-              // and macros point to different environments. So, the map gets constructed first, then we pass it to a single
-              // environment, then have all those functions and macros point to that environment. 
-              lazy val (newEnvironment, errorOpt) = {
-                def recurse(functions: LispList, 
-                            values: Map[String, LispValue]): (Map[String, LispValue], Option[LispError]) = 
-                  functions match {
-                    case EmptyLispList => (values, None)
-                    case ConsLispList(llist: LispList, _) if llist.size != 4 =>
-                      (values, Some(Errors.incorrectArgCount(llist.size - 1)))
-                    case ConsLispList(ConsLispList(LispSymbol(op), 
-                        ConsLispList(nameSym @ LispSymbol(name), ConsLispList(params, ConsLispList(body, _)))), tail) =>
-                      lambda(params :: body :: EmptyLispList, environment) match {
-                        case llambda: LispLambda => 
-                          if (values.exists(_._1 == name)) (values, Some(Errors.alreadyDefined(nameSym)))
-                          else recurse(tail, values + (name -> {
-                            val llambda1 = llambda.updated(environment = ldef.environment)
-                            if (op == "defun") llambda1 else LispDefMacro(llambda1)
-                          }))
-                        case error: LispError => (values, Some(error))
-                      }
-                    case ConsLispList(ConsLispList(_, ConsLispList(name, _)), _) => 
-                      (values, Some(Errors.invalidType(LispTypeStrings.Symbol, name)))
-                  }
-                
-                val (valueMap, errorOpt) = recurse(functions, environment.valueMap)
-                (SomeEnvironment(valueMap, environment.parent), errorOpt)
-              }
-              
-              errorOpt.getOrElse(ldef)
-              
-            case lval => LispDef(environment)
-          }
-        case Failure(msg, _) => Errors.parseFailure(msg)
-        case Error(msg, _) => Errors.parseError(msg)
-      }
-    else Errors.fileNotFound(filename)
+        }
+
+        val (result, updatedEnvi) = recurse(exprs, environment, EmptyLispList)
+
+        whenValid(result) {
+          case functions: LispList =>
+            // Remember: LispDef evaluates its constructor arguments lazily.
+            def ldef: LispDef = LispDef(newEnvironment)
+
+            // Evaluate each of the functions and macros found and register each of them to the environment.
+            // We need to update only the valueMaps at first, then pass it as an argument to the new environment.
+            // The purpose is so that we wouldn't have to create a new environment everytime we register a new function
+            // or macro, which is dangerous since an environment is immutable and we might end up having our functions
+            // and macros point to different environments. So, the map gets constructed first, then we pass it to a single
+            // environment, then have all those functions and macros point to that environment. 
+            lazy val (newEnvironment, errorOpt) = {
+              def recurse(functions: LispList,
+                          values: Map[String, LispValue]): (Map[String, LispValue], Option[LispError]) =
+                functions match {
+                  case EmptyLispList => (values, None)
+                  case ConsLispList(llist: LispList, _) if llist.size != 4 =>
+                    (values, Some(Errors.incorrectArgCount(llist.size - 1)))
+                  case ConsLispList(ConsLispList(LispSymbol(op),
+                  ConsLispList(nameSym @ LispSymbol(name), ConsLispList(params, ConsLispList(body, _)))), tail) =>
+                    lambda(params :: body :: EmptyLispList, environment) match {
+                      case llambda: LispLambda =>
+                        if (values.exists(_._1 == name)) (values, Some(Errors.alreadyDefined(nameSym)))
+                        else recurse(tail, values + (name -> {
+                          val llambda1 = llambda.updated(environment = ldef.environment)
+                          if (op == "defun") llambda1 else LispDefMacro(llambda1)
+                        }))
+                      case error: LispError => (values, Some(error))
+                    }
+                  case ConsLispList(ConsLispList(_, ConsLispList(name, _)), _) =>
+                    (values, Some(Errors.invalidType(LispTypeStrings.Symbol, name)))
+                }
+
+              val (valueMap, errorOpt) = recurse(functions, updatedEnvi.valueMap)
+              (SomeEnvironment(valueMap, updatedEnvi.parent), errorOpt)
+            }
+
+            errorOpt.getOrElse(ldef)
+
+          case lval => LispDef(updatedEnvi)
+        }
+    }
   }
   
   def head(args: LispList) = withCollArg(args)(_.head)(lstr => LispChar(lstr.value.head))

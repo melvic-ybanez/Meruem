@@ -32,7 +32,7 @@ object Globals {
       "false" -> LispBoolean(false),
       "eval" -> LispReadSymbol,
       "read" -> LispBuiltinFunction(read),
-      "load" -> LispLoadSymbol,
+      Keywords.Load -> LispLoadSymbol,
       "def" -> LispDefSymbol,
       Keywords.Defun -> LispDefunSymbol,
       Keywords.DefMacro -> LispLambdaSymbol,

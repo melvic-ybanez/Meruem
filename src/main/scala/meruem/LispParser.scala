@@ -15,21 +15,19 @@ object LispParser extends JavaTokenParsers {
   
   def string: Parser[LispString] = stringLiteral ^^ { case str => LispString(str.tail.init) }
   
-  def quote: Parser[LispValue] = "'" ~ expression ^^ { case _ ~ expr => LispList(LispQuoteSymbol, expr) }
+  def quote: Parser[LispValue] = "'" ~> expression ^^ { case expr => LispList(LispQuoteSymbol, expr) }
   
-  def quasiquote: Parser[LispValue] = "`" ~ expression ^^ { case _ ~ expr => LispList(LispQuasiQuoteSymbol, expr) } 
+  def quasiquote: Parser[LispValue] = "`" ~> expression ^^ { case expr => LispList(LispQuasiQuoteSymbol, expr) } 
   
-  def unquote: Parser[LispValue] = "," ~ expression ^^ { case _ ~ expr => LispList(LispUnquoteSymbol, expr) }
+  def unquote: Parser[LispValue] = "," ~> expression ^^ { case expr => LispList(LispUnquoteSymbol, expr) }
   
-  def comment: Parser[String] = """;[^\r\n]*""".r
-  
-  def list: Parser[LispList] = "(" ~ rep(expression) ~ ")" ^^ { case _ ~ expr ~ _ => 
-    expr.foldLeft(LispList())((acc, h) => h :: acc).reverse
-  }
+  def list: Parser[LispList] = "(" ~> rep(expression) <~ ")" ^^ (exprsToLispList(_))
   
   def expression: Parser[LispValue] = (number | symbol | character | quote | quasiquote | unquote | string | list) ^^ {
     case lval: LispValue => lval
-  } 
+  }
   
-  def meruem: Parser[List[LispValue]] = rep(expression)
+  def meruem: Parser[LispList] = rep(expression) ^^ (exprsToLispList(_))
+  
+  def exprsToLispList(exprs: List[LispValue]) = exprs.foldLeft(LispList())((acc, h) => h :: acc).reverse
 } 

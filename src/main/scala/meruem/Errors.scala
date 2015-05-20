@@ -38,4 +38,8 @@ object Errors {
   def parseFailure(msg: String) = LispError("Parse Failure: " + msg)
   
   def parseError(msg: String) = LispError("Parse Error: " + msg)
+  
+  def unableToParse(msg: String) = LispError("Unable to parse: " + msg)
+  
+  def alreadyLoaded(path: String) = LispError(s"$path is already loaded.") 
 }

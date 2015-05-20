@@ -35,5 +35,6 @@ object Constants {
   object Keywords {
     final val Defun = "defun"
     final val DefMacro = "defmacro"
+    final val Load = "load"
   }
 }

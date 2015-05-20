@@ -3,6 +3,8 @@ package meruem
 import meruem.Constants.LispTypeStrings
 import meruem.LispParser._
 
+import scala.util.parsing.input.CharArrayReader
+
 /**
  * Created by ybamelcash on 4/27/2015.
  */
@@ -10,17 +12,14 @@ import meruem.LispParser._
 object Utils {
   implicit def lispValueToBool(lval: LispValue): Boolean = lval.isTrue
   
-  def read(str: String): LispValue = parse(expression, str) match {
-    case Success(expr, _) => expr
-    case Failure(msg, _) => Errors.parseFailure(msg)
-    case Error(msg, _) => Errors.parseError(msg)
-  } 
+  def read[A <: LispValue](str: String, expression: LispParser.Parser[A])(f: A => A): LispValue = 
+    parseAll(expression, str) match {
+      case Success(expr, _) => f(expr)
+      case failure: Failure => Errors.parseFailure(failure.toString)
+      case error: Error => Errors.parseError(error.toString)
+    } 
   
-  def evalExpression(str: String, environment: Environment): LispValue = parse(expression, str) match {
-    case Success(expr, _) => Evaluate(expr, environment)
-    case Failure(msg, _) => Errors.parseFailure(msg)
-    case Error(msg, _) => Errors.parseError(msg)
-  }
+  def evalExpression(str: String, environment: Environment): LispValue = read(str, expression)(Evaluate(_, environment))
   
   def whenValid[A <: LispValue, B <: LispValue](args: A)(f: A => B) = args match {
     case error: LispError => error
