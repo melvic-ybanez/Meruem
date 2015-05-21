@@ -21,7 +21,7 @@ object LispParser extends JavaTokenParsers {
   
   def unquote: Parser[LispValue] = "," ~> expression ^^ { case expr => LispList(LispUnquoteSymbol, expr) }
   
-  def list: Parser[LispList] = "(" ~> rep(expression) <~ ")" ^^ (exprsToLispList(_))
+  def list: Parser[LispList] = OpenParen ~> rep(expression) <~ CloseParen ^^ (exprsToLispList(_))
   
   def expression: Parser[LispValue] = (number | symbol | character | quote | quasiquote | unquote | string | list) ^^ {
     case lval: LispValue => lval

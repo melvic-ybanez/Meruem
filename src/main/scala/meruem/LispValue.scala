@@ -9,7 +9,7 @@ import scala.util.parsing.input.Positional
  */
 sealed trait LispValue {
   def isTrue = this match {
-    case LispBoolean(false) | LispNil | LispError(_) => false
+    case LispBoolean(false) | LispNil | LispError(_, _) => false
     case _ => true
   }
   
@@ -42,8 +42,8 @@ case object LispNil extends LispAtom[Nothing] {
   override def toString = "nil"
 }
 
-case class LispError(value: String) extends LispValue {
-  override def toString = "Error. " + value
+case class LispError(value: String, pathOpt: Option[String] = None) extends LispValue {
+  override def toString = s"""An error occured at "${pathOpt.getOrElse(Settings.languageName + " REPL")}". $value""""
 }
 
 case class LispSymbol(value: String) extends LispAtom[String]
@@ -114,7 +114,7 @@ sealed trait LispList extends LispValue {
     } 
     
     val str = recurse(this, Nil).reverse.mkString(" ")
-    Constants.ListOpenParen + str + Constants.ListCloseParen  
+    Constants.OpenParen + str + Constants.CloseParen  
   }
 }
 

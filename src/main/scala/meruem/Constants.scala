@@ -5,36 +5,43 @@ package meruem
  */
 object Constants {
   object LispTypeStrings {
-    final val LispValue = "LispValue"
-    final val Symbol = "Symbol"
-    final val Number = "Number"
-    final val String = "String"
-    final val Error = "Error"
-    final val List = "List"
-    final val Nil = "Nil"
-    final val Pair = "Pair"
-    final val Unquote = "Unquote"
-    final val Quasiquote = "Quasiquote"
+    lazy final val LispValue = "LispValue"
+    lazy final val Symbol = "Symbol"
+    lazy final val Number = "Number"
+    lazy final val String = "String"
+    lazy final val Error = "Error"
+    lazy final val List = "List"
+    lazy final val Nil = "Nil"
+    lazy final val Pair = "Pair"
+    lazy final val Unquote = "Unquote"
+    lazy final val Quasiquote = "Quasiquote"
   }
   
-  final val VarArgsChar = "&"
-  final val ListOpenParen = "("
-  final val ListCloseParen = ")"
+  object FunctionNames {
+    lazy final val Add = "+"
+    lazy final val Subtract = "-"
+    lazy final val Multiply = "*"
+    lazy final val Divide = "/"
+  }
   
-  final val LispQuoteSymbol = LispSymbol("quote")
-  final val LispCondSymbol = LispSymbol("cond")
-  final val LispDefSymbol = LispSymbol("def")
-  final val LispDefunSymbol = LispSymbol("defun")
-  final val LispReadSymbol = LispSymbol("read")
-  final val LispLambdaSymbol = LispSymbol("lambda")
-  final val LispQuasiQuoteSymbol = LispSymbol("quasiquote")
-  final val LispUnquoteSymbol = LispSymbol("unquote")
-  final val LispDefMacroSymbol = LispSymbol("defmacro")
-  final val LispLoadSymbol = LispSymbol("load")
+  lazy final val VarArgsChar = "&"
+  final val OpenParen = "("
+  final val CloseParen = ")"
+  
+  lazy final val LispQuoteSymbol = LispSymbol("quote")
+  lazy final val LispCondSymbol = LispSymbol("cond")
+  lazy final val LispDefSymbol = LispSymbol("def")
+  lazy final val LispDefunSymbol = LispSymbol("defun")
+  lazy final val LispReadSymbol = LispSymbol("read")
+  lazy final val LispLambdaSymbol = LispSymbol("lambda")
+  lazy final val LispQuasiQuoteSymbol = LispSymbol("quasiquote")
+  lazy final val LispUnquoteSymbol = LispSymbol("unquote")
+  lazy final val LispDefMacroSymbol = LispSymbol("defmacro")
+  lazy final val LispLoadSymbol = LispSymbol("load")
   
   object Keywords {
-    final val Defun = "defun"
-    final val DefMacro = "defmacro"
-    final val Load = "load"
+    lazy final val Defun = "defun"
+    lazy final val DefMacro = "defmacro"
+    lazy final val Load = "load"
   }
 }

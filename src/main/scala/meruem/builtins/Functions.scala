@@ -63,7 +63,7 @@ object Functions {
       case ConsLispList(name, _) => Errors.invalidType(LispTypeStrings.Symbol, name)
     })
   
-  def read(args: LispList) = withStringArg(args, NilEnvironment)(str => Utils.read(str, expression)(identity))
+  def read(args: LispList) = withStringArg(args, NilEnvironment)(str => Utils.read(expression, str)(identity))
   
   def eval(args: LispList, environment: Environment) = withStringArg(args, environment)(evalExpression(_, environment))
   
@@ -72,24 +72,27 @@ object Functions {
     
     def preLoad(path: String, pathsIncluded: List[String]): LispValue = {
       if (Files.exists(Paths.get(path))) 
-        whenValid(Utils.read(Source.fromFile(path).mkString, meruem)(identity)) {
+        whenValid(Utils.read(meruem, Source.fromFile(path).mkString)(identity)) {
           case exprs: LispList =>
             def expandLoads(xs: LispList, acc: LispList): LispValue = xs match {
               case EmptyLispList => acc
               
-              // If a "load" expression is found, do recursive expandsion  
+              // If a "load" expression is found, perform a recursive expansion
               case ConsLispList(ConsLispList(LispSymbol(Keywords.Load), ConsLispList(LispString(path1), EmptyLispList)), t) =>
                 // If a path has already been loaded, skip it, otherwise expand it.
                 if (pathsIncluded.contains(path1)) expandLoads(t, acc)
                 else whenValid(preLoad(path1, path :: pathsIncluded)) { case loadedExprs: LispList =>
                   expandLoads(t, loadedExprs)
-                }
+                } 
                 
               case ConsLispList(expr, tail) => expandLoads(tail, expr :: acc)
             }
             
             expandLoads(exprs, EmptyLispList)
           case lval => lval  
+        } match {
+          case LispError(msg, None) => LispError(msg, Some(path))
+          case lval => lval
         }
       else Errors.fileNotFound(path)
     }

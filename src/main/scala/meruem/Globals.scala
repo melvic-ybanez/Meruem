@@ -10,10 +10,10 @@ import meruem.Constants._
 object Globals {
   lazy val environment = SomeEnvironment(
     Map(
-      "+" -> LispBuiltinFunction(add),
-      "-" -> LispBuiltinFunction(subtract),
-      "*" -> LispBuiltinFunction(multiply),
-      "/" -> LispBuiltinFunction(divide),
+      FunctionNames.Add -> LispBuiltinFunction(add),
+      FunctionNames.Subtract -> LispBuiltinFunction(subtract),
+      FunctionNames.Multiply -> LispBuiltinFunction(multiply),
+      FunctionNames.Divide -> LispBuiltinFunction(divide),
       "head" -> LispBuiltinFunction(head),
       "tail" -> LispBuiltinFunction(tail),
       "=" -> LispBuiltinFunction(equal),

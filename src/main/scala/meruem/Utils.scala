@@ -12,16 +12,16 @@ import scala.util.parsing.input.CharArrayReader
 object Utils {
   implicit def lispValueToBool(lval: LispValue): Boolean = lval.isTrue
   
-  def read[A <: LispValue](str: String, expression: LispParser.Parser[A])(f: A => A): LispValue = 
+  def read[A <: LispValue](expression: LispParser.Parser[A], str: String)(f: A => A): LispValue = 
     parseAll(expression, str) match {
       case Success(expr, _) => f(expr)
       case failure: Failure => Errors.parseFailure(failure.toString)
       case error: Error => Errors.parseError(error.toString)
     } 
   
-  def evalExpression(str: String, environment: Environment): LispValue = read(str, expression)(Evaluate(_, environment))
+  def evalExpression(str: String, environment: Environment): LispValue = read(expression, str)(Evaluate(_, environment))
   
-  def whenValid[A <: LispValue, B <: LispValue](args: A)(f: A => B) = args match {
+  def whenValid[A <: LispValue, B <: LispValue](lval: A)(f: A => B) = lval match {
     case error: LispError => error
     case lval => f(lval)
   }

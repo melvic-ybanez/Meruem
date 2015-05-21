@@ -615,9 +615,9 @@
 [debug] 	[NOT REQUIRED] org.scala-sbt#test-agent;0.13.5!test-agent.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#test-interface;1.0!test-interface.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#apply-macro;0.13.5!apply-macro.jar
-[debug] :: resolution report :: resolve 4725ms :: artifacts dl 71ms
+[debug] :: resolution report :: resolve 1541ms :: artifacts dl 123ms
 [debug] 	report for meruem#meruem$sbt_2.11;1.0 default produced in D:\melvic\Meruem\target\resolution-cache\reports\meruem-meruem$sbt_2.11-default.xml
-[debug] 	resolve done (4725ms resolve - 71ms download)
+[debug] 	resolve done (1541ms resolve - 123ms download)
 [debug] Using inline dependencies specified in Scala.
 [debug] :: resolving dependencies :: meruem#meruem$sources_2.11;1.0
 [debug] 	confs: [default]
@@ -959,6 +959,6 @@
 [debug] 	[NOT REQUIRED] org.scala-sbt#precompiled-2_8_2;0.13.5!precompiled-2_8_2.jar(src)
 [debug] 	[NOT REQUIRED] org.scala-sbt#precompiled-2_9_2;0.13.5!precompiled-2_9_2.jar(src)
 [debug] 	[NOT REQUIRED] org.scala-sbt#precompiled-2_9_3;0.13.5!precompiled-2_9_3.jar(src)
-[debug] :: resolution report :: resolve 507ms :: artifacts dl 76ms
+[debug] :: resolution report :: resolve 388ms :: artifacts dl 136ms
 [debug] 	report for meruem#meruem$sources_2.11;1.0 default produced in D:\melvic\Meruem\target\resolution-cache\reports\meruem-meruem$sources_2.11-default.xml
-[debug] 	resolve done (507ms resolve - 76ms download)
+[debug] 	resolve done (388ms resolve - 136ms download)
