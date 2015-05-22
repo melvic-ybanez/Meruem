@@ -27,19 +27,21 @@ object Errors {
   
   def alreadyDefined(sym: LispSymbol) = LispError(s"$sym is already defined.")
   
-  def varArgsCount = 
-    Errors.invalidFormat(s"${LispTypeStrings.Symbol} ${Constants.VarArgsChar} is not followed by a single symbol.")
+  def varArgsCount = Errors.invalidFormat(
+    s"${LispTypeStrings.Symbol} ${Constants.VarArgsChar} is not followed by a single symbol.")
   
   def unquoteNotAllowed = 
     LispError(s"${LispTypeStrings.Unquote} can only be used inside a ${LispTypeStrings.Quasiquote}")
   
   def fileNotFound(filename: String) = LispError("File Not Found: " + filename)
   
-  def parseFailure(msg: String) = LispError("Parse Failure: " + msg)
+  def parseFailure(msg: String, path: Option[String] = None) = LispError("Parse Failure: " + msg, path)
   
-  def parseError(msg: String) = LispError("Parse Error: " + msg)
+  def parseError(msg: String, path: Option[String] = None) = LispError("Parse Error: " + msg, path)
   
   def unableToParse(msg: String) = LispError("Unable to parse: " + msg)
   
-  def alreadyLoaded(path: String) = LispError(s"$path is already loaded.") 
+  def alreadyLoaded(path: String) = LispError(s"$path is already loaded.")
+  
+  def withSource(msg: String, source: String, path: String) = LispError(s"${msg}\nSource: $source", Some(path))
 }

@@ -3,23 +3,22 @@ package meruem
 import meruem.Constants.LispTypeStrings
 import meruem.LispParser._
 
-import scala.util.parsing.input.CharArrayReader
+import scala.util.parsing.input.{CharSequenceReader, CharArrayReader}
 
 /**
  * Created by ybamelcash on 4/27/2015.
  */
 
 object Utils {
-  implicit def lispValueToBool(lval: LispValue): Boolean = lval.isTrue
-  
-  def read[A <: LispValue](expression: LispParser.Parser[A], str: String)(f: A => A): LispValue = 
-    parseAll(expression, str) match {
+  def read[A <: LispValue](expression: LispParser.Parser[A], input: String)(f: A => A): LispValue = 
+    parse(expression, input) match {
       case Success(expr, _) => f(expr)
       case failure: Failure => Errors.parseFailure(failure.toString)
       case error: Error => Errors.parseError(error.toString)
     } 
   
-  def evalExpression(str: String, environment: Environment): LispValue = read(expression, str)(Evaluate(_, environment))
+  def evalExpression(str: String, environment: Environment): LispValue = 
+    read(expression, str)(Evaluate(_, environment))
   
   def whenValid[A <: LispValue, B <: LispValue](lval: A)(f: A => B) = lval match {
     case error: LispError => error

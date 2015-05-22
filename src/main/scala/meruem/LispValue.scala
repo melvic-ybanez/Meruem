@@ -1,8 +1,6 @@
 package meruem
 
-import meruem.Utils._
-
-import scala.util.parsing.input.Positional
+import meruem.Implicits._
 
 /**
  * Created by ybamelcash on 4/26/2015.
@@ -43,7 +41,9 @@ case object LispNil extends LispAtom[Nothing] {
 }
 
 case class LispError(value: String, pathOpt: Option[String] = None) extends LispValue {
-  override def toString = s"""An error occured at "${pathOpt.getOrElse(Settings.languageName + " REPL")}". $value""""
+  override def toString =
+    s"""An error occured at "${pathOpt.getOrElse(Settings.languageName + " REPL")}.
+       |$value""".stripMargin
 }
 
 case class LispSymbol(value: String) extends LispAtom[String]
