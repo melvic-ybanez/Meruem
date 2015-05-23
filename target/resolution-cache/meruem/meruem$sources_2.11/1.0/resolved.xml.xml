@@ -4,7 +4,7 @@
 		module="meruem$sources_2.11"
 		revision="1.0"
 		status="integration"
-		publication="20150523021243"
+		publication="20150523124733"
 	/>
 	<configurations>
 		<conf name="default" visibility="public" description=""/>

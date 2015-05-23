@@ -4,6 +4,7 @@ import meruem.Utils._
 import meruem.builtins.Functions
 import meruem.builtins.Functions._
 import meruem.Constants._
+import org.apache.commons.lang.StringEscapeUtils
 
 /**
  * Created by ybamelcash on 5/4/2015.
@@ -12,6 +13,9 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
   def apply(lispValue: LispValue, environment: Environment): LispValue = lispValue match {
     // Symbol evaluates to whatever it is bound to in the environment  
     case symbol: LispSymbol => environment.get(symbol)
+
+    // Strings get unescaped first before they get returned  
+    case LispString(str) => LispString(StringEscapeUtils.unescapeJava(str))  
     
     // Self-evaluating expressions
     case error: LispError => error
@@ -21,6 +25,7 @@ object Evaluate extends ((LispValue, Environment) => LispValue) {
     // The first item of the list must be a symbol that corresponds to a function name,
     // a special operator, or a macro.
     case ConsLispList(head, tail) => Evaluate(head, environment) match {
+      // Special functions/operators  
       case LispQuoteSymbol => quote(tail)
       case LispQuasiQuoteSymbol => quasiquote(tail, environment)
       case LispUnquoteSymbol => unquote(tail)

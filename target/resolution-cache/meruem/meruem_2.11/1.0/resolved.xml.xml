@@ -4,7 +4,7 @@
 		module="meruem_2.11"
 		revision="1.0"
 		status="integration"
-		publication="20150523015809"
+		publication="20150523124708"
 	>
 		<description>
 		Meruem
@@ -34,5 +34,6 @@
 		<dependency org="org.scala-lang" name="scala-library" rev="2.11.6" conf="scala-tool->default,optional(default);compile->default(compile)"/>
 		<dependency org="org.scala-lang.modules" name="scala-parser-combinators_2.11" rev="1.0.3" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe" name="config" rev="1.3.0" conf="compile->default(compile)"/>
+		<dependency org="commons-lang" name="commons-lang" rev="2.6" conf="compile->default(compile)"/>
 	</dependencies>
 </ivy-module>
