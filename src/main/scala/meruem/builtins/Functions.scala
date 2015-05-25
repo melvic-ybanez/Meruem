@@ -285,6 +285,7 @@ object Functions {
       case _: LispString => LispTypeStrings.String
       case _: LispSymbol => LispTypeStrings.Symbol
       case error: LispError => error
+      case lval => Errors.unrecognizedType(lval)
     }
   }) 
 }

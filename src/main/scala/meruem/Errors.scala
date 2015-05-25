@@ -46,4 +46,6 @@ object Errors {
   def withSource(msg: String, source: String, path: String) = LispError(s"${msg}\nSource: $source", Some(path))
   
   def invalidNumberType = throw new IllegalArgumentException("Invalid number type")
+  
+  def unrecognizedType(lval: LispValue) = LispError("Unrecognized File: " + lval)
 }
