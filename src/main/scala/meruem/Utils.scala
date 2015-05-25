@@ -11,7 +11,7 @@ import scala.util.parsing.input.{CharSequenceReader, CharArrayReader}
 
 object Utils {
   def read[A <: LispValue](expression: LispParser.Parser[A], input: String)(f: A => A): LispValue = 
-    parse(expression, input) match {
+    parseAll(expression, input) match {
       case Success(expr, _) => f(expr)
       case failure: Failure => Errors.parseFailure(failure.toString)
       case error: Error => Errors.parseError(error.toString)

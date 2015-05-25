@@ -7,7 +7,11 @@ import meruem.Constants._
  * Created by ybamelcash on 5/1/2015.
  */
 object LispParser extends JavaTokenParsers {
-  def number: Parser[LispNumber] = wholeNumber ^^ (x => LispNumber(x.toLong))
+  def integer: Parser[LispInt] = wholeNumber ^^ (x => LispInt(x.toInt))
+  
+  def long: Parser[LispLong] = wholeNumber <~ "[lL]".r ^^ (x => LispLong(x.toLong))
+  
+  def double: Parser[LispDouble] = """-?(\d+(\.\d*)|\d*\.\d+)([eE][+-]?\d+)?[fFdD]?""".r ^^ (x => LispDouble(x.toDouble))
   
   def symbol: Parser[LispSymbol] = """[a-zA-Z0-9_+\-\*\/=<>!@#\$%\^&*\|\?\.]+""".r ^^ (sym => LispSymbol(sym))
   
@@ -23,7 +27,8 @@ object LispParser extends JavaTokenParsers {
   
   def list: Parser[LispList] = OpenParen ~> rep(expression) <~ CloseParen ^^ (exprsToLispList(_))
   
-  def expression: Parser[LispValue] = (number | symbol | character | quote | quasiquote | unquote | string | list) ^^ {
+  def expression: Parser[LispValue] = (double | long | integer | symbol | character | string 
+      | quote | quasiquote | unquote | list) ^^ {
     case lval: LispValue => lval
   }
   

@@ -7,8 +7,26 @@
 		revision="1.0"
 		conf="compile-internal"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
-		date="20150523124734"/>
+		date="20150524231616"/>
 	<dependencies>
+		<module organisation="org.scala-lang" name="scala-reflect">
+			<revision name="2.11.6" status="release" pubdate="20150226090115" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.11.6/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="4">
+				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
+				<metadata-artifact status="no" details="" size="2854" time="0" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang\scala-reflect\ivy-2.11.6.xml" searched="false" origin-is-local="false" origin-location="http://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.11.6/scala-reflect-2.11.6.pom"/>
+				<caller organisation="meruem" name="meruem$sources_javadoc_2.11" conf="compile-internal, compile, provided, optional" rev="2.11.6" rev-constraint-default="2.11.6" rev-constraint-dynamic="2.11.6" callerrev="1.0" extra-info.apiURL="http://www.scala-lang.org/api/2.11.6/"/>
+				<artifacts>
+					<artifact name="scala-reflect" type="doc" ext="jar" extra-classifier="javadoc" status="no" details="" size="4405075" time="0" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang\scala-reflect\docs\scala-reflect-2.11.6-javadoc.jar">
+						<origin-location is-local="false" location="http://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.11.6/scala-reflect-2.11.6-javadoc.jar"/>
+					</artifact>
+					<artifact name="scala-reflect" type="jar" ext="jar" status="no" details="" size="4450173" time="0" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang\scala-reflect\jars\scala-reflect-2.11.6.jar">
+						<origin-location is-local="false" location="http://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.11.6/scala-reflect-2.11.6.jar"/>
+					</artifact>
+					<artifact name="scala-reflect" type="src" ext="jar" extra-classifier="sources" status="no" details="" size="561028" time="0" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang\scala-reflect\srcs\scala-reflect-2.11.6-sources.jar">
+						<origin-location is-local="false" location="http://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.11.6/scala-reflect-2.11.6-sources.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
 		<module organisation="commons-lang" name="commons-lang">
 			<revision name="2.6" status="release" pubdate="20110117062147" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://commons.apache.org/lang/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="3">
 				<metadata-artifact status="no" details="" size="6452" time="0" location="C:\Users\ybamelcash\.ivy2\cache\commons-lang\commons-lang\ivy-2.6.xml" searched="false" origin-is-local="false" origin-location="http://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.pom"/>
@@ -17,10 +35,10 @@
 					<artifact name="commons-lang" type="jar" ext="jar" status="no" details="" size="284220" time="0" location="C:\Users\ybamelcash\.ivy2\cache\commons-lang\commons-lang\jars\commons-lang-2.6.jar">
 						<origin-location is-local="false" location="http://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.jar"/>
 					</artifact>
-					<artifact name="commons-lang" type="doc" ext="jar" extra-classifier="javadoc" status="successful" details="" size="1624033" time="10282" location="C:\Users\ybamelcash\.ivy2\cache\commons-lang\commons-lang\docs\commons-lang-2.6-javadoc.jar">
+					<artifact name="commons-lang" type="doc" ext="jar" extra-classifier="javadoc" status="no" details="" size="1624033" time="0" location="C:\Users\ybamelcash\.ivy2\cache\commons-lang\commons-lang\docs\commons-lang-2.6-javadoc.jar">
 						<origin-location is-local="false" location="http://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6-javadoc.jar"/>
 					</artifact>
-					<artifact name="commons-lang" type="src" ext="jar" extra-classifier="sources" status="successful" details="" size="372982" time="2775" location="C:\Users\ybamelcash\.ivy2\cache\commons-lang\commons-lang\srcs\commons-lang-2.6-sources.jar">
+					<artifact name="commons-lang" type="src" ext="jar" extra-classifier="sources" status="no" details="" size="372982" time="0" location="C:\Users\ybamelcash\.ivy2\cache\commons-lang\commons-lang\srcs\commons-lang-2.6-sources.jar">
 						<origin-location is-local="false" location="http://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6-sources.jar"/>
 					</artifact>
 				</artifacts>

@@ -1,6 +1,7 @@
 package meruem
 
 import meruem.Implicits._
+import meruem.builtins.Arithmetics._
 
 /**
  * Created by ybamelcash on 4/26/2015.
@@ -22,7 +23,27 @@ sealed trait LispAtom[+A] extends LispValue {
   override def toString = value.toString
 }
 
-case class LispNumber(value: Long) extends LispAtom[Long]
+trait LispNumber[+A] extends LispAtom[A] {
+  lazy val computeThis = compute(this) _
+  
+  def + [B](that: LispNumber[B]) = computeThis(that)(_ + _)(_ + _)(_ + _)
+  
+  def - [B](that: LispNumber[B]) = computeThis(that)(_ - _)(_ - _)(_ - _)
+  
+  def * [B](that: LispNumber[B]) = computeThis(that)(_ * _)(_ * _)(_ * _)
+
+  def / [B](that: LispNumber[B]) = computeThis(that)(_ / _)(_ / _)(_ / _)
+
+  def % [B](that: LispNumber[B]) = computeThis(that)(_ % _)(_ % _)(_ % _)
+  
+  def unary_- : LispNumber[Any] = 0 - this
+}
+
+case class LispInt(value: Int) extends LispNumber[Int] 
+
+case class LispLong(value: Long) extends LispNumber[Long]
+
+case class LispDouble(value: Double) extends LispNumber[Double]
 
 case class LispBoolean(value: Boolean) extends LispAtom[Boolean]
 

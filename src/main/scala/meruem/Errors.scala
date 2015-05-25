@@ -44,4 +44,6 @@ object Errors {
   def alreadyLoaded(path: String) = LispError(s"$path is already loaded.")
   
   def withSource(msg: String, source: String, path: String) = LispError(s"${msg}\nSource: $source", Some(path))
+  
+  def invalidNumberType = throw new IllegalArgumentException("Invalid number type")
 }

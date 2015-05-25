@@ -1,22 +1,23 @@
 package meruem.builtins
 
-  import meruem._
-import meruem.Utils._
+import meruem._
+import meruem.Implicits._
+import meruem.Constants._
 import Constants.LispTypeStrings
 
 /**
  * Created by ybamelcash on 4/28/2015.
  */
 object Arithmetics {
-  def withNumericArgs(args: LispList, initialValue: Long)
-                     (compute: (Long, Long) => Long): LispValue = { 
-    def recurse(valueList: LispList, acc: Long): LispValue = 
+  def withNumericArgs[A](args: LispList, initialValue: LispNumber[A])
+                     (comp: (LispNumber[Any], LispNumber[A]) => Any): LispValue = { 
+    def recurse(valueList: LispList, acc: LispNumber[Any]): LispValue = 
       valueList match {
-        case EmptyLispList => LispNumber(acc)
-        case ConsLispList(h: LispNumber, t) => recurse(t, compute(acc, h.value))
+        case EmptyLispList => acc
+        case ConsLispList(h: LispNumber[A], t) => recurse(t, comp(acc, h))
         case ConsLispList(h, _) => Errors.invalidType(LispTypeStrings.Number, h)
       }
-    
+   
     recurse(args, initialValue)
   }
   
@@ -24,17 +25,33 @@ object Arithmetics {
   
   def multiply(args: LispList) = withNumericArgs(args, 1)(_ * _)
   
-  def subtract(args: LispList) = args match {
-    case EmptyLispList => Errors.incorrectArgCount(0)
-    case ConsLispList(LispNumber(x), EmptyLispList) => LispNumber(-x)
-    case ConsLispList(LispNumber(x), tail) => withNumericArgs(tail, x)(_ - _)
-    case ConsLispList(x, _) => Errors.invalidType(LispTypeStrings.Number, x)
-  }
+  def subtract(args: LispList) = decOp(args)(-_)(_ - _)
 
-  def divide(args: LispList) = args match {
+  def divide(args: LispList): LispValue = decOp(args)(1 / _)(_ / _)
+  
+  def decOp(args: LispList)
+           (f: LispNumber[Any] => LispNumber[Any])
+           (g: (LispNumber[Any], LispNumber[Any]) => Any): LispValue = args match {
     case EmptyLispList => Errors.incorrectArgCount(0)
-    case ConsLispList(LispNumber(x), _) => LispNumber(1 / x)
-    case ConsLispList(LispNumber(x), tail) => withNumericArgs(tail, x)(_ / _)
-    case ConsLispList(x, _) => Errors.invalidType(LispTypeStrings.Number, x)
+    case ConsLispList(x: LispNumber[_], EmptyLispList) => f(x)
+    case ConsLispList(x: LispNumber[_], tail) => withNumericArgs(tail, x)(g)
+    case ConsLispList(x: LispNumber[_], _) => Errors.invalidType(LispTypeStrings.Number, x)
+  }
+  
+  def compute[A, B](lnum1: LispNumber[A])
+                   (lnum2: LispNumber[B])
+                   (f: (Int, Int) => Int)
+                   (g: (Long, Long) => Long)
+                   (h: (Double, Double) => Double): Any = (lnum1.value, lnum2.value) match {
+    case (x: Int, y: Int) => f(x, y)
+    case (x: Int, y: Long) => g(x, y)
+    case (x: Long, y: Int) => g(x, y)
+    case (x: Long, y: Long) => g(x, y)
+    case (x: Int, y: Double) => h(x, y)
+    case (x: Double, y: Int) => h(x, y)
+    case (x: Long, y: Double) => h(x, y)
+    case (x: Double, y: Long) => h(x, y)
+    case (x: Double, y: Double) => h(x, y)
+    case _ => Errors.invalidNumberType
   }
 }
