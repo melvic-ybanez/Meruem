@@ -9,9 +9,15 @@ import meruem.Constants._
 object LispParser extends JavaTokenParsers {
   def integer: Parser[LispInt] = wholeNumber ^^ (x => LispInt(x.toInt))
   
-  def long: Parser[LispLong] = wholeNumber <~ "[lL]".r ^^ (x => LispLong(x.toLong))
+  def long: Parser[LispLong] = wholeNumber <~ Suffixes.LongRegex.r ^^ (x => LispLong(x.toLong))
   
-  def double: Parser[LispDouble] = """-?(\d+(\.\d*)|\d*\.\d+)([eE][+-]?\d+)?[fFdD]?""".r ^^ (x => LispDouble(x.toDouble))
+  def float: Parser[LispFloat] = ((wholeNumber <~ Suffixes.FloatRegex.r) |
+    (doublePointRegexString.r <~ Suffixes.FloatRegex.r)) ^^
+    (x => LispFloat(x.toFloat))
+  
+  def double: Parser[LispDouble] = ((wholeNumber <~ Suffixes.DoubleRegex.r) | 
+    (doublePointRegexString.r <~ (Suffixes.DoubleRegex + "?").r)) ^^
+    (x => LispDouble(x.toDouble))
   
   def symbol: Parser[LispSymbol] = """[a-zA-Z0-9_+\-\*\/=<>!@#\$%\^&*\|\?\.]+""".r ^^ (sym => LispSymbol(sym))
   
@@ -27,12 +33,23 @@ object LispParser extends JavaTokenParsers {
   
   def list: Parser[LispList] = OpenParen ~> rep(expression) <~ CloseParen ^^ (exprsToLispList(_))
   
-  def expression: Parser[LispValue] = (double | long | integer | symbol | character | string 
+  def expression: Parser[LispValue] = (float | double | long | integer | symbol | character | string 
       | quote | quasiquote | unquote | list) ^^ {
     case lval: LispValue => lval
   }
   
   def meruem: Parser[LispList] = rep(expression) ^^ (exprsToLispList(_))
+  
+  lazy val doublePointRegexString = """-?(\d+(\.\d*)|\d*\.\d+)([eE][+-]?\d+)?"""
+
+  object Suffixes {
+    lazy final val FloatRegex = "[fD]"
+    lazy final val DoubleRegex = "[dD]"
+    lazy final val LongRegex = "[lL]"
+  }
+
+  final val OpenParen = "("
+  final val CloseParen = ")"
   
   def exprsToLispList(exprs: List[LispValue]) = exprs.foldLeft(LispList())((acc, h) => h :: acc).reverse
 } 

@@ -44,16 +44,24 @@ object Arithmetics {
                    (lnum2: LispNumber[B])
                    (f: (Int, Int) => Int)
                    (g: (Long, Long) => Long)
-                   (h: (Double, Double) => Double): Any = (lnum1.value, lnum2.value) match {
+                   (h: (Float, Float) => Float)
+                   (k: (Double, Double) => Double): Any = (lnum1.value, lnum2.value) match {
     case (x: Int, y: Int) => f(x, y)
     case (x: Int, y: Long) => g(x, y)
     case (x: Long, y: Int) => g(x, y)
     case (x: Long, y: Long) => g(x, y)
-    case (x: Int, y: Double) => h(x, y)
-    case (x: Double, y: Int) => h(x, y)
-    case (x: Long, y: Double) => h(x, y)
-    case (x: Double, y: Long) => h(x, y)
-    case (x: Double, y: Double) => h(x, y)
+    case (x: Int, y: Float) => h(x, y)
+    case (x: Float, y: Int) => h(x, y)
+    case (x: Long, y: Float) => h(x, y)
+    case (x: Float, y: Long) => h(x, y)
+    case (x: Float, y: Float) => h(x, y)
+    case (x: Int, y: Double) => k(x, y)
+    case (x: Double, y: Int) => k(x, y)
+    case (x: Long, y: Double) => k(x, y)
+    case (x: Double, y: Long) => k(x, y)
+    case (x: Float, y: Double) => k(x, y)
+    case (x: Double, y: Float) => k(x, y)
+    case (x: Double, y: Double) => k(x, y)
     case _ => Errors.invalidNumberType
   }
 }

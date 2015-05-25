@@ -26,15 +26,15 @@ sealed trait LispAtom[+A] extends LispValue {
 trait LispNumber[+A] extends LispAtom[A] {
   lazy val computeThis = compute(this) _
   
-  def + [B](that: LispNumber[B]) = computeThis(that)(_ + _)(_ + _)(_ + _)
+  def + [B](that: LispNumber[B]) = computeThis(that)(_ + _)(_ + _)(_ + _)(_ + _)
   
-  def - [B](that: LispNumber[B]) = computeThis(that)(_ - _)(_ - _)(_ - _)
+  def - [B](that: LispNumber[B]) = computeThis(that)(_ - _)(_ - _)(_ - _)(_ - _)
   
-  def * [B](that: LispNumber[B]) = computeThis(that)(_ * _)(_ * _)(_ * _)
+  def * [B](that: LispNumber[B]) = computeThis(that)(_ * _)(_ * _)(_ * _)(_ * _)
 
-  def / [B](that: LispNumber[B]) = computeThis(that)(_ / _)(_ / _)(_ / _)
+  def / [B](that: LispNumber[B]) = computeThis(that)(_ / _)(_ / _)(_ / _)(_ / _)
 
-  def % [B](that: LispNumber[B]) = computeThis(that)(_ % _)(_ % _)(_ % _)
+  def % [B](that: LispNumber[B]) = computeThis(that)(_ % _)(_ % _)(_ % _)(_ % _)
   
   def unary_- : LispNumber[Any] = 0 - this
 }
@@ -42,6 +42,8 @@ trait LispNumber[+A] extends LispAtom[A] {
 case class LispInt(value: Int) extends LispNumber[Int] 
 
 case class LispLong(value: Long) extends LispNumber[Long]
+
+case class LispFloat(value: Float) extends LispNumber[Float]
 
 case class LispDouble(value: Double) extends LispNumber[Double]
 

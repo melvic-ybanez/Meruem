@@ -14,11 +14,14 @@ object Implicits {
   
   implicit def longToLispNumber(x: Long): LispLong = LispLong(x)
   
+  implicit def floatToLispNumber(x: Float): LispFloat = LispFloat(x)
+  
   implicit def doubleToLispNumber(x: Double): LispDouble = LispDouble(x)
   
   implicit def anyToLispNumber(a: Any): LispNumber[Any] = a match {
     case x: Int => x
     case x: Long => x
+    case x: Float => x
     case x: Double => x
     case _ => Errors.invalidNumberType
   }

@@ -26,8 +26,6 @@ object Constants {
   }
   
   lazy final val VarArgsChar = "&"
-  final val OpenParen = "("
-  final val CloseParen = ")"
   
   lazy final val LispQuoteSymbol = LispSymbol("quote")
   lazy final val LispCondSymbol = LispSymbol("cond")
