@@ -22,6 +22,7 @@ object Constants {
     lazy final val Subtract = "-"
     lazy final val Multiply = "*"
     lazy final val Divide = "/"
+    lazy final val Modulus = "%"
   }
   
   lazy final val VarArgsChar = "&"

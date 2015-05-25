@@ -14,6 +14,7 @@ object Globals {
       FunctionNames.Subtract -> LispBuiltinFunction(subtract),
       FunctionNames.Multiply -> LispBuiltinFunction(multiply),
       FunctionNames.Divide -> LispBuiltinFunction(divide),
+      FunctionNames.Modulus -> LispBuiltinFunction(modulus),
       "head" -> LispBuiltinFunction(head),
       "tail" -> LispBuiltinFunction(tail),
       "=" -> LispBuiltinFunction(equal),
