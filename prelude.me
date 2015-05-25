@@ -1,5 +1,3 @@
-(load "blah.me")
-
 (defmacro if (predicate do-if-true do-if-false)
   `(cond (,predicate ,do-if-true) (true ,do-if-false)))
     

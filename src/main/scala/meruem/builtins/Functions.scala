@@ -270,4 +270,21 @@ object Functions {
     case ConsLispList(LispString(error), _) => LispError(error)
     case lval => Errors.invalidType(LispTypeStrings.String, lval)
   })
+  
+  def getType(args: LispList): LispValue = checkArgsCount(args)(_ == 1)(args match {
+    case ConsLispList(expr, _) => expr match {
+      case _: LispList => LispTypeStrings.List
+      case _: LispChar => LispTypeStrings.Character
+      case LispNil => LispTypeStrings.Nil
+      case _: LispFunction => LispTypeStrings.Function
+      case _: LispDefMacro => LispTypeStrings.DefMacro
+      case _: LispDouble => LispTypeStrings.Double
+      case _: LispFloat => LispTypeStrings.Float
+      case _: LispInt => LispTypeStrings.Integer
+      case _: LispLong => LispTypeStrings.Long
+      case _: LispString => LispTypeStrings.String
+      case _: LispSymbol => LispTypeStrings.Symbol
+      case error: LispError => error
+    }
+  }) 
 }

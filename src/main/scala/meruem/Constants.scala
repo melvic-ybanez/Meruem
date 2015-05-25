@@ -15,6 +15,14 @@ object Constants {
     lazy final val Pair = "Pair"
     lazy final val Unquote = "Unquote"
     lazy final val Quasiquote = "Quasiquote"
+    lazy final val Integer = "Integer"
+    lazy final val Double = "Double"
+    lazy final val Float = "Float"
+    lazy final val Long = "Long"
+    lazy final val Function = "Function"
+    lazy final val Boolean = "Boolean"
+    lazy final val Character = "Character"
+    lazy final val DefMacro = "Macro"
   }
   
   object FunctionNames {
@@ -23,6 +31,7 @@ object Constants {
     lazy final val Multiply = "*"
     lazy final val Divide = "/"
     lazy final val Modulus = "%"
+    lazy final val GetType = "type"
   }
   
   lazy final val VarArgsChar = "&"
