@@ -33,7 +33,7 @@ case object Include extends ((LispList, Environment) => LispValue) {
             // If a "load" expression is found, perform a recursive expansion  
             case ConsLispList(LispSymbol(Keywords.Include), ConsLispList(LispString(path1), EmptyLispList)) =>
               // If a path has already been loaded, skip it. Otherwise, expand it.
-              if (pathsIncluded.contains(path1)) recurseRead(next, acc)
+              if (pathsIncluded.contains(path1) || Settings.preloads.contains(path1)) recurseRead(next, acc)
               else preInclude(path1, path :: pathsIncluded) match {
                 case (loadedExprs, None) => recurseRead(next, loadedExprs ++ acc)
                 case preloadResult => preloadResult

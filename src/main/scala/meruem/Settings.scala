@@ -11,4 +11,5 @@ case object Settings {
   config.checkValid(ConfigFactory.defaultReference(), "language")
   
   val languageName = config.getString("language.name")
+  val preloads = config.getStringList("language.preloaded")
 }
