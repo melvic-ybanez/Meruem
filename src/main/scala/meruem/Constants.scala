@@ -32,9 +32,15 @@ object Constants {
     lazy final val Divide = "/"
     lazy final val Modulus = "%"
     lazy final val GetType = "type"
+    lazy final val ToInt = "to-int"
+    lazy final val ToLong = "to-long"
+    lazy final val ToFloat = "to-float"
+    lazy final val ToDouble = "to-double"
   }
   
   lazy final val VarArgsChar = "&"
+  final val OpenParen = "("
+  final val CloseParen = ")"
   
   lazy final val LispQuoteSymbol = LispSymbol("quote")
   lazy final val LispCondSymbol = LispSymbol("cond")

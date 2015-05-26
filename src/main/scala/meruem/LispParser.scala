@@ -47,9 +47,6 @@ object LispParser extends JavaTokenParsers {
     lazy final val DoubleRegex = "[dD]"
     lazy final val LongRegex = "[lL]"
   }
-
-  final val OpenParen = "("
-  final val CloseParen = ")"
   
   def exprsToLispList(exprs: List[LispValue]) = exprs.foldLeft(LispList())((acc, h) => h :: acc).reverse
 } 

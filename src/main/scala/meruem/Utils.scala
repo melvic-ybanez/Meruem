@@ -1,8 +1,8 @@
 package meruem
 
 import meruem.Constants.LispTypeStrings
+import meruem.Implicits._
 import meruem.LispParser._
-
 import scala.util.parsing.input.{CharSequenceReader, CharArrayReader}
 
 /**
@@ -67,5 +67,17 @@ object Utils {
       case LispString(str) => f(str)
       case lval => Errors.invalidType(LispTypeStrings.String, lval)
     }
+  }
+  
+  def whenNumber[A](lval: LispValue)
+                    (f: Int => A)
+                    (g: Long => A)
+                    (h: Float => A)
+                    (k: Double => A): LispValue = lval match {
+    case LispInt(x) => f(x)
+    case LispLong(x) => g(x)
+    case LispFloat(x) => h(x)
+    case LispDouble(x) => k(x)
+    case _ => Errors.invalidType(LispTypeStrings.Integer, lval)
   }
 }

@@ -62,6 +62,6 @@ object Arithmetics {
     case (x: Float, y: Double) => k(x, y)
     case (x: Double, y: Float) => k(x, y)
     case (x: Double, y: Double) => k(x, y)
-    case _ => Errors.invalidNumberType
+    case _ => Errors.Exceptions.invalidNumberType
   }
 }

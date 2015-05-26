@@ -10,7 +10,7 @@ object Implicits {
   
   implicit def errorToString(error: LispError): String = error.value
   
-  implicit def lispNumberToInt[A](lnum: LispNumber[A]) = lnum.value
+  implicit def lispNumberToValue[A](lnum: LispNumber[A]) = lnum.value
   
   implicit def intToLispNumber(x: Int): LispInt = LispInt(x)
   
@@ -25,6 +25,6 @@ object Implicits {
     case x: Long => x
     case x: Float => x
     case x: Double => x
-    case _ => Errors.invalidNumberType
+    case _ => Errors.Exceptions.invalidNumberType
   }
 }

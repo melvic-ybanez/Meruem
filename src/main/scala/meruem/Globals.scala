@@ -39,7 +39,11 @@ object Globals {
       Keywords.DefMacro -> LispLambdaSymbol,
       "error" -> LispBuiltinFunction(error),
       "defmacro" -> LispDefMacroSymbol,
-      FunctionNames.GetType -> LispBuiltinFunction(getType)
+      FunctionNames.GetType -> LispBuiltinFunction(getType),
+      FunctionNames.ToInt -> LispBuiltinFunction(toInt),
+      FunctionNames.ToLong -> LispBuiltinFunction(toLong),
+      FunctionNames.ToFloat -> LispBuiltinFunction(toFloat),
+      FunctionNames.ToDouble -> LispBuiltinFunction(toDouble)
     ), 
     NilEnvironment
   )
