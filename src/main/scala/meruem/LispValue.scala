@@ -1,14 +1,14 @@
 package meruem
 
 import meruem.Implicits._
-import meruem.builtins.Arithmetics._
+import meruem.Utils._
 
 /**
  * Created by ybamelcash on 4/26/2015.
  */
 sealed trait LispValue {
   def isTrue = this match {
-    case LispBoolean(false) | LispNil | LispError(_, _) => false
+    case LispBoolean(false) | LispNil => false
     case _ => true
   }
   
@@ -35,6 +35,10 @@ trait LispNumber[+A] extends LispAtom[A] {
   def / [B](that: LispNumber[B]) = computeThis(that)(_ / _)(_ / _)(_ / _)(_ / _)
 
   def % [B](that: LispNumber[B]) = computeThis(that)(_ % _)(_ % _)(_ % _)(_ % _)
+  
+  def > [B](that: LispNumber[B]) = computeThis(that)(_ > _)(_ > _)(_ > _)(_ > _)
+  
+  def < [B](that: LispNumber[B]) = computeThis(that)(_ < _)(_ < _)(_ < _)(_ < _)
   
   def unary_- : LispNumber[Any] = 0 - this
 }

@@ -36,6 +36,10 @@ object Constants {
     lazy final val ToLong = "to-long"
     lazy final val ToFloat = "to-float"
     lazy final val ToDouble = "to-double"
+    lazy final val Equals = "="
+    lazy final val Not = "not"
+    lazy final val LessThan = "<"
+    lazy final val GreaterThan = ">"
   }
   
   lazy final val VarArgsChar = "&"

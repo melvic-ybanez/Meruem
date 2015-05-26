@@ -80,4 +80,36 @@ object Utils {
     case LispDouble(x) => k(x)
     case _ => Errors.invalidType(LispTypeStrings.Integer, lval)
   }
+  
+  def withSingleArg(args: LispList)(f: LispValue => LispValue): LispValue = 
+    checkArgsCount(args)(_ == 1)(args match {
+      case ConsLispList(expr, _) => f(expr)
+    })
+  
+  def withAtLeastOneArg(args: LispList)(f: LispList => LispValue) = checkArgsCount(args)(_ > 0)(f(args))
+
+  def compute[A, B, C, D, E, F](lnum1: LispNumber[A])
+                               (lnum2: LispNumber[B])
+                               (f: (Int, Int) => C)
+                               (g: (Long, Long) => D)
+                               (h: (Float, Float) => E)
+                               (k: (Double, Double) => F): Any = (lnum1.value, lnum2.value) match {
+    case (x: Int, y: Int) => f(x, y)
+    case (x: Int, y: Long) => g(x, y)
+    case (x: Long, y: Int) => g(x, y)
+    case (x: Long, y: Long) => g(x, y)
+    case (x: Int, y: Float) => h(x, y)
+    case (x: Float, y: Int) => h(x, y)
+    case (x: Long, y: Float) => h(x, y)
+    case (x: Float, y: Long) => h(x, y)
+    case (x: Float, y: Float) => h(x, y)
+    case (x: Int, y: Double) => k(x, y)
+    case (x: Double, y: Int) => k(x, y)
+    case (x: Long, y: Double) => k(x, y)
+    case (x: Double, y: Long) => k(x, y)
+    case (x: Float, y: Double) => k(x, y)
+    case (x: Double, y: Float) => k(x, y)
+    case (x: Double, y: Double) => k(x, y)
+    case x => Errors.Exceptions.invalidNumberType(x)
+  }
 }

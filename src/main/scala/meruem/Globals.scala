@@ -4,6 +4,7 @@ import meruem.builtins.Arithmetics._
 import meruem.builtins.Functions._
 import meruem.builtins.Predicates._
 import meruem.builtins.Conversions._
+import meruem.builtins.Relational._
 import meruem.Constants._
 
 /**
@@ -17,9 +18,12 @@ object Globals {
       FunctionNames.Multiply -> LispBuiltinFunction(multiply),
       FunctionNames.Divide -> LispBuiltinFunction(divide),
       FunctionNames.Modulus -> LispBuiltinFunction(modulus),
+      FunctionNames.Equals -> LispBuiltinFunction(equal),
+      FunctionNames.Not -> LispBuiltinFunction(not),
+      FunctionNames.LessThan -> LispBuiltinFunction(<),
+      FunctionNames.GreaterThan -> LispBuiltinFunction(>),
       "head" -> LispBuiltinFunction(head),
       "tail" -> LispBuiltinFunction(tail),
-      "=" -> LispBuiltinFunction(equal),
       "cons" -> LispBuiltinFunction(cons),
       "cond"-> LispCondSymbol,
       "quote" -> LispQuoteSymbol,

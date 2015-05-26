@@ -7,9 +7,6 @@ import meruem._
 import meruem.Utils._
 import meruem.LispParser._
 
-import scala.io.Source
-import scala.util.parsing.input.CharSequenceReader
-
 /**
  * Created by ybamelcash on 4/28/2015.
  */
@@ -74,10 +71,6 @@ object Functions {
   
   def tail(args: LispList) = withCollArg(args)(_.tail)(lstr => LispString(lstr.value.tail))
   
-  def equal(args: LispList) = checkArgsCount(args)(_ > 0)(args match {
-    case llist @ ConsLispList(h, _) => LispBoolean(llist.forAll(_ == h))
-  })
-  
   def cons(args: LispList) = checkArgsCount(args)(_ == 2)(withCollArg(args.tail)(args.head :: _) { case LispString(str) =>
     args.head match {
       case LispChar(c) => LispString(c + str)
@@ -141,26 +134,25 @@ object Functions {
   
   def list(args: LispList) = args
   
-  def error(args: LispList) = checkArgsCount(args)(_ == 1)(args match {
-    case ConsLispList(LispString(error), _) => LispError(error)
+  def error(args: LispList) = withSingleArg(args) {
+    case LispString(error) => LispError(error)
     case lval => Errors.invalidType(LispTypeStrings.String, lval)
-  })
+  }
   
-  def getType(args: LispList): LispValue = checkArgsCount(args)(_ == 1)(args match {
-    case ConsLispList(expr, _) => expr match {
-      case _: LispList => LispTypeStrings.List
-      case _: LispChar => LispTypeStrings.Character
-      case LispNil => LispTypeStrings.Nil
-      case _: LispFunction => LispTypeStrings.Function
-      case _: LispDefMacro => LispTypeStrings.DefMacro
-      case _: LispDouble => LispTypeStrings.Double
-      case _: LispFloat => LispTypeStrings.Float
-      case _: LispInt => LispTypeStrings.Integer
-      case _: LispLong => LispTypeStrings.Long
-      case _: LispString => LispTypeStrings.String
-      case _: LispSymbol => LispTypeStrings.Symbol
-      case error: LispError => error
-      case lval => Errors.unrecognizedType(lval)
-    }
-  })
+  def getType(args: LispList): LispValue = withSingleArg(args) {
+    case _: LispList => LispTypeStrings.List
+    case _: LispChar => LispTypeStrings.Character
+    case LispNil => LispTypeStrings.Nil
+    case _: LispFunction => LispTypeStrings.Function
+    case _: LispDefMacro => LispTypeStrings.DefMacro
+    case _: LispDouble => LispTypeStrings.Double
+    case _: LispFloat => LispTypeStrings.Float
+    case _: LispInt => LispTypeStrings.Integer
+    case _: LispLong => LispTypeStrings.Long
+    case _: LispString => LispTypeStrings.String
+    case _: LispSymbol => LispTypeStrings.Symbol
+    case _: LispBoolean => LispTypeStrings.Boolean
+    case error: LispError => error
+    case lval => Errors.unrecognizedType(lval)
+  }
 }

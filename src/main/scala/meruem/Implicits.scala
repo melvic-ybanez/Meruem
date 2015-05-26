@@ -8,6 +8,8 @@ object Implicits {
   
   implicit def lispValueToBool(lval: LispValue): Boolean = lval.isTrue
   
+  implicit def booleanToLispValue(bool: Boolean): LispBoolean = LispBoolean(bool)
+  
   implicit def errorToString(error: LispError): String = error.value
   
   implicit def lispNumberToValue[A](lnum: LispNumber[A]) = lnum.value
@@ -25,6 +27,6 @@ object Implicits {
     case x: Long => x
     case x: Float => x
     case x: Double => x
-    case _ => Errors.Exceptions.invalidNumberType
+    case lval => Errors.Exceptions.invalidNumberType(lval)
   }
 }
