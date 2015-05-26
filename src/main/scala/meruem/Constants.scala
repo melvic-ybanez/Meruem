@@ -56,6 +56,6 @@ object Constants {
   object Keywords {
     lazy final val Defun = "defun"
     lazy final val DefMacro = "defmacro"
-    lazy final val Load = "load"
+    lazy final val Include = "include"
   }
 }
