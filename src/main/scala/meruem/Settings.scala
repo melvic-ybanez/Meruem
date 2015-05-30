@@ -9,7 +9,9 @@ case object Settings {
   val config = ConfigFactory.load()
   
   config.checkValid(ConfigFactory.defaultReference(), "language")
+  config.checkValid(ConfigFactory.defaultReference(), "modules")
   
   val languageName = config.getString("language.name")
-  val preloads = config.getStringList("language.preloaded")
+  val preloads = config.getStringList("modules.preloaded")
+  val mainFunction = config.getString("modules.main-function")
 }

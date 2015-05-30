@@ -20,7 +20,7 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
     // Self-evaluating expressions
     case error: LispError => error
     case atom: LispAtom[_] => atom
-    case EmptyLispList => lispValue  
+    case NilLispList => lispValue  
       
     // The first item of the list must be a symbol that corresponds to a function name,
     // a special operator, or a macro.
@@ -38,7 +38,7 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
       case LispDefMacroSymbol => defmacro(tail, environment)
       
       // If the first symbol is a macro, expand it first before evaluating it.  
-      case lmacro: LispDefMacro => Evaluate(macroExpand(lmacro :: tail, environment), environment)
+      case lmacro: LispDefMacro => Evaluate(macroExpand(lmacro !: tail, environment), environment)
         
       case LispBuiltinFunction(func) => sanitizeAll(tail, environment)(func) 
       case customFunc: LispLambda => Evaluate(customFunc.updated(args = tail), environment)
@@ -48,8 +48,8 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
       
     case customFunc @ LispLambda(params, args, body, environ @ SomeEnvironment(vm, _)) =>
       def evaluateRest(sym: LispValue, lval: LispValue, 
-                       params: LispList = EmptyLispList,
-                       args: LispList = EmptyLispList) = 
+                       params: LispList = NilLispList,
+                       args: LispList = NilLispList) = 
         Evaluate(customFunc.updated(
           params = params,
           args = args,
@@ -57,14 +57,14 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
         ), environment)
       
       args match {
-        case EmptyLispList => params match {
+        case NilLispList => params match {
           // If each of the arguments have been assigned to each of the params, 
           // perform evaluation on the body.  
-          case EmptyLispList => Evaluate(body, environ)
+          case NilLispList => Evaluate(body, environ)
   
           // If parameter contains the '&' character...  
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(sym, EmptyLispList)) =>
-            evaluateRest(sym, EmptyLispList)   // bind the variable follwing the '&' character to empty list
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(sym, NilLispList)) =>
+            evaluateRest(sym, NilLispList)   // bind the variable follwing the '&' character to empty list
           case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArgsCount
   
           // If some parameters remained unbound...  
@@ -72,10 +72,10 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
         }
         case ConsLispList(arg, argsTail) => params match {
           // Too many arguments provided, return an error  
-          case EmptyLispList => Errors.extraArgs(args)
+          case NilLispList => Errors.extraArgs(args)
   
           // If parameter contains the '&' character...  
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(sym, EmptyLispList)) =>
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(sym, NilLispList)) =>
             val newArgs = args.map(Evaluate(_, environment))
             
             // make sure there are no errors in the arguments

@@ -39,7 +39,7 @@ object Globals {
       "false" -> LispBoolean(false),
       "eval" -> LispReadSymbol,
       "read" -> LispBuiltinFunction(read),
-      Keywords.Include -> LispLoadSymbol,
+      Keywords.Import -> LispLoadSymbol,
       "def" -> LispDefSymbol,
       Keywords.Defun -> LispDefunSymbol,
       Keywords.DefMacro -> LispLambdaSymbol,
@@ -49,8 +49,11 @@ object Globals {
       FunctionNames.ToInt -> LispBuiltinFunction(toInt),
       FunctionNames.ToLong -> LispBuiltinFunction(toLong),
       FunctionNames.ToFloat -> LispBuiltinFunction(toFloat),
-      FunctionNames.ToDouble -> LispBuiltinFunction(toDouble)
+      FunctionNames.ToDouble -> LispBuiltinFunction(toDouble),
+      FunctionNames.ToString -> LispBuiltinFunction(toLispString)
     ), 
     NilEnvironment
   )
+  
+  val modules = scala.collection.mutable.MutableList[String]()
 }

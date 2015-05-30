@@ -40,6 +40,7 @@ object Constants {
     lazy final val Not = "not"
     lazy final val LessThan = "<"
     lazy final val GreaterThan = ">"
+    lazy final val ToString = "to-string"
   }
   
   lazy final val VarArgsChar = "&"
@@ -58,8 +59,9 @@ object Constants {
   lazy final val LispLoadSymbol = LispSymbol("load")
   
   object Keywords {
+    lazy final val Def = "def"
     lazy final val Defun = "defun"
     lazy final val DefMacro = "defmacro"
-    lazy final val Include = "include"
+    lazy final val Import = "import"
   }
 }

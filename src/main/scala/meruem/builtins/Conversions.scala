@@ -24,4 +24,9 @@ object Conversions {
   def toFloat(args: LispList) = toNumber(args)(_.toFloat)(_.toFloat)(identity)(_.toFloat)
 
   def toDouble(args: LispList) = toNumber(args)(_.toDouble)(_.toDouble)(_.toDouble)(identity)
+  
+  def toLispString(args: LispList) = withSingleArg(args) {
+    case str: LispString => str
+    case lval => LispString(lval.toString)
+  }
 }

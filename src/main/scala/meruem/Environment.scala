@@ -3,15 +3,22 @@ package meruem
 /**
  * Created by ybamelcash on 4/26/2015.
  */
+import Environment._
+
 trait Environment {
+  
   def parent: Environment
-  def valueMap: Map[String, LispValue]
+  def valueMap: ValueMapType
   def +(key: LispValue, lvalue: => LispValue): Environment
   def get(key: LispSymbol): LispValue
   def hasSymbol(key: LispSymbol): Boolean
   
   def whenNotdefined(sym: LispSymbol)(f: => LispValue): LispValue = 
     if (hasSymbol(sym)) Errors.alreadyDefined(sym) else f
+}
+
+object Environment {
+  type ValueMapType = Map[String, LispValue]
 }
 
 case object NilEnvironment extends Environment {
@@ -30,10 +37,10 @@ case object NilEnvironment extends Environment {
   def hasMacro(name: String) = false
 } 
 
-class SomeEnvironment(values: => Map[String, LispValue], val parent: Environment) extends Environment {
+class SomeEnvironment(values: => ValueMapType, val parent: Environment) extends Environment {
   lazy val valueMap = values
   
-  def updated(newValueMap: => Map[String, LispValue] = valueMap,
+  def updated(newValueMap: => ValueMapType = valueMap,
               newParent: Environment = parent) =
     new SomeEnvironment(newValueMap, newParent)
   
@@ -50,7 +57,7 @@ class SomeEnvironment(values: => Map[String, LispValue], val parent: Environment
 }
 
 case object SomeEnvironment {
-  def apply(values: => Map[String, LispValue], parent: Environment) = 
+  def apply(values: => ValueMapType, parent: Environment) = 
     new SomeEnvironment(values, parent)
   
   def unapply(environment: SomeEnvironment) = Some(environment.valueMap, environment.parent)

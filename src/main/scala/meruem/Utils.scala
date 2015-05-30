@@ -1,6 +1,8 @@
 package meruem
 
-import meruem.Constants.LispTypeStrings
+import scala.util.parsing.combinator.Parsers
+
+import meruem.Constants.{Keywords, LispTypeStrings}
 import meruem.Implicits._
 import meruem.LispParser._
 import scala.util.parsing.input.{CharSequenceReader, CharArrayReader}
@@ -10,12 +12,15 @@ import scala.util.parsing.input.{CharSequenceReader, CharArrayReader}
  */
 
 object Utils {
-  def read[A <: LispValue](expression: LispParser.Parser[A], input: String)(f: A => A): LispValue = 
-    parseAll(expression, input) match {
+  def read[A <: LispValue](expression: LispParser.Parser[A], input: String, module: Module = NilModule)
+                          (f: A => LispValue): LispValue = {
+    LispParser.setModule(module)
+    LispParser.parseAll(expression, new CharArrayReader(input.toArray)) match {
       case Success(expr, _) => f(expr)
       case failure: Failure => Errors.parseFailure(failure.toString)
       case error: Error => Errors.parseError(error.toString)
-    } 
+    }
+  }
   
   def evalExpression(str: String, environment: Environment): LispValue = 
     read(expression, str)(Evaluate(_, environment))
@@ -29,9 +34,9 @@ object Utils {
     if (!p(args.size)) Errors.incorrectArgCount(args.size) else f
 
   def sanitizeAll(args: LispList, environment: Environment)(f: LispList => LispValue) =  
-    whenValid(args.foldLeft[LispValue](EmptyLispList) { (acc, lval) =>
+    whenValid(args.foldLeft[LispValue](NilLispList) { (acc, lval) =>
       whenValid(acc) {
-        case llist: LispList => whenValid(Evaluate(lval, environment))(_ :: llist)
+        case llist: LispList => whenValid(Evaluate(lval, environment))(_ !: llist)
       }
     }) {
       case lval: LispList => f(lval.reverse)
@@ -49,7 +54,7 @@ object Utils {
     }
   
   def isPair(expr: LispValue) = expr match {
-    case ConsLispList(_, ConsLispList(_, EmptyLispList)) => true
+    case ConsLispList(_, ConsLispList(_, NilLispList)) => true
     case _ => false
   }
   
@@ -112,4 +117,6 @@ object Utils {
     case (x: Double, y: Double) => k(x, y)
     case x => Errors.Exceptions.invalidNumberType(x)
   }
+  
+  def isDefineCommand(str: String) = List(Keywords.Def, Keywords.Defun, Keywords.DefMacro) contains str
 }

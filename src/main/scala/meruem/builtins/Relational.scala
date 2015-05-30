@@ -23,7 +23,7 @@ object Relational {
                   (f: (LispNumber[Any], LispNumber[Any]) => Any) = withAtLeastOneArg(args) { 
     case llist @ ConsLispList(h: LispNumber[_], t) =>
       def recurse[A](llist: LispList, greatest: LispNumber[A]): LispValue = llist match {
-        case EmptyLispList => LispBoolean(true)
+        case NilLispList => LispBoolean(true)
         case ConsLispList(x: LispNumber[A], tail) =>  
           val flag = f(greatest, x) match { case bool: Boolean => LispBoolean(bool) }
           if (flag) recurse(tail, x) else LispBoolean(false)

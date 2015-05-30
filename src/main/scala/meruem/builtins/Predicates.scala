@@ -9,7 +9,7 @@ import meruem.Utils._
 object Predicates {
   def isAtom(args: LispList) = checkArgsCount(args)(_ == 1) {
     LispBoolean(args match {
-      case EmptyLispList => false
+      case NilLispList => false
       case ConsLispList(_: LispList, _) => false
       case _ => true
     })

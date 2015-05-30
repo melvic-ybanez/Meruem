@@ -29,4 +29,7 @@ object Implicits {
     case x: Double => x
     case lval => Errors.Exceptions.invalidNumberType(lval)
   }
+
+  implicit def listToLispList(exprs: List[LispValue]): LispList = 
+    exprs.foldLeft(LispList())((acc, h) => h !: acc).reverse
 }

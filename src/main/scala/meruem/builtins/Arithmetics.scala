@@ -12,7 +12,7 @@ object Arithmetics {
                         (comp: (LispNumber[Any], LispNumber[A]) => Any): LispValue = {
     def recurse(valueList: LispList, acc: LispNumber[Any]): LispValue =
       valueList match {
-        case EmptyLispList => acc
+        case NilLispList => acc
         case ConsLispList(h: LispNumber[A], t) => recurse(t, comp(acc, h))
         case ConsLispList(h, _) => Errors.invalidType(LispTypeStrings.Number, h)
       }
@@ -33,8 +33,8 @@ object Arithmetics {
   def decOp(args: LispList)
            (f: LispNumber[Any] => LispValue)
            (g: (LispNumber[Any], LispNumber[Any]) => Any): LispValue = args match {
-    case EmptyLispList => Errors.incorrectArgCount(0)
-    case ConsLispList(x: LispNumber[_], EmptyLispList) => f(x)
+    case NilLispList => Errors.incorrectArgCount(0)
+    case ConsLispList(x: LispNumber[_], NilLispList) => f(x)
     case ConsLispList(x: LispNumber[_], tail) => withNumericArgs(tail, x)(g)
     case ConsLispList(x: LispNumber[_], _) => Errors.invalidType(LispTypeStrings.Number, x)
   }

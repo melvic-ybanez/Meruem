@@ -3,10 +3,12 @@ package meruem
 import meruem.Implicits._
 import meruem.Utils._
 
+import scala.util.parsing.input.Positional
+
 /**
  * Created by ybamelcash on 4/26/2015.
  */
-sealed trait LispValue {
+sealed trait LispValue extends Modular {
   def isTrue = this match {
     case LispBoolean(false) | LispNil => false
     case _ => true
@@ -67,10 +69,14 @@ case object LispNil extends LispAtom[Nothing] {
   override def toString = "nil"
 }
 
-case class LispError(value: String, pathOpt: Option[String] = None) extends LispValue {
-  override def toString =
-    s"""An error occured at "${pathOpt.getOrElse(Settings.languageName + " REPL")}.
-       |$value""".stripMargin
+case class LispError(value: String) extends LispValue {
+  override def toString = 
+    s"An error has occured. $value\n" +
+    "Source: " + (module match {
+      case NilModule => Settings.languageName + "REPL"
+      case SomeModule(path, _, _) => path 
+    }) + s"[${pos.line}:${pos.column}}]\n" +
+    pos.longString
 }
 
 case class LispSymbol(value: String) extends LispAtom[String]
@@ -83,17 +89,17 @@ sealed trait LispList extends LispValue {
   def head: LispValue
   def tail: LispList
   
-  def ::(lval: LispValue): LispList = this match {
-    case EmptyLispList => ConsLispList(lval, EmptyLispList)
+  def !:(lval: LispValue): LispList = this match {
+    case NilLispList => ConsLispList(lval, NilLispList)
     case _: ConsLispList => ConsLispList(lval, this) 
   }
   
   def ++(llist: LispList): LispList = 
-    reverse.foldLeft(llist)((acc, h) => h :: acc)
+    reverse.foldLeft(llist)((acc, h) => h !: acc)
   
   def find(p: LispValue => Boolean): Option[LispValue] = {
     def recurse(llist: LispList): Option[LispValue] = llist match {
-      case EmptyLispList => None
+      case NilLispList => None
       case ConsLispList(h, t) => 
         if (p(h)) Some(h) else recurse(t)
     }
@@ -102,7 +108,7 @@ sealed trait LispList extends LispValue {
   } 
   
   def size: Int = this match {
-    case EmptyLispList => 0
+    case NilLispList => 0
     case ConsLispList(h, t) => 1 + t.size
   }
 
@@ -111,32 +117,32 @@ sealed trait LispList extends LispValue {
   def forAll(p: LispValue => Boolean) = !exists(!p(_))
   
   def filter(p: LispValue => Boolean): LispList = foldLeft(LispList()) { (acc, h) =>
-    if (p(h)) h :: acc else acc
+    if (p(h)) h !: acc else acc
   }
 
   def map(f: LispValue => LispValue): LispList = {
     def recurse(llist: LispList, acc: LispList): LispList = llist match {
-      case EmptyLispList => acc
-      case ConsLispList(h, t) => recurse(t, f(h) :: acc)
+      case NilLispList => acc
+      case ConsLispList(h, t) => recurse(t, f(h) !: acc)
     }
     
-    recurse(this, EmptyLispList).reverse
+    recurse(this, NilLispList).reverse
   }
   
   def foldLeft[A <: LispValue](initialValue: A)(f: (A, LispValue) => A) = {
     def recurse(llist: LispList, acc: A): A = llist match {
-      case EmptyLispList => acc
+      case NilLispList => acc
       case ConsLispList(h, t) => recurse(t, f(acc, h))
     }
     
     recurse(this, initialValue)
   }
   
-  def reverse: LispList = foldLeft(LispList())((acc, h) => h :: acc)
+  def reverse: LispList = foldLeft(LispList())((acc, h) => h !: acc)
   
   override def toString = {
     def recurse(xs: LispList, acc: List[String]): List[String] = xs match {
-      case EmptyLispList => acc
+      case NilLispList => acc
       case ConsLispList(h, t) => recurse(t, h.toString :: acc)
     } 
     
@@ -145,7 +151,7 @@ sealed trait LispList extends LispValue {
   }
 }
 
-case object EmptyLispList extends LispList {
+case object NilLispList extends LispList {
   def head = throw new IllegalAccessException("Empty lisp list has no head.")
   
   def tail = throw new IllegalAccessException("Empty lisp list has no tail.")
@@ -155,8 +161,12 @@ case class ConsLispList(head: LispValue, tail: LispList) extends LispList
 
 object LispList {
   def apply(lval: LispValue*): LispList = 
-    if (lval.isEmpty) EmptyLispList
-    else lval.foldLeft[LispList](EmptyLispList)((llist, h) => h :: llist).reverse
+    if (lval.isEmpty) NilLispList
+    else lval.foldLeft[LispList](NilLispList)((llist, h) => h !: llist).reverse
+}
+
+object !: {
+  def unapply(llist: ConsLispList) = Some(llist.head, llist.tail)
 }
 
 sealed trait LispFunction extends LispValue {
@@ -192,3 +202,18 @@ case object LispLambda {
 
 case class LispDefMacro(func: LispLambda) extends LispValue
 
+trait Module extends LispValue {
+  def filePath: String
+  def modules: List[Module]
+}
+
+case object NilModule extends Module {
+  def filePath = throwError("filePath")
+  
+  def modules = Nil 
+
+  def throwError(memberName: String) =
+    throw new IllegalAccessException(s"""Can not access member "$memberName" of nil module""")
+}
+
+case class SomeModule(filePath: String, modules: List[Module]) extends Module

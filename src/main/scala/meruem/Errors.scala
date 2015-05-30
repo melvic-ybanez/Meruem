@@ -35,15 +35,13 @@ object Errors {
   
   def fileNotFound(filename: String) = LispError("File Not Found: " + filename)
   
-  def parseFailure(msg: String, path: Option[String] = None) = LispError("Parse Failure: " + msg, path)
+  def parseFailure(msg: String) = LispError("Parse Failure: " + msg)
   
-  def parseError(msg: String, path: Option[String] = None) = LispError("Parse Error: " + msg, path)
+  def parseError(msg: String) = LispError("Parse Error: " + msg)
   
   def unableToParse(msg: String) = LispError("Unable to parse: " + msg)
   
-  def alreadyLoaded(path: String) = LispError(s"$path is already loaded.")
-  
-  def withSource(msg: String, source: String, path: String) = LispError(s"${msg}\nSource: $source", Some(path))
+  def alreadyLoaded(path: String) = LispError("Already loaded: " + path)
   
   def unrecognizedType(lval: LispValue) = LispError("Unrecognized Type: " + lval)
   

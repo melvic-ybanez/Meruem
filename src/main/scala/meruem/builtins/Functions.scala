@@ -30,7 +30,7 @@ object Functions {
 
   def lambda(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
     case ConsLispList(llist: LispList, ConsLispList(body, _)) => allSymbols(llist) {
-      LispLambda(llist, EmptyLispList, body, SomeEnvironment(Map(), environment))
+      LispLambda(llist, NilLispList, body, SomeEnvironment(Map(), environment))
     }
   })
   
@@ -50,7 +50,7 @@ object Functions {
   def defineFunction(args: LispList, environment: Environment)(f: LispLambda => LispValue) =
     checkArgsCount(args)(_ == 3)(args match {
       case ConsLispList(name: LispSymbol, ConsLispList(params, ConsLispList(body, _))) =>
-        whenValid(lambda(params :: body :: EmptyLispList, environment)) {
+        whenValid(lambda(params !: body !: NilLispList, environment)) {
           case lambda: LispLambda => environment.whenNotdefined(name) {
             def ldef: LispDef = LispDef(environment + (name, function))
 
@@ -71,7 +71,7 @@ object Functions {
   
   def tail(args: LispList) = withCollArg(args)(_.tail)(lstr => LispString(lstr.value.tail))
   
-  def cons(args: LispList) = checkArgsCount(args)(_ == 2)(withCollArg(args.tail)(args.head :: _) { case LispString(str) =>
+  def cons(args: LispList) = checkArgsCount(args)(_ == 2)(withCollArg(args.tail)(args.head !: _) { case LispString(str) =>
     args.head match {
       case LispChar(c) => LispString(c + str)
       case lval => 
@@ -82,7 +82,7 @@ object Functions {
   
   def cond(args: LispList, environment: Environment) = withPairListArgs(args) {
     def recurse(llist: LispList): LispValue = llist match {
-      case EmptyLispList => LispNil    // if all conditions yield false, return nil
+      case NilLispList => LispNil    // if all conditions yield false, return nil
       case ConsLispList(ConsLispList(condition, ConsLispList(result, _)), tail) =>
         whenValid(Evaluate(condition, environment)) { res =>
           if (res) whenValid(Evaluate(result, environment))(res => res)
@@ -94,37 +94,37 @@ object Functions {
   }
   
   def quote(args: LispList) = args match {
-    case EmptyLispList => EmptyLispList
+    case NilLispList => NilLispList
     case ConsLispList(h, _) => h
   }
   
   def quasiquote(args: LispList, environment: Environment): LispValue = {
     def quasiquote(args: LispList, level: Int): LispValue = args match {
-      case EmptyLispList => EmptyLispList
+      case NilLispList => NilLispList
       case ConsLispList(error: LispError, _) => error
       case ConsLispList(atom: LispAtom[_], _) => atom
         
       case ConsLispList(llist: LispList, _) => 
         def recurse(xs: LispList, acc: LispList): LispValue = xs match {
-          case EmptyLispList => acc.reverse
+          case NilLispList => acc.reverse
           case ConsLispList(error: LispError, _) => error
           case ConsLispList(atom: LispAtom[_], tail) => atom match {
             case LispQuasiQuoteSymbol => whenValid(quasiquote(tail, level + 1))(LispList(LispQuasiQuoteSymbol, _))
             case LispUnquoteSymbol =>
               if (level == 1) tail match {
-                case EmptyLispList => EmptyLispList
+                case NilLispList => NilLispList
                 case ConsLispList(h, _) => 
                   Evaluate(h, environment)
               } else whenValid(quasiquote(tail, level - 1))(LispList(LispUnquoteSymbol, _))
-            case _ => whenValid(atom) { a => recurse(tail, a :: acc) }
+            case _ => whenValid(atom) { a => recurse(tail, a !: acc) }
           }
-          case ConsLispList(EmptyLispList, tail) => recurse(tail, EmptyLispList :: acc)
-          case ConsLispList(llist: LispList, tail) => whenValid(recurse(llist, EmptyLispList)) { res =>
-            recurse(tail, res :: acc)
+          case ConsLispList(NilLispList, tail) => recurse(tail, NilLispList !: acc)
+          case ConsLispList(llist: LispList, tail) => whenValid(recurse(llist, NilLispList)) { res =>
+            recurse(tail, res !: acc)
           }
         }
         
-        recurse(llist, EmptyLispList)
+        recurse(llist, NilLispList)
     }
     
     quasiquote(args, 1)
