@@ -106,7 +106,7 @@ case object Include extends ((LispList, Environment) => LispValue) {
             // environment, then have all those functions and macros point to that environment. 
             lazy val (newEnvironment, errorOpt) = {
               def recurse(funcsWithSources: LispListWithSources,
-                          values: ValueMapType): (ValueMapType, Option[LispError]) = {
+                          values: MapType): (MapType, Option[LispError]) = {
                 def returnError(error: String, s: String, p: String) = (values, Some(Errors.withSource(error, s, p)))
 
                 funcsWithSources match {

@@ -8,7 +8,7 @@ import Environment._
 trait Environment {
   
   def parent: Environment
-  def valueMap: ValueMapType
+  def valueMap: MapType
   def +(key: LispValue, lvalue: => LispValue): Environment
   def get(key: LispSymbol): LispValue
   def hasSymbol(key: LispSymbol): Boolean
@@ -18,7 +18,7 @@ trait Environment {
 }
 
 object Environment {
-  type ValueMapType = Map[String, LispValue]
+  type MapType = Map[String, LispValue]
 }
 
 case object NilEnvironment extends Environment {
@@ -37,10 +37,10 @@ case object NilEnvironment extends Environment {
   def hasMacro(name: String) = false
 } 
 
-class SomeEnvironment(values: => ValueMapType, val parent: Environment) extends Environment {
+class SomeEnvironment(values: => MapType, val parent: Environment) extends Environment {
   lazy val valueMap = values
   
-  def updated(newValueMap: => ValueMapType = valueMap,
+  def updated(newValueMap: => MapType = valueMap,
               newParent: Environment = parent) =
     new SomeEnvironment(newValueMap, newParent)
   
@@ -57,7 +57,7 @@ class SomeEnvironment(values: => ValueMapType, val parent: Environment) extends 
 }
 
 case object SomeEnvironment {
-  def apply(values: => ValueMapType, parent: Environment) = 
+  def apply(values: => MapType, parent: Environment) = 
     new SomeEnvironment(values, parent)
   
   def unapply(environment: SomeEnvironment) = Some(environment.valueMap, environment.parent)

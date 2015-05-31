@@ -216,4 +216,12 @@ case object NilModule extends Module {
     throw new IllegalAccessException(s"""Can not access member "$memberName" of nil module""")
 }
 
-case class SomeModule(filePath: String, modules: List[Module]) extends Module
+class SomeModule(val filePath: String, mods: => List[Module]) extends Module {
+  lazy val modules = mods
+}
+
+object SomeModule {
+  def apply(filePath: String, modules: => List[Module]) = new SomeModule(filePath, modules)
+  
+  def unapply(module: SomeModule) = Some(module.filePath, module.modules)
+}

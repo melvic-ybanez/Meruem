@@ -30,6 +30,15 @@ object Implicits {
     case lval => Errors.Exceptions.invalidNumberType(lval)
   }
 
-  implicit def listToLispList(exprs: List[LispValue]): LispList = 
+  implicit def listToLispList[A <: LispValue](exprs: List[A]): LispList = 
     exprs.foldLeft(LispList())((acc, h) => h !: acc).reverse
+  
+  implicit def lispListToList[A <: LispValue](llist: LispList): List[A] = {
+    def recurse(llist: LispList, acc: List[A]): List[A] = {
+      case NilLispList => acc
+      case (head: A) !: tail => recurse(tail, head :: acc)
+    }
+    
+    recurse(llist, Nil)
+  }
 }
