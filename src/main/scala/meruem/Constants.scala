@@ -63,5 +63,6 @@ object Constants {
     lazy final val Defun = "defun"
     lazy final val DefMacro = "defmacro"
     lazy final val Import = "import"
+    lazy final val Lambda = "lambda"
   }
 }

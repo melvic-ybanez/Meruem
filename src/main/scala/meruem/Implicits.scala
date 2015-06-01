@@ -41,4 +41,6 @@ object Implicits {
     
     recurse(llist, Nil)
   }
+  
+  implicit def defmacroToLambda(defmacro: LispDefMacro): LispLambda = defmacro.func
 }

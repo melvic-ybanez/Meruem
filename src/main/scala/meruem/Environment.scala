@@ -3,13 +3,14 @@ package meruem
 /**
  * Created by ybamelcash on 4/26/2015.
  */
+
 import Environment._
 
 trait Environment {
-  
   def parent: Environment
-  def valueMap: MapType
-  def +(key: LispValue, lvalue: => LispValue): Environment
+  def valueMap: ValueMapType
+  def + (key: LispSymbol, lvalue: LispValue): Environment
+  def += (key: LispSymbol, lvalue: LispValue): Environment
   def get(key: LispSymbol): LispValue
   def hasSymbol(key: LispSymbol): Boolean
   
@@ -18,35 +19,39 @@ trait Environment {
 }
 
 object Environment {
-  type MapType = Map[String, LispValue]
+  type ValueMapType = collection.mutable.Map[String, LispValue]
 }
 
 case object NilEnvironment extends Environment {
-  def parent = throw new IllegalAccessException("Parent of empty envirionment")
+  def parent = throwError("Parent")
   
-  def valueMap = throw new IllegalAccessError("Value map of empty environment")
-  
-  def +(key: LispValue, lvalue: => LispValue): Environment = key match {
-    case LispSymbol(sym) => new SomeEnvironment(Map(sym -> lvalue), NilEnvironment)
-  } 
+  def valueMap = throwError("Value map")
+
+  def += (key: LispSymbol, lval: LispValue) = throwError("+=")
+
+  def + (key: LispSymbol, lval: LispValue) = 
+    SomeEnvironment(collection.mutable.Map[String, LispValue](key.value -> lval), NilEnvironment)
   
   def get(key: LispSymbol) = Errors.unboundSymbol(key)
   
   def hasSymbol(key: LispSymbol) = false
   
   def hasMacro(name: String) = false
+  
+  def throwError(member: String) = throw new IllegalAccessException(member + " of empty environment")
 } 
 
-class SomeEnvironment(values: => MapType, val parent: Environment) extends Environment {
-  lazy val valueMap = values
-  
-  def updated(newValueMap: => MapType = valueMap,
+case class SomeEnvironment(valueMap: ValueMapType, parent: Environment) extends Environment {
+  def updated(newValueMap: ValueMapType = valueMap,
               newParent: Environment = parent) =
-    new SomeEnvironment(newValueMap, newParent)
+    SomeEnvironment(newValueMap, newParent)
   
-  def +(key: LispValue, lvalue: => LispValue) = key match {
-    case LispSymbol(sym) => updated(newValueMap = valueMap + (sym -> lvalue))
-  }
+  def + (key: LispSymbol, lvalue: LispValue) = add(key, lvalue)(_ + _)
+  
+  def += (key: LispSymbol, lvalue: LispValue) = add(key, lvalue)(_ += _)
+  
+  def add(key: LispSymbol, lvalue: LispValue)(f: (ValueMapType, (String, LispValue)) => ValueMapType) = 
+    updated(newValueMap = f(valueMap, (key.value, lvalue)))
   
   def get(key: LispSymbol): LispValue = valueMap.getOrElse(key.value, parent.get(key))
   
@@ -54,11 +59,4 @@ class SomeEnvironment(values: => MapType, val parent: Environment) extends Envir
     case error: LispError => false
     case _ => true
   }
-}
-
-case object SomeEnvironment {
-  def apply(values: => MapType, parent: Environment) = 
-    new SomeEnvironment(values, parent)
-  
-  def unapply(environment: SomeEnvironment) = Some(environment.valueMap, environment.parent)
 }

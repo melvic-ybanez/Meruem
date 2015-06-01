@@ -187,24 +187,15 @@ case class LispBuiltinFunction(func: LispList => LispValue) extends LispFunction
   def environment: Environment = NilEnvironment
 }
 
-class LispLambda(val params: LispList,
-                 val args: LispList,
-                 val body: LispValue,
-                 environ: => Environment) extends LispFunction {
-  lazy val environment = environ
-  
+case class LispLambda(params: LispList,
+                 args: LispList,
+                 body: LispValue,
+                 environment: Environment) extends LispFunction {
   def updated(params: LispList = params,
               args: LispList = args,
               body: LispValue = body,
-              environment: => Environment = environment): LispLambda = 
+              environment: Environment = environment): LispLambda = 
     LispLambda(params, args, body, environment)
-}
-
-object LispLambda {
-  def apply(params: LispList, args: LispList, body: LispValue, environment: => Environment) =
-    new LispLambda(params, args, body, environment)
-  
-  def unapply(lambda: LispLambda) = Some(lambda.params, lambda.args, lambda.body, lambda.environment)
 }
 
 case class LispDefMacro(func: LispLambda) extends LispValue

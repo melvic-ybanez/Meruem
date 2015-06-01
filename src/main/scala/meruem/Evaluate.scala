@@ -46,7 +46,7 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
     }
       
     case customFunc @ LispLambda(params, args, body, environ @ SomeEnvironment(vm, _)) =>
-      def evaluateRest(sym: LispValue, lval: LispValue, 
+      def evaluateRest(sym: LispSymbol, lval: LispValue, 
                        params: LispList = NilLispList,
                        args: LispList = NilLispList) = 
         Evaluate(customFunc.updated(
@@ -62,32 +62,36 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
           case NilLispList => Evaluate(body, environ)
   
           // If parameter contains the '&' character...  
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(sym, NilLispList)) =>
+          case LispSymbol(Constants.VarArgsChar) !: (sym: LispSymbol) !: NilLispList =>
             evaluateRest(sym, NilLispList)   // bind the variable follwing the '&' character to empty list
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArgsCount(params)
+          case LispSymbol(Constants.VarArgsChar) !: lval !: _ => Errors.invalidType(LispTypeStrings.Symbol, lval)
+          case LispSymbol(Constants.VarArgsChar) !: _ => Errors.varArgsCount(params)
   
           // If some parameters remained unbound...  
           case _ => Errors.notEnoughArgs(params)
         }
-        case ConsLispList(arg, argsTail) => params match {
+        case arg !: argsTail => params match {
           // Too many arguments provided, return an error  
           case NilLispList => Errors.extraArgs(args)
   
           // If parameter contains the '&' character...  
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(sym, NilLispList)) =>
+          case LispSymbol(Constants.VarArgsChar) !: sym !: NilLispList =>
             val newArgs = args.map(Evaluate(_, environment))
             
             // make sure there are no errors in the arguments
             newArgs.find {
               case error: LispError => true
               case _ => false
-            } getOrElse {
+            } getOrElse { 
               // if all the arguments are valid, bind them to the symbol following the '&' character
-              evaluateRest(sym, newArgs)
+              sym match {
+                case sym: LispSymbol => evaluateRest(sym, newArgs)
+                case _ => Errors.invalidType(LispTypeStrings.Symbol, sym)
+              }
             }
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArgsCount(params)
+          case LispSymbol(Constants.VarArgsChar) !: _ => Errors.varArgsCount(params)
   
-          case ConsLispList(param, paramsTail) => whenValid(Evaluate(arg, environment)) { arg =>
+          case (param: LispSymbol) !: paramsTail => whenValid(Evaluate(arg, environment)) { arg =>
             evaluateRest(
               sym = param, 
               lval = arg,

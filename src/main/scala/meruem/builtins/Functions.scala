@@ -2,7 +2,7 @@ package meruem.builtins
 
 import meruem.Constants.LispTypeStrings
 import meruem.Constants._
-import meruem.Implicits._
+import meruem.Implicits.{anyToLispNumber => _, _}
 import meruem._
 import meruem.Utils._
 import meruem.LispParser._
@@ -30,7 +30,7 @@ object Functions {
 
   def lambda(args: LispList, environment: Environment): LispValue = checkArgsCount(args)(_ == 2)(args match {
     case (llist: LispList) !: body !: _ => allSymbols(llist) {
-      LispLambda(llist, NilLispList, body, SomeEnvironment(Map(), environment))
+      LispLambda(llist, NilLispList, body, SomeEnvironment(collection.mutable.Map(), environment))
     }
     case llist !: _  => Errors.invalidType(LispTypeStrings.List, llist)
   })
@@ -40,24 +40,25 @@ object Functions {
       // Check whether the symbol has already been defined or not
       environment.whenNotdefined(sym) {
         whenValid(Evaluate(value, environment)) {
-          case lval => LispDef(environment +(sym, lval))
+          case lval => LispDef(environment += (sym, lval))
         }
       }
     case ConsLispList(lval, _) => Errors.invalidType(LispTypeStrings.Symbol, lval)
   })
   
-  def defun(args: LispList, environment: Environment) = defineFunction(args, environment)(llambda => llambda)
+  def defun(args: LispList, environment: Environment) = defineFunction(args, environment)(identity)
 
   def defineFunction(args: LispList, environment: Environment)(f: LispLambda => LispValue) =
     checkArgsCount(args)(_ == 3)(args match {
       case ConsLispList(name: LispSymbol, ConsLispList(params, ConsLispList(body, _))) =>
         whenValid(lambda(params !: body !: NilLispList, environment)) {
           case lambda: LispLambda => environment.whenNotdefined(name) {
-            def ldef: LispDef = LispDef(environment + (name, function))
-
-            def function = f(lambda.updated(environment = ldef.environment))
-
-            whenValid(ldef)(_ => ldef)
+            whenValid(f(lambda)) {
+              case func: LispLambda => 
+                LispDef(func.environment.parent += (name, func))
+              case defmacro: LispDefMacro =>
+                LispDef(defmacro.func.environment.parent += (name, defmacro))
+            }
           }
         }
       case ConsLispList(name, _) => Errors.invalidType(LispTypeStrings.Symbol, name)

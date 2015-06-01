@@ -18,7 +18,7 @@ import scala.io.Source
  * Created by ybamelcash on 5/28/2015.
  */
 case object Import extends (LispList => LispValue) {
-  def apply(args: LispList) = withStringArg(args, Globals.environment) { filePath =>
+  def apply(args: LispList): LispValue = withStringArg(args, Globals.environment) { filePath =>
     type LispValues = List[LispValue]
     type Modules = List[Module]
     
@@ -88,9 +88,9 @@ case object Import extends (LispList => LispValue) {
             case Right((modules, defines, funcs)) => 
               def ldef: LispDef = LispDef(Globals.environment)
 
-              val (newEnvironment: Environment, errorOpt: Option[LispError]) = {
+              def createEnvironment: (Environment, Option[LispError]) = {
                 /** Evaluate all the defun and defmacro expressions. */
-                def evalFuncExprs(funcs: LispValues, valueMap: MapType): Either[LispError, MapType] = funcs match {
+                def evalFuncExprs(funcs: LispValues, valueMap: ValueMapType): Either[LispError, ValueMapType] = funcs match {
                   case Nil => Right(valueMap)
                   case (LispSymbol(op) !: (nameSym@LispSymbol(name)) !: params !: body) :: tail =>
                     lambda(params !: body, Globals.environment) match {
@@ -112,8 +112,10 @@ case object Import extends (LispList => LispValue) {
                   case Right(valueMap) => (SomeEnvironment(valueMap, Globals.environment), None)
                 }
               }
+              
+              lazy val result: (Environment, Option[LispError]) = createEnvironment
     
-              errorOpt.map(err => (Some(err), Nil, NilEnvironment)).getOrElse {
+              result._2.map(err => (Some(err), Nil, NilEnvironment)).getOrElse {
                 /** Evaluate all the def expressions. */
                 def evalDefExprs(defs: LispValues, environment: Environment): Either[LispError, Environment] = defs match {
                   case Nil => Right(environment)

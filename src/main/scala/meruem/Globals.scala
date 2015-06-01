@@ -4,8 +4,8 @@ import meruem.builtins.Arithmetics._
 import meruem.builtins.Functions._
 import meruem.builtins.Import
 import meruem.builtins.Predicates._
-import meruem.builtins.Conversions._
 import meruem.builtins.Relational._
+import meruem.builtins.Conversions._
 import meruem.Constants._
 
 /**
@@ -13,7 +13,7 @@ import meruem.Constants._
  */
 object Globals {
   lazy val environment = SomeEnvironment(
-    Map(
+    collection.mutable.Map(
       FunctionNames.Add -> LispBuiltinFunction(add),
       FunctionNames.Subtract -> LispBuiltinFunction(subtract),
       FunctionNames.Multiply -> LispBuiltinFunction(multiply),
@@ -40,10 +40,11 @@ object Globals {
       "false" -> LispBoolean(false),
       "eval" -> LispReadSymbol,
       "read" -> LispBuiltinFunction(read),
+      Keywords.Lambda -> LispLambdaSymbol,
       Keywords.Import -> LispBuiltinFunction(Import),
       Keywords.Def -> LispDefSymbol,
       Keywords.Defun -> LispDefunSymbol,
-      Keywords.DefMacro -> LispLambdaSymbol,
+      Keywords.DefMacro -> LispDefMacroSymbol,
       "error" -> LispBuiltinFunction(error),
       "defmacro" -> LispDefMacroSymbol,
       FunctionNames.GetType -> LispBuiltinFunction(getType),
