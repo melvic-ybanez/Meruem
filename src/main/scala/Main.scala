@@ -11,7 +11,7 @@ import io.StdIn.readLine
 
 object Main {
   def main(args: Array[String]): Unit = {
-   /* val globalEnv = Globals.environment + 
+    val globalEnv = Globals.environment + 
       (LispSymbol("main-args"), LispString(args.foldLeft("")(_ + _).mkString(" ")))
     val environment = Settings.preloads.asScala.foldLeft[Environment](globalEnv) { (environment, module) =>
       // Create the import string. e.g '(import "prelude.me")'
@@ -19,10 +19,9 @@ object Main {
       
       Utils.evalExpression(importExpr, environment) match {
         case error: LispError => throw new InstantiationException(error.toString)
-        case ldef @ LispDef(newEnvironment) => newEnvironment
+        case SomeModule(filePath, _, newEnvironment) => newEnvironment
       }
-    }*/
-    val environment = Globals.environment
+    }
     repl(environment)
   }
 

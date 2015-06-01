@@ -53,11 +53,8 @@ object Functions {
       case ConsLispList(name: LispSymbol, ConsLispList(params, ConsLispList(body, _))) =>
         whenValid(lambda(params !: body !: NilLispList, environment)) {
           case lambda: LispLambda => environment.whenNotdefined(name) {
-            whenValid(f(lambda)) {
-              case func: LispLambda => 
-                LispDef(func.environment.parent += (name, func))
-              case defmacro: LispDefMacro =>
-                LispDef(defmacro.func.environment.parent += (name, defmacro))
+            whenValid(f(lambda)) { func =>
+              LispDef(environment += (name, func))
             }
           }
         }

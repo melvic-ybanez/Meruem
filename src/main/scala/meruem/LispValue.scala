@@ -17,10 +17,6 @@ sealed trait LispValue extends Modular {
   def or(that: => LispValue) = if (this) this else that
   
   def and(that: => LispValue) = if (this) that else this
-  
-  def specify[A <: LispValue]: A = this match {
-    case lval: A => lval
-  }
 }
 
 sealed trait LispAtom[+A] extends LispValue {
@@ -202,7 +198,7 @@ case class LispDefMacro(func: LispLambda) extends LispValue
 
 trait Module extends LispValue {
   def filePath: String
-  def modules: List[Module]
+  def modules: LispList
   def environment: Environment
 }
 
@@ -211,19 +207,18 @@ case object NilModule extends Module {
   
   def environment = throwError("environment")
   
-  def modules = Nil 
+  def modules = NilLispList 
 
   def throwError(memberName: String) =
     throw new IllegalAccessException(s"""Can not access member "$memberName" of nil module""")
 }
 
-class SomeModule(val filePath: String, mods: => List[Module], env: => Environment) extends Module {
+class SomeModule(val filePath: String, mods: => LispList, val environment: Environment) extends Module {
   lazy val modules = mods
-  lazy val environment = env
 }
 
 object SomeModule {
-  def apply(filePath: String, modules: => List[Module], environment: => Environment) = 
+  def apply(filePath: String, modules: => LispList, environment: Environment) = 
     new SomeModule(filePath, modules, environment)
   
   def unapply(module: SomeModule) = Some(module.filePath, module.modules, module.environment)
