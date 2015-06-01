@@ -11,18 +11,18 @@ import io.StdIn.readLine
 
 object Main {
   def main(args: Array[String]): Unit = {
-    val globalEnv = Globals.environment + 
+   /* val globalEnv = Globals.environment + 
       (LispSymbol("main-args"), LispString(args.foldLeft("")(_ + _).mkString(" ")))
     val environment = Settings.preloads.asScala.foldLeft[Environment](globalEnv) { (environment, module) =>
-      // Create the include string. e.g '(include "prelude.me")'
-      val includeExpr = s"""$OpenParen${Keywords.Import} "$module"$CloseParen"""
+      // Create the import string. e.g '(import "prelude.me")'
+      val importExpr = s"""$OpenParen${Keywords.Import} "$module"$CloseParen"""
       
-      Utils.evalExpression(includeExpr, environment) match {
+      Utils.evalExpression(importExpr, environment) match {
         case error: LispError => throw new InstantiationException(error.toString)
         case ldef @ LispDef(newEnvironment) => newEnvironment
       }
-    }
-    
+    }*/
+    val environment = Globals.environment
     repl(environment)
   }
 

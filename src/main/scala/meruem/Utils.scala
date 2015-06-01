@@ -5,7 +5,7 @@ import scala.util.parsing.combinator.Parsers
 import meruem.Constants.{Keywords, LispTypeStrings}
 import meruem.Implicits._
 import meruem.LispParser._
-import scala.util.parsing.input.{CharSequenceReader, CharArrayReader}
+import scala.util.parsing.input.{NoPosition, CharSequenceReader, CharArrayReader}
 
 /**
  * Created by ybamelcash on 4/27/2015.
@@ -17,8 +17,10 @@ object Utils {
     LispParser.setModule(module)
     LispParser.parseAll(expression, new CharArrayReader(input.toArray)) match {
       case Success(expr, _) => f(expr)
-      case failure: Failure => Errors.parseFailure(failure.toString)
-      case error: Error => Errors.parseError(error.toString)
+      case failure@Failure(expr, _) => Errors.parseFailure(failure.toString,  
+        Some(failure.pos.line, failure.pos.column, failure.pos.longString))
+      case error@Error(expr, _) => Errors.parseError(error.toString,
+        Some(error.pos.line, error.pos.column, error.pos.longString))
     }
   }
   
@@ -31,7 +33,7 @@ object Utils {
   }
 
   def checkArgsCount(args: LispList)(p: Int => Boolean)(f: => LispValue) =
-    if (!p(args.size)) Errors.incorrectArgCount(args.size) else f
+    if (!p(args.size)) Errors.incorrectArgCount(args.size, args) else f
 
   def sanitizeAll(args: LispList, environment: Environment)(f: LispList => LispValue) =  
     whenValid(args.foldLeft[LispValue](NilLispList) { (acc, lval) =>

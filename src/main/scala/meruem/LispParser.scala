@@ -2,7 +2,9 @@ package meruem
 
 import scala.util.parsing.combinator._
 import meruem.Constants._
-import meruem.Implicits._
+import meruem.Implicits.listToLispList
+
+import scala.util.parsing.input.NoPosition
 
 /**
  * Created by ybamelcash on 5/1/2015.
@@ -42,11 +44,12 @@ object LispParser extends JavaTokenParsers with Modular {
   })
   
   def meruem: Parser[LispList] = tracked(rep(expression) ^^ (x => x))
-  
-  def tracked[A <: Modular](parser: Parser[A]) = {
-    val result = positioned(parser)
-    result.setModule(module)
-    result
+
+  def tracked[T <: Modular](p: => Parser[T]): Parser[T] = Parser { in =>
+    positioned(p)(in) match {
+      case Success(t, in1) => t.setModule(module); Success(t, in1)
+      case ns: NoSuccess => ns
+    }
   }
   
   lazy val doublePointRegexString = """-?(\d+(\.\d*)|\d*\.\d+)([eE][+-]?\d+)?"""

@@ -3,7 +3,7 @@ package meruem
 import meruem.Implicits._
 import meruem.Utils._
 
-import scala.util.parsing.input.Positional
+import scala.util.parsing.input.{NoPosition, Position, Positional}
 
 /**
  * Created by ybamelcash on 4/26/2015.
@@ -17,6 +17,10 @@ sealed trait LispValue extends Modular {
   def or(that: => LispValue) = if (this) this else that
   
   def and(that: => LispValue) = if (this) that else this
+  
+  def specify[A <: LispValue]: A = this match {
+    case lval: A => lval
+  }
 }
 
 sealed trait LispAtom[+A] extends LispValue {
@@ -69,14 +73,17 @@ case object LispNil extends LispAtom[Nothing] {
   override def toString = "nil"
 }
 
-case class LispError(value: String) extends LispValue {
+case class LispError(value: String, lval: LispValue,
+                     position: Option[(Int, Int, String)] = None) extends LispValue {
+  val (posLine, posCol, posString) = position.getOrElse(lval.pos.line, lval.pos.column, lval.pos.longString)
+  
   override def toString = 
     s"An error has occured. $value\n" +
-    "Source: " + (module match {
-      case NilModule => Settings.languageName + "REPL"
+    "Source: " + (lval.module match {
+      case NilModule => Settings.languageName + " REPL"
       case SomeModule(path, _, _) => path 
-    }) + s"[${pos.line}:${pos.column}}]\n" +
-    pos.longString
+    }) + s" [$posLine:$posCol]\n" +
+    posString
 }
 
 case class LispSymbol(value: String) extends LispAtom[String]
@@ -180,20 +187,20 @@ case class LispBuiltinFunction(func: LispList => LispValue) extends LispFunction
   def environment: Environment = NilEnvironment
 }
 
-class LispLambda(val params: LispList, 
-                         val args: LispList,
-                         val body: LispValue,
-                         environ: => Environment) extends LispFunction {
+class LispLambda(val params: LispList,
+                 val args: LispList,
+                 val body: LispValue,
+                 environ: => Environment) extends LispFunction {
   lazy val environment = environ
   
   def updated(params: LispList = params,
               args: LispList = args,
               body: LispValue = body,
               environment: => Environment = environment): LispLambda = 
-    new LispLambda(params, args, body, environment)
+    LispLambda(params, args, body, environment)
 }
 
-case object LispLambda {
+object LispLambda {
   def apply(params: LispList, args: LispList, body: LispValue, environment: => Environment) =
     new LispLambda(params, args, body, environment)
   
@@ -205,10 +212,13 @@ case class LispDefMacro(func: LispLambda) extends LispValue
 trait Module extends LispValue {
   def filePath: String
   def modules: List[Module]
+  def environment: Environment
 }
 
 case object NilModule extends Module {
   def filePath = throwError("filePath")
+  
+  def environment = throwError("environment")
   
   def modules = Nil 
 
@@ -216,12 +226,14 @@ case object NilModule extends Module {
     throw new IllegalAccessException(s"""Can not access member "$memberName" of nil module""")
 }
 
-class SomeModule(val filePath: String, mods: => List[Module]) extends Module {
+class SomeModule(val filePath: String, mods: => List[Module], env: => Environment) extends Module {
   lazy val modules = mods
+  lazy val environment = env
 }
 
 object SomeModule {
-  def apply(filePath: String, modules: => List[Module]) = new SomeModule(filePath, modules)
+  def apply(filePath: String, modules: => List[Module], environment: => Environment) = 
+    new SomeModule(filePath, modules, environment)
   
-  def unapply(module: SomeModule) = Some(module.filePath, module.modules)
+  def unapply(module: SomeModule) = Some(module.filePath, module.modules, module.environment)
 }

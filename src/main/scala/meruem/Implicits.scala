@@ -34,7 +34,7 @@ object Implicits {
     exprs.foldLeft(LispList())((acc, h) => h !: acc).reverse
   
   implicit def lispListToList[A <: LispValue](llist: LispList): List[A] = {
-    def recurse(llist: LispList, acc: List[A]): List[A] = {
+    def recurse(llist: LispList, acc: List[A]): List[A] = llist match {
       case NilLispList => acc
       case (head: A) !: tail => recurse(tail, head :: acc)
     }

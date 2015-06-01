@@ -2,6 +2,7 @@ package meruem
 
 import meruem.builtins.Arithmetics._
 import meruem.builtins.Functions._
+import meruem.builtins.Import
 import meruem.builtins.Predicates._
 import meruem.builtins.Conversions._
 import meruem.builtins.Relational._
@@ -39,8 +40,8 @@ object Globals {
       "false" -> LispBoolean(false),
       "eval" -> LispReadSymbol,
       "read" -> LispBuiltinFunction(read),
-      Keywords.Import -> LispLoadSymbol,
-      "def" -> LispDefSymbol,
+      Keywords.Import -> LispBuiltinFunction(Import),
+      Keywords.Def -> LispDefSymbol,
       Keywords.Defun -> LispDefunSymbol,
       Keywords.DefMacro -> LispLambdaSymbol,
       "error" -> LispBuiltinFunction(error),

@@ -2,8 +2,8 @@ package meruem
 
 import meruem.Utils._
 import meruem.builtins.Functions._
-import meruem.builtins.Include
 import meruem.Constants._
+import meruem.builtins.Import
 import org.apache.commons.lang.StringEscapeUtils
 
 /**
@@ -31,7 +31,6 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
       case LispUnquoteSymbol => unquote(tail)
       case LispCondSymbol => cond(tail, environment)
       case LispReadSymbol => eval(tail, environment)
-      case LispLoadSymbol => Include(tail, environment)
       case LispDefSymbol => define(tail, environment)
       case LispDefunSymbol => defun(tail, environment)
       case LispLambdaSymbol => lambda(tail, environment)
@@ -65,7 +64,7 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
           // If parameter contains the '&' character...  
           case ConsLispList(LispSymbol(Constants.VarArgsChar), ConsLispList(sym, NilLispList)) =>
             evaluateRest(sym, NilLispList)   // bind the variable follwing the '&' character to empty list
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArgsCount
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArgsCount(params)
   
           // If some parameters remained unbound...  
           case _ => Errors.notEnoughArgs(params)
@@ -86,7 +85,7 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
               // if all the arguments are valid, bind them to the symbol following the '&' character
               evaluateRest(sym, newArgs)
             }
-          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArgsCount
+          case ConsLispList(LispSymbol(Constants.VarArgsChar), _) => Errors.varArgsCount(params)
   
           case ConsLispList(param, paramsTail) => whenValid(Evaluate(arg, environment)) { arg =>
             evaluateRest(

@@ -28,12 +28,12 @@ object Arithmetics {
 
   def divide(args: LispList): LispValue = decOp(args)(1 / _)(_ / _)
   
-  def modulus(args: LispList) = decOp(args)(_ => Errors.incorrectArgCount(1))(_ % _)
+  def modulus(args: LispList) = decOp(args)(_ => Errors.incorrectArgCount(1, args))(_ % _)
   
   def decOp(args: LispList)
            (f: LispNumber[Any] => LispValue)
            (g: (LispNumber[Any], LispNumber[Any]) => Any): LispValue = args match {
-    case NilLispList => Errors.incorrectArgCount(0)
+    case NilLispList => Errors.incorrectArgCount(0, args)
     case ConsLispList(x: LispNumber[_], NilLispList) => f(x)
     case ConsLispList(x: LispNumber[_], tail) => withNumericArgs(tail, x)(g)
     case ConsLispList(x: LispNumber[_], _) => Errors.invalidType(LispTypeStrings.Number, x)

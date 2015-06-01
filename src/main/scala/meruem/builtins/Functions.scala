@@ -28,10 +28,11 @@ object Functions {
     }
   }
 
-  def lambda(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
-    case ConsLispList(llist: LispList, ConsLispList(body, _)) => allSymbols(llist) {
+  def lambda(args: LispList, environment: Environment): LispValue = checkArgsCount(args)(_ == 2)(args match {
+    case (llist: LispList) !: body !: _ => allSymbols(llist) {
       LispLambda(llist, NilLispList, body, SomeEnvironment(Map(), environment))
     }
+    case llist !: _  => Errors.invalidType(LispTypeStrings.List, llist)
   })
   
   def define(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
@@ -130,12 +131,12 @@ object Functions {
     quasiquote(args, 1)
   }
   
-  def unquote(args: LispList) = Errors.unquoteNotAllowed
+  def unquote(args: LispList) = Errors.unquoteNotAllowed(args)
   
   def list(args: LispList) = args
   
   def error(args: LispList) = withSingleArg(args) {
-    case LispString(error) => LispError(error)
+    case LispString(error) => LispError(error, args)
     case lval => Errors.invalidType(LispTypeStrings.String, lval)
   }
   
