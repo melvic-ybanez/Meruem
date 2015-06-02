@@ -24,7 +24,7 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
       
     // The first item of the list must be a symbol that corresponds to a function name,
     // a special operator, or a macro.
-    case ConsLispList(head, tail) => Evaluate(head, environment) match {
+    case head !: tail => Evaluate(head, environment) match {
       // Special functions/operators  
       case LispQuoteSymbol => quote(tail)
       case LispQuasiQuoteSymbol => quasiquote(tail, environment)

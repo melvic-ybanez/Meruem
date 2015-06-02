@@ -5,6 +5,7 @@ package meruem
  */
 
 import Environment._
+import Constants._
 
 trait Environment {
   def parent: Environment
@@ -53,7 +54,23 @@ case class SomeEnvironment(valueMap: ValueMapType, parent: Environment) extends 
   def add(key: LispSymbol, lvalue: LispValue)(f: (ValueMapType, (String, LispValue)) => ValueMapType) = 
     updated(newValueMap = f(valueMap, (key.value, lvalue)))
   
-  def get(key: LispSymbol): LispValue = valueMap.getOrElse(key.value, parent.get(key))
+  def get(key: LispSymbol): LispValue = valueMap.getOrElse(key.value, parent.get(key)) match {
+    case error => if (key.value.contains(ModuleSeparator)) {
+      val values = key.value.split(s"""\$ModuleSeparator""")
+      val modulePath = values.init.mkString(PathSeparator)
+      key.module.modules.find {
+        case SomeModule(filePath, _, _) => filePath == modulePath 
+      } map {
+        case SomeModule(filePath, _, environment) =>
+          val function = values.last
+          environment.get(LispSymbol(function)) match {
+            case _: LispError => error // We need to return the outer error (so the tracking will work)
+            case lval => lval
+          }
+      } getOrElse error
+    } else error
+    case lval => lval
+  }
   
   def hasSymbol(key: LispSymbol) = get(key) match {
     case error: LispError => false

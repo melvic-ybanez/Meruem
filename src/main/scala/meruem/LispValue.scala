@@ -160,7 +160,7 @@ case object NilLispList extends LispList {
   def tail = throw new IllegalAccessException("Empty lisp list has no tail.")
 }
 
-case class ConsLispList(head: LispValue, tail: LispList) extends LispList 
+case class ConsLispList(head: LispValue, tail: LispList) extends LispList
 
 object LispList {
   def apply(lval: LispValue*): LispList = 

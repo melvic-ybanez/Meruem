@@ -12,7 +12,7 @@ import meruem.LispParser._
  */
 object Functions {
   def macroExpand(lval: LispValue, environment: Environment): LispValue = lval match {
-    case ConsLispList(LispDefMacro(func), tail) =>
+    case LispDefMacro(func) !: tail =>
       macroExpand(
         Evaluate(func.updated(args = tail.map(x => LispList(LispQuoteSymbol, x))), environment), 
         environment)
@@ -36,21 +36,21 @@ object Functions {
   })
   
   def define(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
-    case ConsLispList(sym: LispSymbol, ConsLispList(value, _)) => 
+    case (sym: LispSymbol) !: value !:  _ => 
       // Check whether the symbol has already been defined or not
       environment.whenNotdefined(sym) {
         whenValid(Evaluate(value, environment)) {
           case lval => LispDef(environment += (sym, lval))
         }
       }
-    case ConsLispList(lval, _) => Errors.invalidType(LispTypeStrings.Symbol, lval)
+    case lval !: _ => Errors.invalidType(LispTypeStrings.Symbol, lval)
   })
   
   def defun(args: LispList, environment: Environment) = defineFunction(args, environment)(identity)
 
   def defineFunction(args: LispList, environment: Environment)(f: LispLambda => LispValue) =
     checkArgsCount(args)(_ == 3)(args match {
-      case ConsLispList(name: LispSymbol, ConsLispList(params, ConsLispList(body, _))) =>
+      case (name: LispSymbol) !: params !: body !:  _ =>
         whenValid(lambda(params !: body !: NilLispList, environment)) {
           case lambda: LispLambda => environment.whenNotdefined(name) {
             whenValid(f(lambda)) { func =>
@@ -58,7 +58,7 @@ object Functions {
             }
           }
         }
-      case ConsLispList(name, _) => Errors.invalidType(LispTypeStrings.Symbol, name)
+      case name !: _ => Errors.invalidType(LispTypeStrings.Symbol, name)
     })
   
   def read(args: LispList) = withStringArg(args, NilEnvironment)(str => 
@@ -72,17 +72,17 @@ object Functions {
   
   def cons(args: LispList) = checkArgsCount(args)(_ == 2)(withCollArg(args.tail)(args.head !: _) { case LispString(str) =>
     args.head match {
-      case LispChar(c) => LispString(c + str)
+      case LispChar(c) => LispString(c.toString + str)
       case lval => 
         val llist = str.foldRight(LispList())((c, llist) => ConsLispList(LispChar(c), llist))
-        ConsLispList(lval, llist)
+        lval !: llist
     }
   })
   
   def cond(args: LispList, environment: Environment) = withPairListArgs(args) {
     def recurse(llist: LispList): LispValue = llist match {
       case NilLispList => LispNil    // if all conditions yield false, return nil
-      case ConsLispList(ConsLispList(condition, ConsLispList(result, _)), tail) =>
+      case (condition !: result !: _) !: tail =>
         whenValid(Evaluate(condition, environment)) { res =>
           if (res) whenValid(Evaluate(result, environment))(res => res)
           else recurse(tail)
@@ -100,14 +100,14 @@ object Functions {
   def quasiquote(args: LispList, environment: Environment): LispValue = {
     def quasiquote(args: LispList, level: Int): LispValue = args match {
       case NilLispList => NilLispList
-      case ConsLispList(error: LispError, _) => error
-      case ConsLispList(atom: LispAtom[_], _) => atom
+      case (error: LispError) !: _ => error
+      case (atom: LispAtom[_]) !: _ => atom
         
-      case ConsLispList(llist: LispList, _) => 
+      case (llist: LispList) !: _ => 
         def recurse(xs: LispList, acc: LispList): LispValue = xs match {
           case NilLispList => acc.reverse
-          case ConsLispList(error: LispError, _) => error
-          case ConsLispList(atom: LispAtom[_], tail) => atom match {
+          case (error: LispError) !: _ => error
+          case (atom: LispAtom[_]) !: tail => atom match {
             case LispQuasiQuoteSymbol => whenValid(quasiquote(tail, level + 1))(LispList(LispQuasiQuoteSymbol, _))
             case LispUnquoteSymbol =>
               if (level == 1) tail match {
@@ -117,8 +117,8 @@ object Functions {
               } else whenValid(quasiquote(tail, level - 1))(LispList(LispUnquoteSymbol, _))
             case _ => whenValid(atom) { a => recurse(tail, a !: acc) }
           }
-          case ConsLispList(NilLispList, tail) => recurse(tail, NilLispList !: acc)
-          case ConsLispList(llist: LispList, tail) => whenValid(recurse(llist, NilLispList)) { res =>
+          case NilLispList !: tail => recurse(tail, NilLispList !: acc)
+          case (llist: LispList) !: tail => whenValid(recurse(llist, NilLispList)) { res =>
             recurse(tail, res !: acc)
           }
         }
