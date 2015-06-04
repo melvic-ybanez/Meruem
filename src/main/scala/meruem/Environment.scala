@@ -15,8 +15,16 @@ trait Environment {
   def get(key: LispSymbol): LispValue
   def hasSymbol(key: LispSymbol): Boolean
   
+  def module: Module = this match {
+    case NilEnvironment => throw new IllegalAccessException("module of nil environment")
+    case env => env.get(LispModuleSymbol) match {
+      case mod: Module => mod
+      case error: LispError => NilModule
+    }
+  } 
+  
   def whenNotdefined(sym: LispSymbol)(f: => LispValue): LispValue = 
-    if (hasSymbol(sym)) Errors.alreadyDefined(sym) else f
+    if (hasSymbol(sym)) Errors.alreadyDefined(sym)(this) else f
 }
 
 object Environment {
@@ -33,7 +41,7 @@ case object NilEnvironment extends Environment {
   def + (key: LispSymbol, lval: LispValue) = 
     SomeEnvironment(collection.mutable.Map[String, LispValue](key.value -> lval), NilEnvironment)
   
-  def get(key: LispSymbol) = Errors.unboundSymbol(key)
+  def get(key: LispSymbol) = Errors.unboundSymbol(key)(this)
   
   def hasSymbol(key: LispSymbol) = false
   
@@ -55,20 +63,24 @@ case class SomeEnvironment(valueMap: ValueMapType, parent: Environment) extends 
     updated(newValueMap = f(valueMap, (key.value, lvalue)))
   
   def get(key: LispSymbol): LispValue = valueMap.getOrElse(key.value, parent.get(key)) match {
-    case error => if (key.value.contains(ModuleSeparator)) {
-      val values = key.value.split(s"""\$ModuleSeparator""")
-      val modulePath = values.init.mkString(PathSeparator)
-      key.module.modules.find {
-        case SomeModule(filePath, _, _) => filePath == modulePath 
-      } map {
-        case SomeModule(filePath, _, environment) =>
-          val function = values.last
-          environment.get(LispSymbol(function)) match {
-            case _: LispError => error // We need to return the outer error (so the tracking will work)
-            case lval => lval
-          }
-      } getOrElse error
-    } else error
+    case LispError(msg, _) =>
+      // We need to return the outer error since it holds the info for the actual location of the erroneous code
+      def error = LispError(msg, key)(this)
+      
+      if (key.value.contains(ModuleSeparator)) {
+        val values = key.value.split(s"""\\$ModuleSeparator""")
+        val modulePath = values.init.mkString(PathSeparator)
+        module.submodules.find {
+          case SomeModule(filePath, _, _) => filePath == modulePath
+        } map {
+          case SomeModule(filePath, _, environment) =>
+            val function = values.last
+            environment.get(LispSymbol(function)) match {
+              case _: LispError => error
+              case lval => lval
+            }
+        } getOrElse error
+      } else error
     case lval => lval
   }
   

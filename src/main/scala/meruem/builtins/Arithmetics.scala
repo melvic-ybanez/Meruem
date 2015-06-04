@@ -9,7 +9,8 @@ import Constants.LispTypeStrings
  */
 object Arithmetics {
   def withNumericArgs[A](args: LispList, initialValue: LispNumber[A])
-                        (comp: (LispNumber[Any], LispNumber[A]) => Any): LispValue = {
+                        (comp: (LispNumber[Any], LispNumber[A]) => Any)
+                        (implicit env: Environment): LispValue = {
     def recurse(valueList: LispList, acc: LispNumber[Any]): LispValue =
       valueList match {
         case NilLispList => acc
@@ -20,19 +21,24 @@ object Arithmetics {
     recurse(args, initialValue)
   }
   
-  def add(args: LispList) = withNumericArgs(args, 0)(_ + _)
+  def add(args: LispList, env: Environment) = withNumericArgs(args, 0)(_ + _)(env)
   
-  def multiply(args: LispList) = withNumericArgs(args, 1)(_ * _)
+  def multiply(args: LispList, env: Environment) = withNumericArgs(args, 1)(_ * _)(env)
   
-  def subtract(args: LispList) = decOp(args)(-_)(_ - _)
+  def subtract(args: LispList, env: Environment) = {
+    implicit val env1 = env
+    decOp(args)(-_)(_ - _)(env)
+  }
 
-  def divide(args: LispList): LispValue = decOp(args)(1 / _)(_ / _)
+  def divide(args: LispList, env: Environment): LispValue = decOp(args)(1 / _)(_ / _)(env)
   
-  def modulus(args: LispList) = decOp(args)(_ => Errors.incorrectArgCount(1, args))(_ % _)
+  def modulus(args: LispList, env: Environment) = 
+    decOp(args)(_ => Errors.incorrectArgCount(1, args)(env))(_ % _)(env)
   
   def decOp(args: LispList)
            (f: LispNumber[Any] => LispValue)
-           (g: (LispNumber[Any], LispNumber[Any]) => Any): LispValue = args match {
+           (g: (LispNumber[Any], LispNumber[Any]) => Any)
+           (implicit env: Environment): LispValue = args match {
     case NilLispList => Errors.incorrectArgCount(0, args)
     case ConsLispList(x: LispNumber[_], NilLispList) => f(x)
     case ConsLispList(x: LispNumber[_], tail) => withNumericArgs(tail, x)(g)

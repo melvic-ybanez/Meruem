@@ -9,28 +9,29 @@ import meruem.Implicits._
  * Created by ybamelcash on 5/26/2015.
  */
 object Relational {
-  def equal(args: LispList) = withAtLeastOneArg(args) {
+  def equal(args: LispList, env: Environment) = withAtLeastOneArg(args) {
     case llist @ ConsLispList(h, _) => LispBoolean(llist.forAll(_ == h))
-  }
+  }(env)
   
-  def not(args: LispList) = withSingleArg(args) { expr => LispBoolean(if (expr) false else true) }
+  def not(args: LispList, env: Environment) = withSingleArg(args) { expr => LispBoolean(if (expr) false else true) }(env)
   
-  def > (args: LispList) = relationalOp(args)(_ > _)
+  def > (args: LispList, env: Environment) = relationalOp(args)(_ > _)(env)
   
-  def < (args: LispList) = relationalOp(args)(_ < _)
+  def < (args: LispList, env: Environment) = relationalOp(args)(_ < _)(env)
   
   def relationalOp(args: LispList)
-                  (f: (LispNumber[Any], LispNumber[Any]) => Any) = withAtLeastOneArg(args) { 
+                  (f: (LispNumber[Any], LispNumber[Any]) => Any)
+                  (implicit env: Environment) = withAtLeastOneArg(args) { 
     case llist @ ConsLispList(h: LispNumber[_], t) =>
       def recurse[A](llist: LispList, greatest: LispNumber[A]): LispValue = llist match {
         case NilLispList => LispBoolean(true)
         case ConsLispList(x: LispNumber[A], tail) =>  
           val flag = f(greatest, x) match { case bool: Boolean => LispBoolean(bool) }
           if (flag) recurse(tail, x) else LispBoolean(false)
-        case ConsLispList(x, _) => Errors.invalidType(LispTypeStrings.Number, x)
+        case ConsLispList(x, _) => Errors.invalidType(LispTypeStrings.Number, x)(env)
       }
       
       recurse(t, h)
-    case ConsLispList(h, _) => Errors.invalidType(LispTypeStrings.Number, h)
+    case ConsLispList(h, _) => Errors.invalidType(LispTypeStrings.Number, h)(env)
   }
 }

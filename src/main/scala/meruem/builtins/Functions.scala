@@ -11,80 +11,75 @@ import meruem.LispParser._
  * Created by ybamelcash on 4/28/2015.
  */
 object Functions {
-  def macroExpand(lval: LispValue, environment: Environment): LispValue = lval match {
-    case LispDefMacro(func) !: tail =>
-      macroExpand(
-        Evaluate(func.updated(args = tail.map(x => LispList(LispQuoteSymbol, x))), environment), 
-        environment)
-    case _ => lval
-  }
+  def defmacro(args: LispList)(implicit environment: Environment) = defineFunction(args)(LispDefMacro(_))
   
-  def defmacro(args: LispList, environment: Environment) = defineFunction(args, environment)(LispDefMacro(_))
-  
-  def getMacro(args: LispList) = checkArgsCount(args)(_ == 1) {
+  def getMacro(args: LispList, env: Environment) = checkArgsCount(args)(_ == 1) {
     args.head match {
       case lmacro: LispDefMacro => lmacro
       case _ => LispNil
     }
-  }
+  }(env)
 
-  def lambda(args: LispList, environment: Environment): LispValue = checkArgsCount(args)(_ == 2)(args match {
+  def lambda(args: LispList)(implicit env: Environment): LispValue = checkArgsCount(args)(_ == 2)(args match {
     case (llist: LispList) !: body !: _ => allSymbols(llist) {
-      LispLambda(llist, NilLispList, body, SomeEnvironment(collection.mutable.Map(), environment))
+      LispLambda(llist, NilLispList, body, SomeEnvironment(collection.mutable.Map(), env))
     }
     case llist !: _  => Errors.invalidType(LispTypeStrings.List, llist)
   })
   
-  def define(args: LispList, environment: Environment) = checkArgsCount(args)(_ == 2)(args match {
+  def define(args: LispList)(implicit env: Environment) = checkArgsCount(args)(_ == 2)(args match {
     case (sym: LispSymbol) !: value !:  _ => 
       // Check whether the symbol has already been defined or not
-      environment.whenNotdefined(sym) {
-        whenValid(Evaluate(value, environment)) {
-          case lval => LispDef(environment += (sym, lval))
+      env.whenNotdefined(sym) {
+        whenValid(Evaluate(value)(env)) {
+          case lval => LispDef(env += (sym, lval))
         }
       }
     case lval !: _ => Errors.invalidType(LispTypeStrings.Symbol, lval)
   })
   
-  def defun(args: LispList, environment: Environment) = defineFunction(args, environment)(identity)
+  def defun(args: LispList)(implicit env: Environment) = defineFunction(args)(identity)
 
-  def defineFunction(args: LispList, environment: Environment)(f: LispLambda => LispValue) =
+  def defineFunction(args: LispList)(f: LispLambda => LispValue)(implicit env: Environment) =
     checkArgsCount(args)(_ == 3)(args match {
       case (name: LispSymbol) !: params !: body !:  _ =>
-        whenValid(lambda(params !: body !: NilLispList, environment)) {
-          case lambda: LispLambda => environment.whenNotdefined(name) {
+        whenValid(lambda(params !: body !: NilLispList)) {
+          case lambda: LispLambda => env.whenNotdefined(name) {
             whenValid(f(lambda)) { func =>
-              LispDef(environment += (name, func))
+              LispDef(env += (name, func))
             }
           }
         }
       case name !: _ => Errors.invalidType(LispTypeStrings.Symbol, name)
     })
   
-  def read(args: LispList) = withStringArg(args, NilEnvironment)(str => 
-    Utils.read(expression, str)(identity))
+  def read(args: LispList, env: Environment) = withStringArg(args)(str => 
+    Utils.read(expression, str)(identity)(env))(env)
   
-  def eval(args: LispList, environment: Environment) = withStringArg(args, environment)(evalExpression(_, environment))
+  def eval(args: LispList)(implicit env: Environment) = withStringArg(args)(evalExpression(_, env))
   
-  def head(args: LispList) = withCollArg(args)(_.head)(lstr => LispChar(lstr.value.head))
+  def head(args: LispList, env: Environment) = withCollArg(args)(_.head)(lstr => LispChar(lstr.value.head))(env)
   
-  def tail(args: LispList) = withCollArg(args)(_.tail)(lstr => LispString(lstr.value.tail))
+  def tail(args: LispList, env: Environment) = withCollArg(args)(_.tail)(lstr => LispString(lstr.value.tail))(env)
   
-  def cons(args: LispList) = checkArgsCount(args)(_ == 2)(withCollArg(args.tail)(args.head !: _) { case LispString(str) =>
-    args.head match {
-      case LispChar(c) => LispString(c.toString + str)
-      case lval => 
-        val llist = str.foldRight(LispList())((c, llist) => ConsLispList(LispChar(c), llist))
-        lval !: llist
-    }
-  })
+  def cons(args: LispList, env: Environment) = {
+    implicit val env1 = env
+    checkArgsCount(args)(_ == 2)(withCollArg(args.tail)(args.head !: _) { case LispString(str) =>
+      args.head match {
+        case LispChar(c) => LispString(c.toString + str)
+        case lval =>
+          val llist = str.foldRight(LispList())((c, llist) => ConsLispList(LispChar(c), llist))
+          lval !: llist
+      }
+    })
+  }
   
-  def cond(args: LispList, environment: Environment) = withPairListArgs(args) {
+  def cond(args: LispList)(implicit env: Environment) = withPairListArgs(args) {
     def recurse(llist: LispList): LispValue = llist match {
       case NilLispList => LispNil    // if all conditions yield false, return nil
       case (condition !: result !: _) !: tail =>
-        whenValid(Evaluate(condition, environment)) { res =>
-          if (res) whenValid(Evaluate(result, environment))(res => res)
+        whenValid(Evaluate(condition)(env)) { res =>
+          if (res) whenValid(Evaluate(result)(env))(res => res)
           else recurse(tail)
         }
     }
@@ -97,7 +92,7 @@ object Functions {
     case ConsLispList(h, _) => h
   }
   
-  def quasiquote(args: LispList, environment: Environment): LispValue = {
+  def quasiquote(args: LispList)(implicit env: Environment): LispValue = {
     def quasiquote(args: LispList, level: Int): LispValue = args match {
       case NilLispList => NilLispList
       case (error: LispError) !: _ => error
@@ -112,8 +107,7 @@ object Functions {
             case LispUnquoteSymbol =>
               if (level == 1) tail match {
                 case NilLispList => NilLispList
-                case ConsLispList(h, _) => 
-                  Evaluate(h, environment)
+                case ConsLispList(h, _) => Evaluate(h)
               } else whenValid(quasiquote(tail, level - 1))(LispList(LispUnquoteSymbol, _))
             case _ => whenValid(atom) { a => recurse(tail, a !: acc) }
           }
@@ -129,16 +123,16 @@ object Functions {
     quasiquote(args, 1)
   }
   
-  def unquote(args: LispList) = Errors.unquoteNotAllowed(args)
+  def unquote(args: LispList)(implicit env: Environment) = Errors.unquoteNotAllowed(args)
   
-  def list(args: LispList) = args
+  def list(args: LispList, env: Environment) = args
   
-  def error(args: LispList) = withSingleArg(args) {
-    case LispString(error) => LispError(error, args)
-    case lval => Errors.invalidType(LispTypeStrings.String, lval)
-  }
+  def error(args: LispList, env: Environment) = withSingleArg(args) {
+    case LispString(error) => LispError(error, args)(env)
+    case lval => Errors.invalidType(LispTypeStrings.String, lval)(env)
+  } (env)
   
-  def getType(args: LispList): LispValue = withSingleArg(args) {
+  def getType(args: LispList, env: Environment): LispValue = withSingleArg(args) {
     case _: LispList => LispTypeStrings.List
     case _: LispChar => LispTypeStrings.Character
     case LispNil => LispTypeStrings.Nil
@@ -152,6 +146,6 @@ object Functions {
     case _: LispSymbol => LispTypeStrings.Symbol
     case _: LispBoolean => LispTypeStrings.Boolean
     case error: LispError => error
-    case lval => Errors.unrecognizedType(lval)
-  }
+    case lval => Errors.unrecognizedType(lval)(env)
+  } (env)
 }

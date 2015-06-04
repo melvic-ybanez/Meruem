@@ -5,36 +5,34 @@
 import scala.collection.JavaConverters._
 
 import meruem.Constants._
+import meruem.Environment._
 import meruem._
 
 import io.StdIn.readLine
+import scala.collection.mutable
 
 object Main {
   def main(args: Array[String]): Unit = {
-    val globalEnv = Globals.environment + 
-      (LispSymbol("main-args"), LispString(args.foldLeft("")(_ + _).mkString(" ")))
-    val environment = Settings.preloads.asScala.foldLeft[Environment](globalEnv) { (environment, module) =>
+    val importExprs = Settings.preloads.asScala.map { module =>
       // Create the import string. e.g '(import "prelude.me")'
-      val importExpr = s"""$OpenParen${Keywords.Import} "$module"$CloseParen"""
-      
-      Utils.evalExpression(importExpr, environment) match {
-        case error: LispError => throw new InstantiationException(error.toString)
-        case SomeModule(filePath, _, newEnvironment) => newEnvironment
-      }
+      s"""$OpenParen${Keywords.Import} "$module"$CloseParen"""
+    }.mkString
+
+    val environment = SomeEnvironment(mutable.Map(Keywords.Module -> Globals.module), Globals.environment)
+    
+    Utils.evalExpression(importExprs, environment) match {
+      case error: LispError => throw new InstantiationException(error.toString)
+      case module: Module => repl(environment)
     }
-    repl(environment)
-  }
+  } 
 
   // READ-EVAL-PRINT-LOOP
-  def repl(environment: Environment) {
-    val input = readLine("meruem> ")
-    Utils.evalExpression(input, environment) match {
-      case ldef @ LispDef(newEnvironment) =>
-        println(ldef)
-        repl(newEnvironment)
-      case lval =>
-        println(lval)
-        repl(environment)
-    }
+  def repl(env: Environment): Unit = readLine("meruem> ") match {
+    case Settings.exitCommand => 
+      println("Bye!")
+      sys.exit(0)
+    case input =>
+      println(Utils.evalExpression(input, env))
+      repl(env)
   }
 }

@@ -9,13 +9,13 @@ import org.apache.commons.lang.StringEscapeUtils
 /**
  * Created by ybamelcash on 5/4/2015.
  */
-case object Evaluate extends ((LispValue, Environment) => LispValue) {
-  def apply(lispValue: LispValue, environment: Environment): LispValue = lispValue match {
+object Evaluate {
+  def apply(lispValue: LispValue)(implicit environment: Environment): LispValue = lispValue match {
     // Symbol evaluates to whatever it is bound to in the environment  
     case symbol: LispSymbol => environment.get(symbol)
 
     // Strings get unescaped first before they get returned  
-    case LispString(str) => LispString(StringEscapeUtils.unescapeJava(str))  
+    case lstr @ LispString(str) => LispString(StringEscapeUtils.unescapeJava(str))
     
     // Self-evaluating expressions
     case error: LispError => error
@@ -24,23 +24,23 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
       
     // The first item of the list must be a symbol that corresponds to a function name,
     // a special operator, or a macro.
-    case head !: tail => Evaluate(head, environment) match {
+    case head !: tail => Evaluate(head) match {
       // Special functions/operators  
       case LispQuoteSymbol => quote(tail)
-      case LispQuasiQuoteSymbol => quasiquote(tail, environment)
+      case LispQuasiQuoteSymbol => quasiquote(tail)
       case LispUnquoteSymbol => unquote(tail)
-      case LispCondSymbol => cond(tail, environment)
-      case LispReadSymbol => eval(tail, environment)
-      case LispDefSymbol => define(tail, environment)
-      case LispDefunSymbol => defun(tail, environment)
-      case LispLambdaSymbol => lambda(tail, environment)
-      case LispDefMacroSymbol => defmacro(tail, environment)
+      case LispCondSymbol => cond(tail)
+      case LispEvalSymbol => eval(tail)
+      case LispDefSymbol => define(tail)
+      case LispDefunSymbol => defun(tail)
+      case LispLambdaSymbol => lambda(tail)
+      case LispDefMacroSymbol => defmacro(tail)
       
       // If the first symbol is a macro, expand it first before evaluating it.  
-      case lmacro: LispDefMacro => Evaluate(macroExpand(lmacro !: tail, environment), environment)
+      case lmacro: LispDefMacro => Evaluate(macroExpand(lmacro !: tail))
         
-      case LispBuiltinFunction(func) => sanitizeAll(tail, environment)(func) 
-      case customFunc: LispLambda => Evaluate(customFunc.updated(args = tail), environment)
+      case LispBuiltinFunction(func) => sanitizeAll(tail)(func)
+      case customFunc: LispLambda => Evaluate(customFunc.updated(args = tail))
       case error: LispError => error
       case lval => Errors.nonFunction(lval)
     }
@@ -53,13 +53,13 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
           params = params,
           args = args,
           environment = environ + (sym, lval)
-        ), environment)
+        ))
       
       args match {
         case NilLispList => params match {
           // If each of the arguments have been assigned to each of the params, 
           // perform evaluation on the body.  
-          case NilLispList => Evaluate(body, environ)
+          case NilLispList => Evaluate(body)(environ)
   
           // If parameter contains the '&' character...  
           case LispSymbol(Constants.VarArgsChar) !: (sym: LispSymbol) !: NilLispList =>
@@ -76,7 +76,7 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
   
           // If parameter contains the '&' character...  
           case LispSymbol(Constants.VarArgsChar) !: sym !: NilLispList =>
-            val newArgs = args.map(Evaluate(_, environment))
+            val newArgs = args.map(Evaluate(_))
             
             // make sure there are no errors in the arguments
             newArgs.find {
@@ -91,7 +91,7 @@ case object Evaluate extends ((LispValue, Environment) => LispValue) {
             }
           case LispSymbol(Constants.VarArgsChar) !: _ => Errors.varArgsCount(params)
   
-          case (param: LispSymbol) !: paramsTail => whenValid(Evaluate(arg, environment)) { arg =>
+          case (param: LispSymbol) !: paramsTail => whenValid(Evaluate(arg)) { arg =>
             evaluateRest(
               sym = param, 
               lval = arg,

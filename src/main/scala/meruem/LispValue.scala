@@ -2,13 +2,14 @@ package meruem
 
 import meruem.Implicits._
 import meruem.Utils._
+import meruem.Constants._
 
 import scala.util.parsing.input.{NoPosition, Position, Positional}
 
 /**
  * Created by ybamelcash on 4/26/2015.
  */
-sealed trait LispValue extends Modular {
+sealed trait LispValue extends Positional {
   def isTrue = this match {
     case LispBoolean(false) | LispNil => false
     case _ => true
@@ -42,7 +43,7 @@ trait LispNumber[+A] extends LispAtom[A] {
   
   def < [B](that: LispNumber[B]) = computeThis(that)(_ < _)(_ < _)(_ < _)(_ < _)
   
-  def unary_- : LispNumber[Any] = 0 - this
+  def unary_- (implicit env: Environment): LispNumber[Any] = 0 - this
 }
 
 case class LispInt(value: Int) extends LispNumber[Int] 
@@ -69,17 +70,14 @@ case object LispNil extends LispAtom[Nothing] {
   override def toString = "nil"
 }
 
-case class LispError(value: String, lval: LispValue,
-                     position: Option[(Int, Int, String)] = None) extends LispValue {
-  val (posLine, posCol, posString) = position.getOrElse(lval.pos.line, lval.pos.column, lval.pos.longString)
-  
+case class LispError(value: String, lval: LispValue)(implicit environment: Environment) extends LispValue {
   override def toString = 
     s"An error has occured. $value\n" +
-    "Source: " + (lval.module match {
-      case NilModule => Settings.languageName + " REPL"
+    "Source: " + (environment.get(LispModuleSymbol) match {
+      case NilModule => Globals.module.filePath
       case SomeModule(path, _, _) => path 
-    }) + s" [$posLine:$posCol]\n" +
-    posString
+    }) + s" [${lval.pos.line}:${lval.pos.column}}]\n" +
+    lval.pos.longString
 }
 
 case class LispSymbol(value: String) extends LispAtom[String]
@@ -178,8 +176,7 @@ sealed trait LispFunction extends LispValue {
   override def toString = "<function>"
 }
 
-case class LispBuiltinFunction(func: LispList => LispValue) extends LispFunction {
-  
+case class LispBuiltinFunction(func: (LispList, Environment) => LispValue) extends LispFunction {
   def environment: Environment = NilEnvironment
 }
 
@@ -196,9 +193,11 @@ case class LispLambda(params: LispList,
 
 case class LispDefMacro(func: LispLambda) extends LispValue
 
+import scala.collection.mutable.MutableList
+
 trait Module extends LispValue {
   def filePath: String
-  def modules: LispList
+  def submodules: MutableList[Module]
   def environment: Environment
 }
 
@@ -207,19 +206,10 @@ case object NilModule extends Module {
   
   def environment = throwError("environment")
   
-  def modules = NilLispList 
+  def submodules = throwError("modules")
 
   def throwError(memberName: String) =
     throw new IllegalAccessException(s"""Can not access member "$memberName" of nil module""")
 }
 
-class SomeModule(val filePath: String, mods: => LispList, val environment: Environment) extends Module {
-  lazy val modules = mods
-}
-
-object SomeModule {
-  def apply(filePath: String, modules: => LispList, environment: Environment) = 
-    new SomeModule(filePath, modules, environment)
-  
-  def unapply(module: SomeModule) = Some(module.filePath, module.modules, module.environment)
-}
+case class SomeModule(filePath: String, submodules: MutableList[Module], environment: Environment) extends Module

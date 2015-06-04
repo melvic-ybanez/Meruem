@@ -7,55 +7,60 @@ import meruem.builtins.Predicates._
 import meruem.builtins.Relational._
 import meruem.builtins.Conversions._
 import meruem.Constants._
+import FunctionNames._
+import Keywords._
+
+import scala.collection.mutable
 
 /**
  * Created by ybamelcash on 5/3/2015.
  */
 object Globals {
-  lazy val environment = SomeEnvironment(
+  lazy val environment: Environment = SomeEnvironment(
     collection.mutable.Map(
-      FunctionNames.Add -> LispBuiltinFunction(add),
-      FunctionNames.Subtract -> LispBuiltinFunction(subtract),
-      FunctionNames.Multiply -> LispBuiltinFunction(multiply),
-      FunctionNames.Divide -> LispBuiltinFunction(divide),
-      FunctionNames.Modulus -> LispBuiltinFunction(modulus),
-      FunctionNames.Equals -> LispBuiltinFunction(equal),
-      FunctionNames.Not -> LispBuiltinFunction(not),
-      FunctionNames.LessThan -> LispBuiltinFunction(<),
-      FunctionNames.GreaterThan -> LispBuiltinFunction(>),
-      "head" -> LispBuiltinFunction(head),
-      "tail" -> LispBuiltinFunction(tail),
-      "cons" -> LispBuiltinFunction(cons),
-      "cond"-> LispCondSymbol,
-      "quote" -> LispQuoteSymbol,
-      "quasiquote" -> LispQuasiQuoteSymbol,
-      "unquote" -> LispUnquoteSymbol,
-      "list" -> LispBuiltinFunction(list),
-      "atom?" -> LispBuiltinFunction(isAtom),
-      "symbol?" -> LispBuiltinFunction(isSymbol),
-      "list?" -> LispBuiltinFunction(isList),
-      "macro" -> LispBuiltinFunction(getMacro),
-      "nil" -> LispNil,
-      "true" -> LispBoolean(true),
-      "false" -> LispBoolean(false),
-      "eval" -> LispReadSymbol,
-      "read" -> LispBuiltinFunction(read),
-      Keywords.Lambda -> LispLambdaSymbol,
+      Add -> LispBuiltinFunction(add),
+      Subtract -> LispBuiltinFunction(subtract),
+      Multiply -> LispBuiltinFunction(multiply),
+      Divide -> LispBuiltinFunction(divide),
+      Modulus -> LispBuiltinFunction(modulus),
+      Equals -> LispBuiltinFunction(equal),
+      Not -> LispBuiltinFunction(not),
+      LessThan -> LispBuiltinFunction(<),
+      GreaterThan -> LispBuiltinFunction(>),
+      Head -> LispBuiltinFunction(head),
+      Tail -> LispBuiltinFunction(tail),
+      Cons -> LispBuiltinFunction(cons),
+      Cond -> LispCondSymbol,
+      Quote -> LispQuoteSymbol,
+      Quasiquote -> LispQuasiQuoteSymbol,
+      Unquote -> LispUnquoteSymbol,
+      List -> LispBuiltinFunction(list),
+      AtomP -> LispBuiltinFunction(isAtom),
+      SymbolP -> LispBuiltinFunction(isSymbol),
+      ListP -> LispBuiltinFunction(isList),
+      Macro -> LispBuiltinFunction(getMacro),
+      LNil -> LispNil,
+      True -> LispBoolean(true),
+      False -> LispBoolean(false),
+      Eval -> LispEvalSymbol,
+      Read -> LispBuiltinFunction(read),
+      Lambda -> LispLambdaSymbol,
       Keywords.Import -> LispBuiltinFunction(Import),
-      Keywords.Def -> LispDefSymbol,
-      Keywords.Defun -> LispDefunSymbol,
+      Def -> LispDefSymbol,
+      Defun -> LispDefunSymbol,
       Keywords.DefMacro -> LispDefMacroSymbol,
-      "error" -> LispBuiltinFunction(error),
-      "defmacro" -> LispDefMacroSymbol,
-      FunctionNames.GetType -> LispBuiltinFunction(getType),
-      FunctionNames.ToInt -> LispBuiltinFunction(toInt),
-      FunctionNames.ToLong -> LispBuiltinFunction(toLong),
-      FunctionNames.ToFloat -> LispBuiltinFunction(toFloat),
-      FunctionNames.ToDouble -> LispBuiltinFunction(toDouble),
-      FunctionNames.ToString -> LispBuiltinFunction(toLispString)
+      LError -> LispBuiltinFunction(error),
+      GetType -> LispBuiltinFunction(getType),
+      ToInt -> LispBuiltinFunction(toInt),
+      ToLong -> LispBuiltinFunction(toLong),
+      ToFloat -> LispBuiltinFunction(toFloat),
+      ToDouble -> LispBuiltinFunction(toDouble),
+      ToString -> LispBuiltinFunction(toLispString)
     ), 
     NilEnvironment
   )
   
-  val modules = scala.collection.mutable.MutableList[String]()
+  lazy val module = SomeModule(Settings.languageName + " Global", mutable.MutableList(), environment)
+  
+  val modules = mutable.MutableList[Module]()
 }
