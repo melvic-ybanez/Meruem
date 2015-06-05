@@ -58,6 +58,8 @@ object Constants {
     lazy final val Read = "read"
     lazy final val LError = "error"
     lazy final val LDefMacro = "defmacro"
+    lazy final val ReadLine = "read-line"
+    lazy final val Print = "print"
   }
   
   lazy final val VarArgsChar = "&"

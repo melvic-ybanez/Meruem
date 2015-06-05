@@ -96,7 +96,7 @@ object Utils {
   
   def withSingleArg(args: LispList)(f: LispValue => LispValue)(implicit env: Environment): LispValue = 
     checkArgsCount(args)(_ == 1)(args match {
-      case ConsLispList(expr, _) => f(expr)
+      case expr !: _ => f(expr)
     })
   
   def withAtLeastOneArg(args: LispList)(f: LispList => LispValue)(implicit env: Environment) = 

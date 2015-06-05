@@ -6,6 +6,7 @@ import meruem.builtins.Import
 import meruem.builtins.Predicates._
 import meruem.builtins.Relational._
 import meruem.builtins.Conversions._
+import meruem.builtins.StdIO._
 import meruem.Constants._
 import FunctionNames._
 import Keywords._
@@ -55,7 +56,9 @@ object Globals {
       ToLong -> LispBuiltinFunction(toLong),
       ToFloat -> LispBuiltinFunction(toFloat),
       ToDouble -> LispBuiltinFunction(toDouble),
-      ToString -> LispBuiltinFunction(toLispString)
+      ToString -> LispBuiltinFunction(toLispString),
+      ReadLine -> LispBuiltinFunction(readLine),
+      Print -> LispBuiltinFunction(print)
     ), 
     NilEnvironment
   )

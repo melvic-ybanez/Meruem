@@ -14,11 +14,11 @@ case object Conversions {
                  (h: Float => A)
                  (k: Double => A)
                  (l: String => A)
-                 (implicit env: Environment): LispValue = checkArgsCount(args)(_ == 1)(args match {
-    case LispString(str) !: _ => LispNumber(l(str))
-    case ConsLispList(atom: LispAtom[_], _) => whenNumber(atom)(f)(g)(h)(k)
+                 (implicit env: Environment): LispValue = withSingleArg(args) {
+    case LispString(str) => LispNumber(l(str))
+    case atom: LispAtom[_] => whenNumber(atom)(f)(g)(h)(k)
     case lval => Errors.invalidType(LispTypeStrings.Number, lval)
-  })
+  }
 
   def toInt(args: LispList, env: Environment) = toNumber(args)(identity)(_.toInt)(_.toInt)(_.toInt)(_.toInt)(env)
 
