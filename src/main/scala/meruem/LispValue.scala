@@ -54,6 +54,15 @@ case class LispFloat(value: Float) extends LispNumber[Float]
 
 case class LispDouble(value: Double) extends LispNumber[Double]
 
+object LispNumber {
+  def apply(value: Any): LispNumber[Any] = value match {
+    case x: Int => LispInt(x)
+    case x: Long => LispLong(x)
+    case x: Float => LispFloat(x)
+    case x: Double => LispDouble(x)
+  }
+}
+
 case class LispBoolean(value: Boolean) extends LispAtom[Boolean]
 
 case class LispChar(value: Char) extends LispAtom[Char] {
