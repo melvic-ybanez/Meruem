@@ -27,7 +27,8 @@ trait Environment {
 
     recurse(this) match {
       case LispError(msg, _) => 
-        // We need to return the outer error since it holds the info for the actual location of the erroneous code
+        // We need to return the outer error since it holds the info for the actual 
+        // location of the erroneous code
         def error = LispError(msg, key)(this)
 
         if (key.value.contains(ModuleSeparator)) {

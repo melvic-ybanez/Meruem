@@ -62,6 +62,7 @@ object Import extends ((LispList, Environment) => LispValue) {
           environment += (LispModuleSymbol, module)
 
           Globals.modules += module
+          callingModule.submodules += module
 
           def exprs = Utils.read(meruem, Source.fromFile(extendedFilePath).mkString)(identity) match {
             case llist: LispList => llist
