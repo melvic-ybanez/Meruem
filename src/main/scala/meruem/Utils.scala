@@ -17,8 +17,8 @@ object Utils {
                           (implicit env: Environment): LispValue = {
     LispParser.parseAll(expression, new CharArrayReader(input.toArray)) match {
       case Success(expr, _) => f(expr)
-      case failure@Failure(msg, _) =>  Errors.parseFailure(msg, failure.pos) 
-      case error@Error(msg, _) => Errors.parseError(msg, error.pos)
+      case failure@Failure(msg, next) =>  Errors.parseFailure(msg, next.pos) 
+      case error@Error(msg, next) => Errors.parseError(msg, next.pos)
     }
   }
   

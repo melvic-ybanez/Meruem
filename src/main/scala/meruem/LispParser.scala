@@ -4,8 +4,6 @@ import scala.util.parsing.combinator._
 import meruem.Constants._
 import meruem.Implicits.listToLispList
 
-import scala.util.parsing.input.NoPosition
-
 /**
  * Created by ybamelcash on 5/1/2015.
  */

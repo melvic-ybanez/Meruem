@@ -43,7 +43,7 @@ trait LispNumber[+A] extends LispAtom[A] {
   
   def < [B](that: LispNumber[B]) = computeThis(that)(_ < _)(_ < _)(_ < _)(_ < _)
   
-  def unary_- (implicit env: Environment): LispNumber[Any] = 0 - this
+  def unary_- : LispNumber[Any] = LispInt(0) - this
 }
 
 case class LispInt(value: Int) extends LispNumber[Int] 
@@ -73,7 +73,7 @@ case object LispNil extends LispAtom[Nothing] {
 case class LispError(value: String, lval: LispValue)(implicit environment: Environment) extends LispValue {
   override def toString = 
     s"An error has occured. $value\n" +
-    "Source: " + (environment.get(LispModuleSymbol) match {
+    "Source: " + (environment.module match {
       case NilModule => Globals.module.filePath
       case SomeModule(path, _, _) => path 
     }) + s" [${lval.pos.line}:${lval.pos.column}}]\n" +
@@ -158,7 +158,9 @@ case object NilLispList extends LispList {
   def tail = throw new IllegalAccessException("Empty lisp list has no tail.")
 }
 
-case class ConsLispList(head: LispValue, tail: LispList) extends LispList
+case class ConsLispList(head: LispValue, tail: LispList) extends LispList {
+  setPos(head.pos)
+}
 
 object LispList {
   def apply(lval: LispValue*): LispList = 
@@ -206,10 +208,26 @@ case object NilModule extends Module {
   
   def environment = throwError("environment")
   
-  def submodules = throwError("modules")
+  def submodules = throwError("submodules")
 
   def throwError(memberName: String) =
     throw new IllegalAccessException(s"""Can not access member "$memberName" of nil module""")
 }
 
-case class SomeModule(filePath: String, submodules: MutableList[Module], environment: Environment) extends Module
+/** This class represents an existing module.
+  * 
+  * This isn't a case class due to the cyclic reference with the environment param. While there's no problem
+  * with the construction since the submodules needed by the environment is mutable, the printing of this
+  * class would throw a stackoverflow error. For that reason, we need to make this a non-case-class and then
+  * manually override the toString method.
+  */
+class SomeModule(val filePath: String, val submodules: MutableList[Module], val environment: Environment) extends Module {
+  override def toString = s"SomeModule($filePath, ${submodules.map(_.filePath)}, ${environment.valueMap.map(_._1)}})"
+}
+
+object SomeModule {
+  def apply(filePath: String, submodules: MutableList[Module], env: Environment) = 
+    new SomeModule(filePath, submodules, env)
+  
+  def unapply(module: SomeModule) = Some(module.filePath, module.submodules, module.environment)
+}

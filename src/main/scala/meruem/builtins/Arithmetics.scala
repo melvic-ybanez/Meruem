@@ -25,10 +25,7 @@ object Arithmetics {
   
   def multiply(args: LispList, env: Environment) = withNumericArgs(args, 1)(_ * _)(env)
   
-  def subtract(args: LispList, env: Environment) = {
-    implicit val env1 = env
-    decOp(args)(-_)(_ - _)(env)
-  }
+  def subtract(args: LispList, env: Environment) = decOp(args)(-_)(_ - _)(env)
 
   def divide(args: LispList, env: Environment): LispValue = decOp(args)(1 / _)(_ / _)(env)
   

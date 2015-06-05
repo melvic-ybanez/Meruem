@@ -18,7 +18,8 @@ object Main {
       s"""$OpenParen${Keywords.Import} "$module"$CloseParen"""
     }.mkString
 
-    val environment = SomeEnvironment(mutable.Map(Keywords.Module -> Globals.module), Globals.environment)
+    val environment = SomeEnvironment(mutable.Map(), Globals.environment)
+    environment += (LispModuleSymbol, SomeModule(Settings.languageName + " Global", mutable.MutableList(), environment))
     
     Utils.evalExpression(importExprs, environment) match {
       case error: LispError => throw new InstantiationException(error.toString)

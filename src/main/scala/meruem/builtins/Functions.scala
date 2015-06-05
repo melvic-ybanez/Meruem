@@ -31,7 +31,7 @@ object Functions {
     case (sym: LispSymbol) !: value !:  _ => 
       // Check whether the symbol has already been defined or not
       env.whenNotdefined(sym) {
-        whenValid(Evaluate(value)(env)) {
+        whenValid(Evaluate(value)) {
           case lval => LispDef(env += (sym, lval))
         }
       }
