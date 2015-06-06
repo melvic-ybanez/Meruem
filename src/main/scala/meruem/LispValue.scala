@@ -81,7 +81,7 @@ case object LispNil extends LispAtom[Nothing] {
 
 case class LispError(value: String, lval: LispValue)(implicit environment: Environment) extends LispValue {
   override def toString = 
-    s"An error has occured. $value\n" +
+    s"An error has occurred. $value\n" +
     "Source: " + (environment.module match {
       case NilModule => Globals.module.filePath
       case SomeModule(path, _, _) => path 
@@ -225,10 +225,10 @@ case object NilModule extends Module {
 
 /** This class represents an existing module.
   * 
-  * This isn't a case class due to the cyclic reference with the environment param. While there's no problem
-  * with the construction since the submodules needed by the environment is mutable, the printing of this
-  * class would throw a stackoverflow error. For that reason, we need to make this a non-case-class and then
-  * manually override the toString method.
+  * This isn't a case class due to the cyclic reference with the environment param. While there would have been
+  * no problem with the construction since the submodules needed by the environment is mutable (if this was a
+  * case class), the printing of this class would throw a stackoverflow error. For that reason, we needed to make 
+  * this a non-case-class and then manually override the toString method.
   */
 class SomeModule(val filePath: String, val submodules: MutableList[Module], val environment: Environment) extends Module {
   override def toString = s"SomeModule($filePath, ${submodules.map(_.filePath)}, ${environment.valueMap.map(_._1)}})"

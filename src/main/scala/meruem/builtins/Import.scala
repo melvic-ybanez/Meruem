@@ -23,7 +23,7 @@ object Import extends ((LispList, Environment) => LispValue) {
     implicit val callingEnv = env
     if (Files.isDirectory(Paths.get(filePath))) {
       val paths = Files.newDirectoryStream(Paths.get(filePath)).asScala.toList.filter { path =>
-        // Get all the files that are not directories and ends with the correct file extension. 
+        // Get all the files that are not directories and end with the correct file extension. 
         !Files.isDirectory(path) && path.toString.toLowerCase.endsWith(Settings.fileExtendsion)
       } map { path =>
         // Remove the file extension
@@ -71,7 +71,7 @@ object Import extends ((LispList, Environment) => LispValue) {
           def evalExprs(exprs: LispList, modules: LispList): Either[LispError, LispList] = exprs match {
             case NilLispList => Right(modules)
 
-            // If it's an import expression, apply the Import function to it.
+            // If it's an import expression, apply the Import function to the arguments.
             case (LispSymbol(Keywords.Import) !: args) !: tail => Import(args, environment) match {
               case error: LispError => Left(error)
               case LispNil => evalExprs(tail, modules)

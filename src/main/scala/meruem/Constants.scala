@@ -60,6 +60,13 @@ object Constants {
     lazy final val LDefMacro = "defmacro"
     lazy final val ReadLine = "read-line"
     lazy final val Print = "print"
+    lazy final val ToPath = "to-path"
+    lazy final val PathFileName = "path-filename"
+    lazy final val PathName = "path-name"
+    lazy final val PathNameCount = "path-name-count"
+    lazy final val PathSubpath = "path-subpath"
+    lazy final val PathGetParent = "path-parent"
+    lazy final val PathGetRoot = "path-root"
   }
   
   lazy final val VarArgsChar = "&"

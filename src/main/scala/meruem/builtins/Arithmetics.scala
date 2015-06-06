@@ -37,8 +37,8 @@ object Arithmetics {
            (g: (LispNumber[Any], LispNumber[Any]) => Any)
            (implicit env: Environment): LispValue = args match {
     case NilLispList => Errors.incorrectArgCount(0, args)
-    case ConsLispList(x: LispNumber[_], NilLispList) => f(x)
-    case ConsLispList(x: LispNumber[_], tail) => withNumericArgs(tail, x)(g)
-    case ConsLispList(x: LispNumber[_], _) => Errors.invalidType(LispTypeStrings.Number, x)
+    case (x: LispNumber[_]) !: NilLispList => f(x)
+    case (x: LispNumber[_]) !: tail => withNumericArgs(tail, x)(g)
+    case (x: LispNumber[_]) !:  _ => Errors.invalidType(LispTypeStrings.Number, x)
   }
 }

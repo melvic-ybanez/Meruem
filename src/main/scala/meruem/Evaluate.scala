@@ -15,7 +15,7 @@ object Evaluate {
     case symbol: LispSymbol => environment.get(symbol)
 
     // Strings get unescaped first before they get returned  
-    case lstr @ LispString(str) => LispString(StringEscapeUtils.unescapeJava(str))
+    case lstr @ LispString(str) => LispString(StringEscapeUtils.unescapeJava(str)).setPos(lstr.pos)
     
     // Self-evaluating expressions
     case error: LispError => error
@@ -101,5 +101,5 @@ object Evaluate {
           }
         }
       }
-  } 
+  }
 }

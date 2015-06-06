@@ -7,6 +7,7 @@ import meruem.builtins.Predicates._
 import meruem.builtins.Relational._
 import meruem.builtins.Conversions._
 import meruem.builtins.StdIO._
+import meruem.builtins.FileIO._
 import meruem.Constants._
 import FunctionNames._
 import Keywords._
@@ -58,7 +59,14 @@ object Globals {
       ToDouble -> LispBuiltinFunction(toDouble),
       ToString -> LispBuiltinFunction(toLispString),
       ReadLine -> LispBuiltinFunction(readLine),
-      Print -> LispBuiltinFunction(print)
+      Print -> LispBuiltinFunction(print),
+      ToPath -> LispBuiltinFunction(toPath),
+      PathFileName -> LispBuiltinFunction(pathFileName),
+      PathName -> LispBuiltinFunction(pathName),
+      PathNameCount -> LispBuiltinFunction(pathNameCount),
+      PathSubpath -> LispBuiltinFunction(subpath),
+      PathGetParent -> LispBuiltinFunction(getParent),
+      PathGetRoot -> LispBuiltinFunction(getRoot)
     ), 
     NilEnvironment
   )

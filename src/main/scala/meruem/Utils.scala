@@ -1,10 +1,13 @@
 package meruem
 
+import java.nio.file.{Paths, Path}
+
 import scala.util.parsing.combinator.Parsers
 
 import meruem.Constants._
 import meruem.Implicits._
 import meruem.LispParser._
+
 import scala.util.parsing.input.{NoPosition, CharSequenceReader, CharArrayReader}
 
 /**
@@ -127,4 +130,7 @@ object Utils {
   }
   
   def isDefineCommand(str: String) = List(Keywords.Def, Keywords.Defun, Keywords.DefMacro) contains str
+  
+  def withPath(args: LispList)(f: Path => Path)(implicit env: Environment) = 
+    withStringArg(args)(path => LispString(f(Paths.get(path)).toString))
 }

@@ -40,10 +40,10 @@ object Errors {
     LispError("File Not Found: " + filename, lval)
   
   def parseFailure(msg: String, position: Position)(implicit env: Environment) = 
-    LispError("Parse Failure: " + msg, positionedLispValue(position))
+    LispError("Parse Failure: " + msg, dummyLispValue(position))
   
   def parseError(msg: String, position: Position)(implicit env: Environment) = 
-    LispError("Parse Error: " + msg, positionedLispValue(position))
+    LispError("Parse Error: " + msg, dummyLispValue(position))
   
   def unableToParse(msg: String, lval: LispValue)(implicit env: Environment) = 
     LispError("Unable to parse: " + msg, lval)
@@ -57,9 +57,5 @@ object Errors {
     def invalidNumberType(any: Any) = throw new IllegalArgumentException("Invalid number type " + any)
   }
   
-  def positionedLispValue(pos: Position) = {
-    val nil = LispNil
-    nil.setPos(pos)
-    nil
-  }
+  def dummyLispValue(pos: Position) = LispNil.setPos(pos)
 }

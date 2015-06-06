@@ -69,8 +69,6 @@ case object NilEnvironment extends Environment {
   
   def hasSymbol(key: LispSymbol) = false
   
-  def hasMacro(name: String) = false
-  
   def throwError(member: String) = throw new IllegalAccessException(member + " of empty environment")
 } 
 
