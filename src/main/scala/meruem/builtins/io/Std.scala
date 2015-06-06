@@ -1,14 +1,15 @@
-package meruem.builtins
+package meruem.builtins.io
 
-import meruem._
 import meruem.Utils._
+import meruem._
+import meruem.builtins.io
 
 /**
  * Created by ybamelcash on 6/5/2015.
  */
-object StdIO {
+object Std {
   def readLine(args: LispList, env: Environment) = checkArgsCount(args)(_ == 0) {
-    val input = io.StdIn.readLine
+    val input = scala.io.StdIn.readLine
     LispString(input)
   } (env)
   
