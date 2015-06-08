@@ -1,6 +1,6 @@
 package meruem.builtins.io
 
-import java.nio.file.{LinkOption, Paths}
+import java.nio.file.{Path, LinkOption, Paths}
 
 import meruem.Constants.LispTypeStrings
 import meruem.Utils._
@@ -39,7 +39,7 @@ object Path {
   
   def toAbsolutePath(args: LispList, env: Environment) = withPath(args)(_.toAbsolutePath)(env)
   
-  def toRealPath(args: LispList, env: Environment) = withPath(args)(_.toRealPath(LinkOption.NOFOLLOW_LINKS))(env)
+  def toRealPath(args: LispList, env: Environment) = withPath(args)(_.toRealPath())(env)
   
   def resolve(args: LispList, env: Environment) = checkArgsCount(args)(_ == 2)(args match {
     case LispString(str) !: rest => withPath(rest)(_.resolve(str))(env)
@@ -54,4 +54,7 @@ object Path {
     case LispString(_) !: lval !: _ => Errors.invalidType(LispTypeStrings.String, lval)(env)
     case lval !: _ => Errors.invalidType(LispTypeStrings.String, lval)(env)
   })(env)
+
+  def withPath(args: LispList)(f: Path => Path)(implicit env: Environment) =
+    withStringArg(args)(path => LispString(f(Paths.get(path)).toString))
 }

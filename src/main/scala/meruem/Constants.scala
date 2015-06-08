@@ -4,6 +4,8 @@ package meruem
  * Created by ybamelcash on 4/27/2015.
  */
 object Constants {
+  import BuiltinModuleNames._
+  
   object LispTypeStrings {
     lazy final val LispValue = "LispValue"
     lazy final val Symbol = "Symbol"
@@ -60,19 +62,28 @@ object Constants {
     lazy final val LDefMacro = "defmacro"
     lazy final val ReadLine = "read-line"
     lazy final val Print = "print"
-    lazy final val ToPath = "path.to-path"
-    lazy final val PathFileName = "path.filename"
-    lazy final val PathName = "path.name"
-    lazy final val PathNameCount = "path.name-count"
-    lazy final val PathSubpath = "path.subpath"
-    lazy final val PathGetParent = "path.parent"
-    lazy final val PathGetRoot = "path.root"
-    lazy final val PathNormalize = "path.normalize"
-    lazy final val PathToURI = "path.to-uri"
-    lazy final val PathToAbsolute = "path.to-absolute"
-    lazy final val PathToReal = "path.to-real"
-    lazy final val PathResolve = "path.resolve"
-    lazy final val PathRelativize = "path.relativize"
+    lazy final val ToPath = s"$Paths.to-path"
+    lazy final val PathFileName = s"$Paths.filename"
+    lazy final val PathsName = s"$Paths..name"
+    lazy final val PathsNameCount = s"$Paths.name-count"
+    lazy final val PathsSubpath = s"$Paths.subpath"
+    lazy final val PathsGetParent = s"$Paths.parent"
+    lazy final val PathsGetRoot = s"$Paths.root"
+    lazy final val PathsNormalize = s"$Paths.normalize"
+    lazy final val PathsToURI = s"$Paths.to-uri"
+    lazy final val PathsToAbsolute = s"$Paths.to-absolute"
+    lazy final val PathsToReal = s"$Paths.to-real"
+    lazy final val PathsResolve = s"$Paths.resolve"
+    lazy final val PathsRelativize = s"$Paths.relativize"
+    lazy final val FilesExists = s"$Files.exists?"
+    lazy final val FilesIsReadable = s"$Files.readable?"
+    lazy final val FilesIsWritable = s"$Files.writable?"
+    lazy final val FilesIsExecutable = s"$Files.executable?"
+    lazy final val FilesDelete = s"$Files.delete"
+    lazy final val FilesCopy = s"$Files.copy"
+    lazy final val FilesSize = s"$Files.size"
+    lazy final val FilesIsDirectory = s"$Files.directory?"
+    lazy final val FilesIsHidden = s"$Files.hidden?"
   }
   
   lazy final val VarArgsChar = "&"
@@ -102,5 +113,10 @@ object Constants {
     lazy final val Module = "module"
     lazy final val True = "true"
     lazy final val False = "false"
+  }
+  
+  object BuiltinModuleNames {
+    lazy final val Paths = "paths"
+    lazy final val Files = "files"
   }
 }

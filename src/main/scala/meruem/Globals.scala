@@ -6,9 +6,10 @@ import meruem.builtins.Import
 import meruem.builtins.Predicates._
 import meruem.builtins.Relational._
 import meruem.builtins.Conversions._
-import meruem.builtins.io.{Path, Std}
+import meruem.builtins.io.{Path, Std, File}
 import Std._
 import Path._
+import File._
 import meruem.Constants._
 import FunctionNames._
 import Keywords._
@@ -63,17 +64,26 @@ object Globals {
       Print -> LispBuiltinFunction(print),
       ToPath -> LispBuiltinFunction(toPath),
       PathFileName -> LispBuiltinFunction(pathFileName),
-      PathName -> LispBuiltinFunction(pathName),
-      PathNameCount -> LispBuiltinFunction(pathNameCount),
-      PathSubpath -> LispBuiltinFunction(subpath),
-      PathGetParent -> LispBuiltinFunction(getParent),
-      PathGetRoot -> LispBuiltinFunction(getRoot),
-      PathNormalize -> LispBuiltinFunction(normalize),
-      PathToURI -> LispBuiltinFunction(toURI),
-      PathToAbsolute -> LispBuiltinFunction(toAbsolutePath),
-      PathToReal -> LispBuiltinFunction(toRealPath),
-      PathResolve -> LispBuiltinFunction(resolve),
-      PathRelativize -> LispBuiltinFunction(relativize)
+      PathsName -> LispBuiltinFunction(pathName),
+      PathsNameCount -> LispBuiltinFunction(pathNameCount),
+      PathsSubpath -> LispBuiltinFunction(subpath),
+      PathsGetParent -> LispBuiltinFunction(getParent),
+      PathsGetRoot -> LispBuiltinFunction(getRoot),
+      PathsNormalize -> LispBuiltinFunction(normalize),
+      PathsToURI -> LispBuiltinFunction(toURI),
+      PathsToAbsolute -> LispBuiltinFunction(toAbsolutePath),
+      PathsToReal -> LispBuiltinFunction(toRealPath),
+      PathsResolve -> LispBuiltinFunction(resolve),
+      PathsRelativize -> LispBuiltinFunction(relativize),
+      FilesExists -> LispBuiltinFunction(exists),
+      FilesIsReadable -> LispBuiltinFunction(isReadable),
+      FilesIsWritable -> LispBuiltinFunction(isWriteable),
+      FilesIsExecutable -> LispBuiltinFunction(isExecuatable),
+      FilesDelete -> LispBuiltinFunction(delete),
+      FilesCopy -> LispBuiltinFunction(copy),
+      FilesSize -> LispBuiltinFunction(size),
+      FilesIsDirectory -> LispBuiltinFunction(isDirectory),
+      FilesIsHidden -> LispBuiltinFunction(isHidden)
     ), 
     NilEnvironment
   )
