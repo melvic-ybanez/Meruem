@@ -3,6 +3,11 @@
   
 (defun empty? (xs) (if (list? xs) (= () xs) (error "Not a list")))
 
-(defun is-even (n) (if (= n 0) true  (is-odd (- n 1))))
+(defun even? (n) (if (= n 0) true  (odd? (- n 1))))
   
-(defun is-odd (n) (if (= n 0) false (is-even (- n 1))))
+(defun odd? (n) (if (= n 0) false (even? (- n 1))))
+
+(defmacro error? (expr) 
+  `(if (list? ',expr) 
+     (if (empty? ',expr) false (= (head ',expr) 'error)) 
+     false))

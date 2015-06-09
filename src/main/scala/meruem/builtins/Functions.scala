@@ -95,26 +95,23 @@ object Functions {
   def quasiquote(args: LispList)(implicit env: Environment): LispValue = {
     def quasiquote(args: LispList, level: Int): LispValue = args match {
       case NilLispList => NilLispList
-      case (error: LispError) !: _ => error
       case (atom: LispAtom[_]) !: _ => atom
         
       case (llist: LispList) !: _ => 
         def recurse(xs: LispList, acc: LispList): LispValue = xs match {
           case NilLispList => acc.reverse
-          case (error: LispError) !: _ => error
           case (atom: LispAtom[_]) !: tail => atom match {
-            case LispQuasiQuoteSymbol => whenValid(quasiquote(tail, level + 1))(LispList(LispQuasiQuoteSymbol, _))
+            case LispQuasiQuoteSymbol => LispQuasiQuoteSymbol !: quasiquote(tail, level + 1) !: NilLispList
             case LispUnquoteSymbol =>
               if (level == 1) tail match {
                 case NilLispList => NilLispList
                 case ConsLispList(h, _) => Evaluate(h)
-              } else whenValid(quasiquote(tail, level - 1))(LispList(LispUnquoteSymbol, _))
-            case _ => whenValid(atom) { a => recurse(tail, a !: acc) }
+              } else LispUnquoteSymbol !: quasiquote(tail, level - 1) !: NilLispList
+            case _ => recurse(tail, atom !: acc)
           }
           case NilLispList !: tail => recurse(tail, NilLispList !: acc)
-          case (llist: LispList) !: tail => whenValid(recurse(llist, NilLispList)) { res =>
-            recurse(tail, res !: acc)
-          }
+          case (llist: LispList) !: tail => recurse(tail, recurse(llist, NilLispList) !: acc)
+          
         }
         
         recurse(llist, NilLispList)
