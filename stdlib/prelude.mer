@@ -1,11 +1,12 @@
-(import "errors")
-
 (defmacro if (predicate do-if-true do-if-false)
   `(cond (,predicate ,do-if-true) (true ,do-if-false)))
   
 (defmacro defun (name args body) `(def ,name (lambda ,args ,body)))
+
+(defun size (xs)
+  (if (= xs ()) 0 (+ 1 (size (tail xs)))))
   
-(defun empty? (xs) (if (list? xs) (= () xs) (errors.not-a-list xs)))
+(defun empty? (xs) (= (size xs) 0))
 
 (defun even? (n) (if (= n 0) true  (odd? (- n 1))))
   

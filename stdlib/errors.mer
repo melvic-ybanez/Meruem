@@ -1,1 +1,0 @@
-(defmacro not-a-list (expr) `(error "Not a list" ,expr))

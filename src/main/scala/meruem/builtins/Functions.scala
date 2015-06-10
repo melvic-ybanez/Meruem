@@ -50,8 +50,8 @@ object Functions {
   
   def read(args: LispList, env: Environment) = withStringArg(args)(str => 
     Utils.read(expression, str)(identity)(env))(env)
-  
-  def eval(args: LispList)(implicit env: Environment) = withStringArg(args)(evalExpression(_, env))
+
+  def eval(args: LispList, env: Environment) = withSingleArg(args)(Evaluate(_)(env))(env)
   
   def head(args: LispList, env: Environment) = withCollArg(args)(_.head)(lstr => LispChar(lstr.value.head))(env)
   
@@ -119,10 +119,10 @@ object Functions {
   
   def list(args: LispList, env: Environment) = args
   
-  def error(args: LispList)(implicit env: Environment) = checkArgsCount(args)(_ == 2)( args match {
-    case LispString(error) !: lval !: _ => LispError(error, lval)
-    case lval !: _ => Errors.invalidType(LispTypeStrings.String, lval)
-  })
+  def error(args: LispList, env: Environment) = checkArgsCount(args)(_ == 2)( args match {
+    case LispString(msg) !: lval !: _ => LispError(msg, lval)(env)
+    case lval !: _ => Errors.invalidType(LispTypeStrings.String, lval)(env)
+  })(env)
   
   def getType(args: LispList, env: Environment): LispValue = withSingleArg(args) {
     case _: LispList => LispTypeStrings.List

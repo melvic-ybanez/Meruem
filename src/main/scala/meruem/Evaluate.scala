@@ -31,12 +31,10 @@ object Evaluate {
       case LispQuasiQuoteSymbol => quasiquote(tail)
       case LispUnquoteSymbol => unquote(tail)
       case LispCondSymbol => cond(tail)
-      case LispEvalSymbol => eval(tail)
       case LispDefSymbol => define(tail)
       case LispLambdaSymbol => lambda(tail)
       case LispDefMacroSymbol => defmacro(tail)
       case LispTryCatchSymbol => tryCatch(tail)
-      case LispErrorSymbol => error(tail)
       case LispImportSymbol => Import(tail)
       
       // If the first symbol is a macro, expand it first before evaluating it.  

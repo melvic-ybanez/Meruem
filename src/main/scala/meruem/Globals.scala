@@ -46,7 +46,7 @@ object Globals {
       LNil -> LispNil,
       True -> LispBoolean(true),
       False -> LispBoolean(false),
-      Eval -> LispEvalSymbol,
+      Eval -> LispBuiltinFunction(eval),
       Read -> LispBuiltinFunction(read),
       Lambda -> LispLambdaSymbol,
       Keywords.Import -> LispImportSymbol,
@@ -84,7 +84,7 @@ object Globals {
       FilesIsHidden -> LispBuiltinFunction(isHidden),
       IsError -> LispIsErrorSymbol,
       TryCatch -> LispTryCatchSymbol,
-      Error -> LispErrorSymbol
+      Error -> LispBuiltinFunction(error)
     ), 
     NilEnvironment
   )
