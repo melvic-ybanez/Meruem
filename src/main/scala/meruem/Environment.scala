@@ -4,6 +4,9 @@ package meruem
  * Created by ybamelcash on 4/26/2015.
  */
 
+import java.io.File
+import java.nio.file.Paths
+
 import Environment._
 import Constants._
 
@@ -33,9 +36,9 @@ trait Environment {
 
         if (key.value.contains(ModuleSeparator)) {
           val values = key.value.split(s"""\\$ModuleSeparator""")
-          val modulePath = values.init.mkString(PathSeparator)
+          val modulePath = values.init.mkString(File.separator)
           module.submodules.find {
-            case SomeModule(filePath, _, _) => filePath == modulePath
+            case SomeModule(filePath, _, _) => filePath == Paths.get(filePath).getParent + File.separator + modulePath
           } map {
             case SomeModule(filePath, _, environment) =>
               val function = values.last

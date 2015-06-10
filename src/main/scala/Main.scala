@@ -2,6 +2,8 @@
  * Created by ybamelcash on 4/27/2015.
  */
 
+import java.io.File
+
 import scala.collection.JavaConverters._
 
 import meruem.Constants._

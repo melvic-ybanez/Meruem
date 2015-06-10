@@ -1,5 +1,7 @@
 package meruem
 
+import java.io.File
+
 import meruem.Implicits._
 import meruem.Utils._
 import meruem.Constants._
@@ -85,7 +87,7 @@ case class LispError(value: String, lval: LispValue)(implicit environment: Envir
     "Source: " + (environment.module match {
       case NilModule => Globals.module.filePath
       case SomeModule(path, _, _) => path 
-    }) + s" [${lval.pos.line}:${lval.pos.column}}]\n" +
+    }).replace(File.separator, ModuleSeparator) + s" [${lval.pos.line}:${lval.pos.column}}]\n" +
     lval.pos.longString
 }
 

@@ -13,8 +13,11 @@ case object Settings {
   config.checkValid(ConfigFactory.defaultReference(), "commands")
   
   val languageName = config.getString("language.name")
+  
   val preloads = config.getStringList("modules.preloaded")
   val mainFunction = config.getString("modules.main-function")
+  val libLocation = config.getString("modules.lib-location")
   val fileExtendsion = config.getString("modules.file-extension")
+  
   val exitCommand = config.getString("commands.exit")
 }

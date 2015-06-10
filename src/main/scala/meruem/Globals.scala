@@ -49,10 +49,9 @@ object Globals {
       Eval -> LispEvalSymbol,
       Read -> LispBuiltinFunction(read),
       Lambda -> LispLambdaSymbol,
-      Keywords.Import -> LispBuiltinFunction(Import),
+      Keywords.Import -> LispImportSymbol,
       Def -> LispDefSymbol,
       Keywords.DefMacro -> LispDefMacroSymbol,
-      LError -> LispBuiltinFunction(error),
       GetType -> LispBuiltinFunction(getType),
       ToInt -> LispBuiltinFunction(toInt),
       ToLong -> LispBuiltinFunction(toLong),
@@ -84,12 +83,13 @@ object Globals {
       FilesIsDirectory -> LispBuiltinFunction(isDirectory),
       FilesIsHidden -> LispBuiltinFunction(isHidden),
       IsError -> LispIsErrorSymbol,
-      TryCatch -> LispTryCatchSymbol
+      TryCatch -> LispTryCatchSymbol,
+      Error -> LispErrorSymbol
     ), 
     NilEnvironment
   )
   
-  lazy val module = SomeModule(Settings.languageName + " Global", mutable.MutableList(), environment)
+  lazy val module = SomeModule(Settings.libLocation + java.io.File.separator + Settings.languageName + " Global", mutable.MutableList(), environment)
   
   val modules = mutable.MutableList[Module]()
 }
