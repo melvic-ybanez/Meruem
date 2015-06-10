@@ -14,7 +14,7 @@ import scala.collection.mutable
 object Main {
   def main(args: Array[String]): Unit = {
     val importExprs = Settings.preloads.asScala.map { module =>
-      // Create the import string. e.g '(import "prelude.me")'
+      // Create the import string. e.g '(import "prelude.mer")'
       s"""$OpenParen${Keywords.Import} "$module"$CloseParen"""
     }.mkString
 
