@@ -96,7 +96,6 @@ object Constants {
   lazy final val LispQuoteSymbol = LispSymbol(FunctionNames.Quote)
   lazy final val LispCondSymbol = LispSymbol(FunctionNames.Cond)
   lazy final val LispDefSymbol = LispSymbol(Keywords.Def)
-  lazy final val LispDefunSymbol = LispSymbol(Keywords.Defun)
   lazy final val LispEvalSymbol = LispSymbol(FunctionNames.Read)
   lazy final val LispLambdaSymbol = LispSymbol(Keywords.Lambda)
   lazy final val LispQuasiQuoteSymbol = LispSymbol(FunctionNames.Quasiquote)
@@ -109,7 +108,6 @@ object Constants {
   
   object Keywords {
     lazy final val Def = "def"
-    lazy final val Defun = "defun"
     lazy final val DefMacro = "defmacro"
     lazy final val Import = "import"
     lazy final val Lambda = "lambda"

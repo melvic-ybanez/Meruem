@@ -11,7 +11,17 @@ import meruem.LispParser._
  * Created by ybamelcash on 4/28/2015.
  */
 object Functions {
-  def defmacro(args: LispList)(implicit environment: Environment) = defineFunction(args)(LispDefMacro(_))
+  def defmacro(args: LispList)(implicit env: Environment) = checkArgsCount(args)(_ == 3)(args match {
+    case (name: LispSymbol) !: params !: body !:  _ =>
+      whenValid(lambda(params !: body !: NilLispList)) {
+        case lambda: LispLambda => env.whenNotdefined(name) {
+          whenValid(LispDefMacro(lambda)) { func =>
+            LispDef(env += (name, func))
+          }
+        }
+      }
+    case name !: _ => Errors.invalidType(LispTypeStrings.Symbol, name)
+  })
   
   def getMacro(args: LispList, env: Environment) = checkArgsCount(args)(_ == 1) {
     args.head match {
@@ -37,21 +47,6 @@ object Functions {
       }
     case lval !: _ => Errors.invalidType(LispTypeStrings.Symbol, lval)
   })
-  
-  def defun(args: LispList)(implicit env: Environment) = defineFunction(args)(identity)
-
-  def defineFunction(args: LispList)(f: LispLambda => LispValue)(implicit env: Environment) =
-    checkArgsCount(args)(_ == 3)(args match {
-      case (name: LispSymbol) !: params !: body !:  _ =>
-        whenValid(lambda(params !: body !: NilLispList)) {
-          case lambda: LispLambda => env.whenNotdefined(name) {
-            whenValid(f(lambda)) { func =>
-              LispDef(env += (name, func))
-            }
-          }
-        }
-      case name !: _ => Errors.invalidType(LispTypeStrings.Symbol, name)
-    })
   
   def read(args: LispList, env: Environment) = withStringArg(args)(str => 
     Utils.read(expression, str)(identity)(env))(env)

@@ -84,7 +84,6 @@ object Import extends ((LispList, Environment) => LispValue) {
               def func = { (x: LispList) => 
                 op match {
                   case Keywords.Def => define(x)
-                  case Keywords.Defun => defun(x)
                   case Keywords.DefMacro => defmacro(x)
                 }
               }

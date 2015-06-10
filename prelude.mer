@@ -1,6 +1,9 @@
 (defmacro if (predicate do-if-true do-if-false)
   `(cond (,predicate ,do-if-true) (true ,do-if-false)))
   
+(defmacro defun (name args body)
+  (if (list? args) `(def ,name (lambda ,args ,body)) (error "not a list")))
+  
 (defun empty? (xs) (if (list? xs) (= () xs) (error "Not a list")))
 
 (defun even? (n) (if (= n 0) true  (odd? (- n 1))))

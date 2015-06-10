@@ -32,7 +32,6 @@ object Evaluate {
       case LispCondSymbol => cond(tail)
       case LispEvalSymbol => eval(tail)
       case LispDefSymbol => define(tail)
-      case LispDefunSymbol => defun(tail)
       case LispLambdaSymbol => lambda(tail)
       case LispDefMacroSymbol => defmacro(tail)
       case LispIsErrorSymbol => isError(tail)

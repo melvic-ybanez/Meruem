@@ -51,7 +51,6 @@ object Globals {
       Lambda -> LispLambdaSymbol,
       Keywords.Import -> LispBuiltinFunction(Import),
       Def -> LispDefSymbol,
-      Defun -> LispDefunSymbol,
       Keywords.DefMacro -> LispDefMacroSymbol,
       LError -> LispBuiltinFunction(error),
       GetType -> LispBuiltinFunction(getType),

@@ -129,5 +129,5 @@ object Utils {
     case (x: Double, y: Double) => k(x, y)
   }
   
-  def isDefineCommand(str: String) = List(Keywords.Def, Keywords.Defun, Keywords.DefMacro) contains str
+  def isDefineCommand(str: String) = List(Keywords.Def, Keywords.DefMacro) contains str
 }
