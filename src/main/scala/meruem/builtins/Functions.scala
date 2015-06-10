@@ -119,10 +119,10 @@ object Functions {
   
   def list(args: LispList, env: Environment) = args
   
-  def error(args: LispList, env: Environment) = withSingleArg(args) {
-    case LispString(error) => LispError(error, args)(env)
-    case lval => Errors.invalidType(LispTypeStrings.String, lval)(env)
-  } (env)
+  def error(args: LispList)(implicit env: Environment) = checkArgsCount(args)(_ == 2)( args match {
+    case LispString(error) !: lval !: _ => LispError(error, lval)
+    case lval !: _ => Errors.invalidType(LispTypeStrings.String, lval)
+  })
   
   def getType(args: LispList, env: Environment): LispValue = withSingleArg(args) {
     case _: LispList => LispTypeStrings.List

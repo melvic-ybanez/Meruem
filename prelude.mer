@@ -2,7 +2,7 @@
   `(cond (,predicate ,do-if-true) (true ,do-if-false)))
   
 (defmacro defun (name args body)
-  (if (list? args) `(def ,name (lambda ,args ,body)) (error "not a list")))
+  (if (list? args) `(def ,name (lambda ,args ,body)) (error "not a list" args)))
   
 (defun empty? (xs) (if (list? xs) (= () xs) (error "Not a list")))
 
