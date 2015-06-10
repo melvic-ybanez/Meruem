@@ -2,8 +2,8 @@ package meruem
 
 import meruem.Utils._
 import meruem.builtins.Functions._
+import meruem.builtins.Predicates._
 import meruem.Constants._
-import meruem.builtins.Import
 import org.apache.commons.lang.StringEscapeUtils
 
 /**
@@ -35,6 +35,8 @@ object Evaluate {
       case LispDefunSymbol => defun(tail)
       case LispLambdaSymbol => lambda(tail)
       case LispDefMacroSymbol => defmacro(tail)
+      case LispIsErrorSymbol => isError(tail)
+      case LispTryCatchSymbol => tryCatch(tail)
       
       // If the first symbol is a macro, expand it first before evaluating it.  
       case lmacro: LispDefMacro => Evaluate(macroExpand(lmacro !: tail))

@@ -51,9 +51,9 @@ object Constants {
     lazy final val Quasiquote = "quasiquote"
     lazy final val Unquote = "unqoute"
     lazy final val List = "list"
-    lazy final val AtomP = "atom?"
-    lazy final val SymbolP = "symbol?"
-    lazy final val ListP = "list?"
+    lazy final val IsAtom = "atom?"
+    lazy final val IsSymbol = "symbol?"
+    lazy final val IsList = "list?"
     lazy final val Macro = "macro"
     lazy final val LNil = "nil"
     lazy final val Eval = "eval"
@@ -84,6 +84,7 @@ object Constants {
     lazy final val FilesSize = s"$Files.size"
     lazy final val FilesIsDirectory = s"$Files.directory?"
     lazy final val FilesIsHidden = s"$Files.hidden?"
+    lazy final val IsError = "error?"
   }
   
   lazy final val VarArgsChar = "&"
@@ -92,17 +93,19 @@ object Constants {
   lazy final val ModuleSeparator = "."
   lazy final val PathSeparator = "/"
   
-  lazy final val LispQuoteSymbol = LispSymbol("quote")
-  lazy final val LispCondSymbol = LispSymbol("cond")
+  lazy final val LispQuoteSymbol = LispSymbol(FunctionNames.Quote)
+  lazy final val LispCondSymbol = LispSymbol(FunctionNames.Cond)
   lazy final val LispDefSymbol = LispSymbol(Keywords.Def)
   lazy final val LispDefunSymbol = LispSymbol(Keywords.Defun)
-  lazy final val LispEvalSymbol = LispSymbol("read")
-  lazy final val LispLambdaSymbol = LispSymbol("lambda")
-  lazy final val LispQuasiQuoteSymbol = LispSymbol("quasiquote")
-  lazy final val LispUnquoteSymbol = LispSymbol("unquote")
+  lazy final val LispEvalSymbol = LispSymbol(FunctionNames.Read)
+  lazy final val LispLambdaSymbol = LispSymbol(Keywords.Lambda)
+  lazy final val LispQuasiQuoteSymbol = LispSymbol(FunctionNames.Quasiquote)
+  lazy final val LispUnquoteSymbol = LispSymbol(FunctionNames.Unquote)
   lazy final val LispDefMacroSymbol = LispSymbol(Keywords.DefMacro)
-  lazy final val LispLoadSymbol = LispSymbol("load")
+  lazy final val LispImportSymbol = LispSymbol(Keywords.Import)
   lazy final val LispModuleSymbol = LispSymbol(Keywords.Module)
+  lazy final val LispIsErrorSymbol = LispSymbol(FunctionNames.IsError)
+  lazy final val LispTryCatchSymbol = LispSymbol(Keywords.TryCatch)
   
   object Keywords {
     lazy final val Def = "def"
@@ -113,6 +116,7 @@ object Constants {
     lazy final val Module = "module"
     lazy final val True = "true"
     lazy final val False = "false"
+    lazy final val TryCatch = "try-catch"
   }
   
   object BuiltinModuleNames {

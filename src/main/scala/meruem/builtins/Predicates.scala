@@ -24,4 +24,16 @@ object Predicates {
     case ConsLispList(_: LispList, _) => true
     case _ => false
   }))(env)
+  
+  def isError(args: LispList)(implicit env: Environment) = withSingleArg(args) { lval => 
+    val isError = try {
+      Evaluate(lval) match {
+        case LispError(_, _) => true
+        case _ => false
+      }
+    } catch {
+      case _: Exception => false
+    }
+    LispBoolean(isError)
+  } 
 }

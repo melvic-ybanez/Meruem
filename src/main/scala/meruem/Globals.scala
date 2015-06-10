@@ -39,9 +39,9 @@ object Globals {
       Quasiquote -> LispQuasiQuoteSymbol,
       Unquote -> LispUnquoteSymbol,
       List -> LispBuiltinFunction(list),
-      AtomP -> LispBuiltinFunction(isAtom),
-      SymbolP -> LispBuiltinFunction(isSymbol),
-      ListP -> LispBuiltinFunction(isList),
+      IsAtom -> LispBuiltinFunction(isAtom),
+      IsSymbol -> LispBuiltinFunction(isSymbol),
+      IsList -> LispBuiltinFunction(isList),
       Macro -> LispBuiltinFunction(getMacro),
       LNil -> LispNil,
       True -> LispBoolean(true),
@@ -83,7 +83,9 @@ object Globals {
       FilesCopy -> LispBuiltinFunction(copy),
       FilesSize -> LispBuiltinFunction(size),
       FilesIsDirectory -> LispBuiltinFunction(isDirectory),
-      FilesIsHidden -> LispBuiltinFunction(isHidden)
+      FilesIsHidden -> LispBuiltinFunction(isHidden),
+      IsError -> LispIsErrorSymbol,
+      TryCatch -> LispTryCatchSymbol
     ), 
     NilEnvironment
   )

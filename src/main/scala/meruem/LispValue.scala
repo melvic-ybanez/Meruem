@@ -162,9 +162,9 @@ sealed trait LispList extends LispValue {
 }
 
 case object NilLispList extends LispList {
-  def head = throw new IllegalAccessException("Empty lisp list has no head.")
+  def head = throw new IllegalAccessException("head of empty list.")
   
-  def tail = throw new IllegalAccessException("Empty lisp list has no tail.")
+  def tail = throw new IllegalAccessException("tail of empty list.")
 }
 
 case class ConsLispList(head: LispValue, tail: LispList) extends LispList {

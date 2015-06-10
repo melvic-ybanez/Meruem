@@ -145,4 +145,23 @@ object Functions {
     case error: LispError => error
     case lval => Errors.unrecognizedType(lval)(env)
   } (env)
+  
+  def tryCatch(args: LispList)(implicit env: Environment): LispValue = checkArgsCount(args)(size => size == 2 || size == 3)(args match {
+    case lval !: catchExpr !: NilLispList => tryCatch(lval !: catchExpr !: LispNil !: NilLispList)
+    case lval !: catchExpr !: finallyExpr !: _ => try {
+      Evaluate(lval)
+    } catch {
+      case ex: Exception => Evaluate(catchExpr) match {
+        case LispLambda(params, _, body, environ) => 
+          val position = LispInt(lval.pos.line) !: LispInt(lval.pos.column) !: NilLispList
+          val quotedPosition = LispQuoteSymbol !: position !: NilLispList
+          val args = LispString(ex.getMessage) !: quotedPosition !: LispString(lval.pos.longString) !: NilLispList
+          Evaluate(LispLambda(params, args, body, environ))
+        case error: LispError => error
+        case lval1 => Errors.invalidType(LispTypeStrings.Function, lval1)
+      }
+    } finally {
+      Evaluate(finallyExpr)
+    }
+  })
 }
