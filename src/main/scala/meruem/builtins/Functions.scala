@@ -53,6 +53,13 @@ object Functions {
 
   def eval(args: LispList, env: Environment) = withSingleArg(args)(Evaluate(_)(env))(env)
   
+  def applyFunc(args: LispList)(implicit env: Environment) = checkArgsCount(args)(_ == 2)(args match {
+    case fn !: fargs !: _ => whenValid(Evaluate(fargs)) {
+      case xs: LispList => Evaluate(fn !: xs)
+      case lval => Errors.invalidType(LispTypeStrings.List, lval)
+    }
+  })
+  
   def head(args: LispList, env: Environment) = withCollArg(args)(_.head)(lstr => LispChar(lstr.value.head))(env)
   
   def tail(args: LispList, env: Environment) = withCollArg(args)(_.tail)(lstr => LispString(lstr.value.tail))(env)

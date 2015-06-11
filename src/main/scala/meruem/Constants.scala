@@ -84,7 +84,7 @@ object Constants {
     lazy final val FilesSize = s"$Files.size"
     lazy final val FilesIsDirectory = s"$Files.directory?"
     lazy final val FilesIsHidden = s"$Files.hidden?"
-    lazy final val IsError = "error?"
+    lazy final val Apply = "apply"
   }
   
   lazy final val VarArgsChar = "&"
@@ -101,8 +101,8 @@ object Constants {
   lazy final val LispDefMacroSymbol = LispSymbol(Keywords.DefMacro)
   lazy final val LispImportSymbol = LispSymbol(Keywords.Import)
   lazy final val LispModuleSymbol = LispSymbol(Keywords.Module)
-  lazy final val LispIsErrorSymbol = LispSymbol(FunctionNames.IsError)
   lazy final val LispTryCatchSymbol = LispSymbol(Keywords.TryCatch)
+  lazy final val LispApplySymbol = LispSymbol(FunctionNames.Apply)
   
   object Keywords {
     lazy final val Def = "def"

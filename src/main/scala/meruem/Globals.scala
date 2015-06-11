@@ -82,9 +82,9 @@ object Globals {
       FilesSize -> LispBuiltinFunction(size),
       FilesIsDirectory -> LispBuiltinFunction(isDirectory),
       FilesIsHidden -> LispBuiltinFunction(isHidden),
-      IsError -> LispIsErrorSymbol,
       TryCatch -> LispTryCatchSymbol,
-      Error -> LispBuiltinFunction(error)
+      Error -> LispBuiltinFunction(error),
+      Apply -> LispApplySymbol
     ), 
     NilEnvironment
   )

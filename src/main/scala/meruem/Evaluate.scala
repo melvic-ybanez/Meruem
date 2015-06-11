@@ -36,6 +36,7 @@ object Evaluate {
       case LispDefMacroSymbol => defmacro(tail)
       case LispTryCatchSymbol => tryCatch(tail)
       case LispImportSymbol => Import(tail)
+      case LispApplySymbol => applyFunc(tail)
       
       // If the first symbol is a macro, expand it first before evaluating it.  
       case lmacro: LispDefMacro => Evaluate(macroExpand(lmacro !: tail))
