@@ -11,3 +11,11 @@
 (defun even? (n) (if (= n 0) true  (odd? (- n 1))))
   
 (defun odd? (n) (if (= n 0) false (even? (- n 1))))
+
+(defun unzip (tuples) (unzip-acc tuples '(() ())))
+
+(defun unzip-acc (tuples acc)
+  (if (empty? tuples) acc
+    (unzip-acc (tail tuples) 
+      (list (cons (head (head tuples)) (head acc))
+            (cons (head (tail (head tuples))) (head (tail acc)))))))
