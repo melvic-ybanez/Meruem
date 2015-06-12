@@ -7,8 +7,44 @@
 		revision="1.0"
 		conf="compile-internal"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
-		date="20150524231616"/>
+		date="20150612233203"/>
 	<dependencies>
+		<module organisation="com.jsuereth" name="scala-arm_2.11">
+			<revision name="1.4" status="release" pubdate="20140430122655" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://jsuereth.com/scala-arm" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="5">
+				<license name="BSD-Style" url="http://www.opensource.org/licenses/bsd-license.php"/>
+				<metadata-artifact status="no" details="" size="3177" time="0" location="C:\Users\ybamelcash\.ivy2\cache\com.jsuereth\scala-arm_2.11\ivy-1.4.xml" searched="false" origin-is-local="false" origin-location="file:/C:/activator-1.3.2/repository/com.jsuereth/scala-arm_2.11/1.4/ivys/ivy.xml"/>
+				<caller organisation="meruem" name="meruem$sources_javadoc_2.11" conf="compile-internal, compile, provided, optional" rev="1.4" rev-constraint-default="1.4" rev-constraint-dynamic="1.4" callerrev="1.0"/>
+				<artifacts>
+					<artifact name="scala-arm_2.11" type="doc" ext="jar" extra-classifier="javadoc" status="successful" details="" size="403135" time="7631" location="C:\Users\ybamelcash\.ivy2\cache\com.jsuereth\scala-arm_2.11\docs\scala-arm_2.11-1.4-javadoc.jar">
+						<origin-location is-local="false" location="http://repo1.maven.org/maven2/com/jsuereth/scala-arm_2.11/1.4/scala-arm_2.11-1.4-javadoc.jar"/>
+					</artifact>
+					<artifact name="scala-arm_2.11" type="src" ext="jar" extra-classifier="sources" status="successful" details="" size="11249" time="1798" location="C:\Users\ybamelcash\.ivy2\cache\com.jsuereth\scala-arm_2.11\srcs\scala-arm_2.11-1.4-sources.jar">
+						<origin-location is-local="false" location="http://repo1.maven.org/maven2/com/jsuereth/scala-arm_2.11/1.4/scala-arm_2.11-1.4-sources.jar"/>
+					</artifact>
+					<artifact name="scala-arm_2.11" type="jar" ext="jar" status="no" details="" size="73939" time="0" location="C:\Users\ybamelcash\.ivy2\cache\com.jsuereth\scala-arm_2.11\jars\scala-arm_2.11-1.4.jar">
+						<origin-location is-local="false" location="file:/C:/activator-1.3.2/repository/com.jsuereth/scala-arm_2.11/1.4/jars/scala-arm_2.11.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang.plugins" name="scala-continuations-library_2.11">
+			<revision name="1.0.1" status="release" pubdate="20140416052514" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="6">
+				<license name="BSD 3-clause" url="http://opensource.org/licenses/BSD-3-Clause"/>
+				<metadata-artifact status="no" details="" size="2928" time="0" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang.plugins\scala-continuations-library_2.11\ivy-1.0.1.xml" searched="false" origin-is-local="false" origin-location="file:/C:/activator-1.3.2/repository/org.scala-lang.plugins/scala-continuations-library_2.11/1.0.1/ivys/ivy.xml"/>
+				<caller organisation="meruem" name="meruem$sources_javadoc_2.11" conf="compile-internal, compile, provided, optional" rev="1.0.1" rev-constraint-default="1.0.1" rev-constraint-dynamic="1.0.1" callerrev="1.0"/>
+				<artifacts>
+					<artifact name="scala-continuations-library_2.11" type="src" ext="jar" extra-classifier="sources" status="successful" details="" size="6481" time="2095" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang.plugins\scala-continuations-library_2.11\srcs\scala-continuations-library_2.11-1.0.1-sources.jar">
+						<origin-location is-local="false" location="http://repo1.maven.org/maven2/org/scala-lang/plugins/scala-continuations-library_2.11/1.0.1/scala-continuations-library_2.11-1.0.1-sources.jar"/>
+					</artifact>
+					<artifact name="scala-continuations-library_2.11" type="doc" ext="jar" extra-classifier="javadoc" status="successful" details="" size="368011" time="3659" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang.plugins\scala-continuations-library_2.11\docs\scala-continuations-library_2.11-1.0.1-javadoc.jar">
+						<origin-location is-local="false" location="http://repo1.maven.org/maven2/org/scala-lang/plugins/scala-continuations-library_2.11/1.0.1/scala-continuations-library_2.11-1.0.1-javadoc.jar"/>
+					</artifact>
+					<artifact name="scala-continuations-library_2.11" type="jar" ext="jar" status="successful" details="" size="26038" time="3670" location="C:\Users\ybamelcash\.ivy2\cache\org.scala-lang.plugins\scala-continuations-library_2.11\jars\scala-continuations-library_2.11-1.0.1.jar">
+						<origin-location is-local="false" location="http://repo1.maven.org/maven2/org/scala-lang/plugins/scala-continuations-library_2.11/1.0.1/scala-continuations-library_2.11-1.0.1.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
 		<module organisation="org.scala-lang" name="scala-reflect">
 			<revision name="2.11.6" status="release" pubdate="20150226090115" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.11.6/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="4">
 				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>

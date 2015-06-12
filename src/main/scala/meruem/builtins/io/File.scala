@@ -6,6 +6,8 @@ import meruem.Constants.LispTypeStrings
 import meruem._
 import meruem.Utils._
 
+import resource._
+
 /**
  * Created by ybamelcash on 6/8/2015.
  */
@@ -31,6 +33,8 @@ object File {
   def isDirectory(args: LispList, env: Environment) = filePredicate(args)(Files.isDirectory(_))(env)
   
   def isHidden(args: LispList, env: Environment) = filePredicate(args)(Files.isHidden)(env)
+
+  
   
   def withFile(args: LispList)(f: Path => LispValue)(implicit env: Environment) = withStringArg(args)(path =>
     f(Paths.get(path)))
@@ -40,9 +44,9 @@ object File {
   
   def withPathPairArgs(args: LispList)
                       (f: (Path, Path) => LispValue)
-                      (implicit env: Environment) = checkArgsCount(args)(_ == 2)(args match {
-    case LispString(path1) !: LispString(path2) !: _ => f(Paths.get(path1), Paths.get(path2))
-    case LispString(_) !: lval => Errors.invalidType(LispTypeStrings.String, lval)
-    case lval !: _ => Errors.invalidType(LispTypeStrings.String, lval)
-  })
+                      (implicit env: Environment) = withPairArgs(args) {
+    case (LispString(path1), LispString(path2)) => f(Paths.get(path1), Paths.get(path2))
+    case (LispString(_), lval) => Errors.invalidType(LispTypeStrings.String, lval)
+    case (lval, _) => Errors.invalidType(LispTypeStrings.String, lval)
+  }
 }

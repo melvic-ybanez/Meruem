@@ -173,22 +173,23 @@ object Functions {
     case lval => Errors.unrecognizedType(lval)(env)
   } (env)
   
-  def tryCatch(args: LispList)(implicit env: Environment): LispValue = checkArgsCount(args)(size => size == 2 || size == 3)(args match {
-    case lval !: catchExpr !: NilLispList => tryCatch(lval !: catchExpr !: LispNil !: NilLispList)
-    case lval !: catchExpr !: finallyExpr !: _ => try {
-      Evaluate(lval)
-    } catch {
-      case ex: Exception => Evaluate(catchExpr) match {
-        case LispLambda(params, _, body, environ) => 
-          val position = LispInt(lval.pos.line) !: LispInt(lval.pos.column) !: NilLispList
-          val quotedPosition = QuoteSymbol !: position !: NilLispList
-          val args = LispString(ex.getMessage) !: quotedPosition !: LispString(lval.pos.longString) !: NilLispList
-          Evaluate(LispLambda(params, args, body, environ))
-        case error: LispError => error
+  def tryCatch(args: LispList)(implicit env: Environment): LispValue = checkArgsCount(args)(size => size == 2 || size == 3) {
+    args match {
+      case lval !: catchExpr !: NilLispList => tryCatch(lval !: catchExpr !: LispNil !: NilLispList)
+      case lval !: catchExpr !: finallyExpr !: _ => whenValid(Evaluate(catchExpr)) {
+        case LispLambda(params, _, body, environ) => try {
+          Evaluate(lval)
+        } catch {
+          case ex: Exception =>
+            val position = LispInt(lval.pos.line) !: LispInt(lval.pos.column) !: NilLispList
+            val quotedPosition = QuoteSymbol !: position !: NilLispList
+            val args = LispString(ex.toString) !: quotedPosition !: LispString(lval.pos.longString) !: NilLispList
+            Evaluate(LispLambda(params, args, body, environ))
+        } finally {
+          Evaluate(finallyExpr)
+        }
         case lval1 => Errors.invalidType(LispTypeStrings.Function, lval1)
       }
-    } finally {
-      Evaluate(finallyExpr)
     }
-  })
+  } 
 }
