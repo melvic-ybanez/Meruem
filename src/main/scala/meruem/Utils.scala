@@ -30,13 +30,13 @@ object Utils {
 
   def macroExpand(lval: LispValue)(implicit env: Environment): LispValue = lval match {
     case LispDefMacro(func) !: tail =>
-      macroExpand(Evaluate(func.updated(args = tail.map(x => LispList(LispQuoteSymbol, x)))))
+      macroExpand(Evaluate(func.updated(args = tail.map(x => LispList(QuoteSymbol, x)))))
     case _ => lval
   }
   
   def whenValid[A <: LispValue, B <: LispValue](lval: A)(f: A => B) = lval match {
     case error: LispError => error
-    case lval => f(lval)
+    case lval: A => f(lval)
   }
 
   def checkArgsCount(args: LispList)(p: Int => Boolean)(f: => LispValue)(implicit env: Environment) =
@@ -101,6 +101,12 @@ object Utils {
     checkArgsCount(args)(_ == 1)(args match {
       case expr !: _ => f(expr)
     })
+  
+  def withPairArgs(args: LispList)
+                 (f: (LispValue, LispValue) => LispValue)
+                 (implicit env: Environment): LispValue = checkArgsCount(args)(_ == 2)(args match {
+    case expr1 !: expr2 !: _ => f(expr1, expr2) 
+  }) 
   
   def withAtLeastOneArg(args: LispList)(f: LispList => LispValue)(implicit env: Environment) = 
     checkArgsCount(args)(_ > 0)(f(args))

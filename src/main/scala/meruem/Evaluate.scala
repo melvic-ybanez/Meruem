@@ -27,16 +27,17 @@ object Evaluate {
     // a special operator, or a macro.
     case head !: tail => Evaluate(head) match {
       // Special functions/operators  
-      case LispQuoteSymbol => quote(tail)
-      case LispQuasiQuoteSymbol => quasiquote(tail)
-      case LispUnquoteSymbol => unquote(tail)
-      case LispCondSymbol => cond(tail)
-      case LispDefSymbol => define(tail)
-      case LispLambdaSymbol => lambda(tail)
-      case LispDefMacroSymbol => defmacro(tail)
-      case LispTryCatchSymbol => tryCatch(tail)
-      case LispImportSymbol => Import(tail)
-      case LispApplySymbol => applyFunc(tail)
+      case QuoteSymbol => quote(tail)
+      case QuasiQuoteSymbol => quasiquote(tail)
+      case UnquoteSymbol => unquote(tail)
+      case CondSymbol => cond(tail)
+      case DefSymbol => define(tail)
+      case LambdaSymbol => lambda(tail)
+      case DefMacroSymbol => defmacro(tail)
+      case TryCatchSymbol => tryCatch(tail)
+      case ImportSymbol => Import(tail)
+      case ApplySymbol => applyFunc(tail)
+      case LetSymbol => letExpression(tail)
       
       // If the first symbol is a macro, expand it first before evaluating it.  
       case lmacro: LispDefMacro => Evaluate(macroExpand(lmacro !: tail))

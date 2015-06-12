@@ -28,11 +28,11 @@ object LispParser extends JavaTokenParsers {
   
   def string: Parser[LispString] = positioned(stringLiteral ^^ { case str => LispString(str.tail.init) })
   
-  def quote: Parser[LispValue] = positioned("'" ~> expression ^^ { case expr => LispList(LispQuoteSymbol, expr) })
+  def quote: Parser[LispValue] = positioned("'" ~> expression ^^ { case expr => LispList(QuoteSymbol, expr) })
   
-  def quasiquote: Parser[LispValue] = positioned("`" ~> expression ^^ { case expr => LispList(LispQuasiQuoteSymbol, expr) }) 
+  def quasiquote: Parser[LispValue] = positioned("`" ~> expression ^^ { case expr => LispList(QuasiQuoteSymbol, expr) }) 
   
-  def unquote: Parser[LispValue] = positioned("," ~> expression ^^ { case expr => LispList(LispUnquoteSymbol, expr) })
+  def unquote: Parser[LispValue] = positioned("," ~> expression ^^ { case expr => LispList(UnquoteSymbol, expr) })
   
   def list: Parser[LispList] = positioned(OpenParen ~> rep(expression) <~ CloseParen ^^ (x => x))
   

@@ -20,7 +20,7 @@ object Main {
       s"""$OpenParen${Keywords.Import} "$module"$CloseParen"""
     }.mkString
 
-    Globals.environment += (LispModuleSymbol, Globals.module)
+    Globals.environment += (ModuleSymbol, Globals.module)
     
     Utils.evalExpression(importExprs, Globals.environment) match {
       case error: LispError => throw new InstantiationException(error.toString)

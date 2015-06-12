@@ -3,6 +3,8 @@
   
 (defmacro defun (name args body) `(def ,name (lambda ,args ,body)))
 
+(defun lazy (expr) (lambda () ,expr))
+
 (defun size (xs)
   (if (= xs ()) 0 (+ 1 (size (tail xs)))))
   

@@ -6,7 +6,7 @@ import scala.collection.JavaConverters._
 
 import java.nio.file._
 
-import meruem.Constants.{LispTypeStrings, Keywords, LispModuleSymbol}
+import meruem.Constants.{LispTypeStrings, Keywords, ModuleSymbol}
 import meruem.{LispValue, LispNil, NilEnvironment, LispList}
 import meruem.Utils._
 import meruem.Constants._
@@ -63,7 +63,7 @@ object Import {
           implicit val environment = SomeEnvironment(collection.mutable.Map(), Globals.environment)
           val module: Module = SomeModule(modulePath, mutable.MutableList(), environment)
           
-          environment += (LispModuleSymbol, module)
+          environment += (ModuleSymbol, module)
 
           Globals.modules += module
           callingModule.submodules += module

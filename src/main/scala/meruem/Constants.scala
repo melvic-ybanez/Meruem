@@ -92,17 +92,18 @@ object Constants {
   lazy final val CloseParen = ")"
   lazy final val ModuleSeparator = "."
   
-  lazy final val LispQuoteSymbol = LispSymbol(FunctionNames.Quote)
-  lazy final val LispCondSymbol = LispSymbol(FunctionNames.Cond)
-  lazy final val LispDefSymbol = LispSymbol(Keywords.Def)
-  lazy final val LispLambdaSymbol = LispSymbol(Keywords.Lambda)
-  lazy final val LispQuasiQuoteSymbol = LispSymbol(FunctionNames.Quasiquote)
-  lazy final val LispUnquoteSymbol = LispSymbol(FunctionNames.Unquote)
-  lazy final val LispDefMacroSymbol = LispSymbol(Keywords.DefMacro)
-  lazy final val LispImportSymbol = LispSymbol(Keywords.Import)
-  lazy final val LispModuleSymbol = LispSymbol(Keywords.Module)
-  lazy final val LispTryCatchSymbol = LispSymbol(Keywords.TryCatch)
-  lazy final val LispApplySymbol = LispSymbol(FunctionNames.Apply)
+  lazy final val QuoteSymbol = LispSymbol(FunctionNames.Quote)
+  lazy final val CondSymbol = LispSymbol(FunctionNames.Cond)
+  lazy final val DefSymbol = LispSymbol(Keywords.Def)
+  lazy final val LambdaSymbol = LispSymbol(Keywords.Lambda)
+  lazy final val QuasiQuoteSymbol = LispSymbol(FunctionNames.Quasiquote)
+  lazy final val UnquoteSymbol = LispSymbol(FunctionNames.Unquote)
+  lazy final val DefMacroSymbol = LispSymbol(Keywords.DefMacro)
+  lazy final val ImportSymbol = LispSymbol(Keywords.Import)
+  lazy final val ModuleSymbol = LispSymbol(Keywords.Module)
+  lazy final val TryCatchSymbol = LispSymbol(Keywords.TryCatch)
+  lazy final val ApplySymbol = LispSymbol(FunctionNames.Apply)
+  lazy final val LetSymbol = LispSymbol(Keywords.Let)
   
   object Keywords {
     lazy final val Def = "def"
@@ -114,6 +115,7 @@ object Constants {
     lazy final val False = "false"
     lazy final val TryCatch = "try-catch"
     lazy final val Error = "error"
+    lazy final val Let = "let"
   }
   
   object BuiltinModuleNames {

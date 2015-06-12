@@ -17,7 +17,7 @@ trait Environment {
   def += (key: LispSymbol, lvalue: LispValue): Environment
   def hasSymbol(key: LispSymbol): Boolean
   
-  def module: Module = get(LispModuleSymbol) match {
+  def module: Module = get(ModuleSymbol) match {
     case mod: Module => mod
     case error: LispError => NilModule
   }
