@@ -31,5 +31,5 @@ case object Conversions {
   def toLispString(args: LispList, env: Environment) = withSingleArg(args) {
     case str: LispString => str
     case lval => LispString(lval.toString)
-  }(env)
+  } (env)
 }
