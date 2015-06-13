@@ -14,6 +14,9 @@
   
 (defun odd? (n) (if (= n 0) false (even? (- n 1))))
 
+(defmacro loop (xs init acc x body)
+  `(recur ,xs ,init (lambda (,acc ,x) ,body)))
+
 (defun unzip (tuples) (unzip-acc tuples '(() ())))
 
 (defun unzip-acc (tuples acc)
