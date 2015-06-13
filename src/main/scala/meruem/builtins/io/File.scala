@@ -62,6 +62,25 @@ object File {
     case lval !: _ => Errors.invalidType(LispTypeStrings.String, lval)(env)
   })(env)
   
+  def write(args: LispList, env: Environment): LispValue = checkArgsCount(args)(size => size == 2 || size == 3) {
+    def error[A <: LispValue](lval: A) = Errors.invalidType(LispTypeStrings.String, lval)(env)
+    
+    args match {
+      case expr1 !: expr2 !: NilLispList =>
+        write(expr1 !: expr2 !: LispString(Charset.defaultCharset.toString) !: NilLispList, env)
+      case LispString(filePath) !: LispString(content) !: LispString(charset) !: _ =>
+        val path = Paths.get(filePath)
+        val writeToFile = managed(Files.newBufferedWriter(path, Charset.forName(charset))) map { writer =>
+          writer.write(content)
+          LispNil
+        }
+        writeToFile.opt.getOrElse(LispError("Unable to write to file: " + filePath, args)(env))
+      case LispString(_) !: LispString(_) !: lval !: _ => error(lval)
+      case LispString(_) !: lval !: _ => error(lval)
+      case lval !: _ => error(lval)
+    }
+  } (env)
+  
   def withFile(args: LispList)(f: Path => LispValue)(implicit env: Environment) = withStringArg(args)(path =>
     f(Paths.get(path)))
   

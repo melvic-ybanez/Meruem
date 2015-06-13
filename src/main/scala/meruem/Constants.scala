@@ -85,6 +85,8 @@ object Constants {
     lazy final val FilesIsDirectory = s"$Files.directory?"
     lazy final val FilesIsHidden = s"$Files.hidden?"
     lazy final val Apply = "apply"
+    lazy final val FilesReadLines = s"$Files.read-lines"
+    lazy final val FilesWrite = s"$Files.write"
   }
   
   lazy final val VarArgsChar = "&"
@@ -116,7 +118,6 @@ object Constants {
     lazy final val TryCatch = "try-catch"
     lazy final val Error = "error"
     lazy final val Let = "let"
-    lazy final val ReadLines = s"$Files.read-lines"
   }
   
   object BuiltinModuleNames {

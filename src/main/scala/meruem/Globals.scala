@@ -86,7 +86,8 @@ object Globals {
       Error -> LispBuiltinFunction(error),
       Apply -> ApplySymbol,
       Let -> LetSymbol,
-      ReadLines -> LispBuiltinFunction(readLines)
+      FilesReadLines -> LispBuiltinFunction(readLines),
+      FilesWrite -> LispBuiltinFunction(write)
     ), 
     NilEnvironment
   )
