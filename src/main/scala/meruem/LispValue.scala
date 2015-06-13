@@ -142,9 +142,10 @@ sealed trait LispList extends LispValue {
   }
   
   def foldLeft[A <: LispValue](initialValue: A)(f: (A, LispValue) => A) = {
+    @scala.annotation.tailrec
     def recurse(llist: LispList, acc: A): A = llist match {
       case NilLispList => acc
-      case ConsLispList(h, t) => recurse(t, f(acc, h))
+      case h !: t => recurse(t, f(acc, h))
     }
     
     recurse(this, initialValue)

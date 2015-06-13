@@ -87,6 +87,7 @@ object Constants {
     lazy final val Apply = "apply"
     lazy final val FilesReadLines = s"$Files.read-lines"
     lazy final val FilesWrite = s"$Files.write"
+    lazy final val Recur = "recur"
   }
   
   lazy final val VarArgsChar = "&"

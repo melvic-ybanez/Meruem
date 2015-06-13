@@ -85,6 +85,13 @@ object Functions {
     case (lval, _) => Errors.invalidType(LispTypeStrings.List, lval)
   }
   
+  def recur(args: LispList, env: Environment) = checkArgsCount(args)(_ == 3)(args match {
+    case (xs: LispList) !: init !: (lambda: LispLambda) !: _ => 
+      xs.foldLeft(init)((acc, lval) => Evaluate(lambda.updated(args = LispList(acc, lval)))(env))
+    case (_: LispList) !: init !: lval !: _ => Errors.invalidType(LispTypeStrings.Function, lval)(env)
+    case lval !: _ => Errors.invalidType(LispTypeStrings.List, lval)(env)
+  })(env) 
+  
   def head(args: LispList, env: Environment) = withCollArg(args)(_.head)(lstr => LispChar(lstr.value.head))(env)
   
   def tail(args: LispList, env: Environment) = withCollArg(args)(_.tail)(lstr => LispString(lstr.value.tail))(env)
