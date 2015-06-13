@@ -3,7 +3,7 @@ package meruem
 import meruem.Utils._
 import meruem.builtins.Functions._
 import meruem.builtins.Import
-import meruem.builtins.Predicates._
+import meruem.builtins.io.File._
 import meruem.Constants._
 import org.apache.commons.lang.StringEscapeUtils
 

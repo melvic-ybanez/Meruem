@@ -85,7 +85,8 @@ object Globals {
       TryCatch -> TryCatchSymbol,
       Error -> LispBuiltinFunction(error),
       Apply -> ApplySymbol,
-      Let -> LetSymbol
+      Let -> LetSymbol,
+      ReadLines -> LispBuiltinFunction(readLines)
     ), 
     NilEnvironment
   )

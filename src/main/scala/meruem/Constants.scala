@@ -116,6 +116,7 @@ object Constants {
     lazy final val TryCatch = "try-catch"
     lazy final val Error = "error"
     lazy final val Let = "let"
+    lazy final val ReadLines = s"$Files.read-lines"
   }
   
   object BuiltinModuleNames {

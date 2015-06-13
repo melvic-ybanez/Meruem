@@ -1,6 +1,8 @@
 package meruem.builtins.io
 
+import java.io.BufferedReader
 import java.nio.file.{Path, Paths, Files}
+import java.nio.charset.Charset
 
 import meruem.Constants.LispTypeStrings
 import meruem._
@@ -34,7 +36,31 @@ object File {
   
   def isHidden(args: LispList, env: Environment) = filePredicate(args)(Files.isHidden)(env)
 
-  
+  def readLines(args: LispList, env: Environment): LispValue = checkArgsCount(args)(size => size == 3 || size == 4)(args match {
+    // If a charset is not provided, use the default one  
+    case expr1 !: expr2 !: expr3 !: NilLispList => 
+      readLines(expr1 !: expr2 !: expr3 !: LispString(Charset.defaultCharset.toString) !: NilLispList, env)
+      
+    case LispString(strPath) !: (lambda: LispLambda) !: defaultValue !: LispString(charset) !: _ => 
+      val path = Paths.get(strPath)
+      val readFile = managed(Files.newBufferedReader(path, Charset.forName(charset))) map { reader =>
+        def recurse(acc: LispValue): LispValue = Option(reader.readLine) map { line =>
+          Evaluate(lambda.updated(args = LispList(acc, LispString(line))))(env) match {
+            case error: LispError => error
+            case LispNil => acc
+            case result => recurse(result)
+          }
+        } getOrElse acc
+        
+        recurse(defaultValue)
+      }
+      readFile.opt.getOrElse(LispError("Unable to read file: " + strPath, args)(env))
+      
+    // Ensure that the 1st, 2nd and 4th types are all correct  
+    case LispString(_) !: (_: LispLambda) !: _ !: lval !: _ => Errors.invalidType(LispTypeStrings.String, lval)(env)
+    case LispString(_) !: lval !: _ => Errors.invalidType(LispTypeStrings.Function, lval)(env)
+    case lval !: _ => Errors.invalidType(LispTypeStrings.String, lval)(env)
+  })(env)
   
   def withFile(args: LispList)(f: Path => LispValue)(implicit env: Environment) = withStringArg(args)(path =>
     f(Paths.get(path)))
