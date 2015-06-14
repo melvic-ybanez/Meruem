@@ -14,10 +14,7 @@
   
 (defun odd? (n) (if (= n 0) false (even? (- n 1))))
 
-(defun unzip (tuples) (unzip-acc tuples '(() ())))
-
-(defun unzip-acc (tuples acc)
-  (if (empty? tuples) acc
-    (unzip-acc (tail tuples) 
-      (list (cons (head (head tuples)) (head acc))
-            (cons (head (tail (head tuples))) (head (tail acc)))))))
+(defmacro or (& xs)
+  (if (empty? xs) nil
+    `(tail-rec ((xs1 ',xs))
+       (let ((h (head xs1))) (if h h (recur (tail xs1)))))))

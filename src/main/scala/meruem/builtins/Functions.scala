@@ -77,7 +77,13 @@ object Functions {
           case error: LispError => error
           case llambda: LispLambda =>
             Evaluate(llambda.updated(args = args)) match {
-              case LispRecur(resultArgs) => recurse(resultArgs.map(LispList(QuoteSymbol, _)))
+              case LispRecur(resultArgs) =>
+                // The resultArgs are the result of calling the recur function. It is assumed that
+                // the items have already been evaluated (recur is just a normal function, after all).
+                // We need to quote them to prevent double evaluations.
+                val quotedArgs = resultArgs.map(LispList(QuoteSymbol, _))
+                
+                recurse(quotedArgs)
               case lval => lval
             }
         }

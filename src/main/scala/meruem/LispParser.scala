@@ -22,6 +22,8 @@ object LispParser extends JavaTokenParsers {
     (doublePointRegexString.r <~ (Suffixes.DoubleRegex + "?").r)) ^^
     (x => LispDouble(x.toDouble)))
   
+  def boolean: Parser[LispBoolean] = positioned(s"""${Keywords.True}|${Keywords.False}""".r ^^ (bool => LispBoolean(bool.toBoolean)))
+  
   def symbol: Parser[LispSymbol] = positioned("""[a-zA-Z0-9_+\-\*\/=<>!@#\$%\^&*\|\?\.]+""".r ^^ (sym => LispSymbol(sym)))
   
   def character: Parser[LispChar] = positioned("""\\.""".r ^^ (c => LispChar(c.tail.head)))
@@ -36,7 +38,7 @@ object LispParser extends JavaTokenParsers {
   
   def list: Parser[LispList] = positioned(OpenParen ~> rep(expression) <~ CloseParen ^^ (x => x))
   
-  def expression: Parser[LispValue] = positioned((float | double | long | integer | symbol | character | string 
+  def expression: Parser[LispValue] = positioned((float | double | long | integer | boolean | symbol | character | string 
       | quote | quasiquote | unquote | list) ^^ {
     case lval: LispValue => lval
   })
