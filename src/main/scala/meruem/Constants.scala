@@ -55,7 +55,6 @@ object Constants {
     lazy final val IsSymbol = "symbol?"
     lazy final val IsList = "list?"
     lazy final val Macro = "macro"
-    lazy final val LNil = "nil"
     lazy final val Eval = "eval"
     lazy final val Read = "read"
     lazy final val LError = "error"
@@ -121,6 +120,7 @@ object Constants {
     lazy final val Error = "error"
     lazy final val Let = "let"
     lazy final val Recur = "recur"
+    lazy final val LNil = "nil"
   }
   
   object BuiltinModuleNames {

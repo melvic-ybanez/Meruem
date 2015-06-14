@@ -43,7 +43,6 @@ object Globals {
       IsSymbol -> LispBuiltinFunction(isSymbol),
       IsList -> LispBuiltinFunction(isList),
       Macro -> LispBuiltinFunction(getMacro),
-      LNil -> LispNil,
       Eval -> LispBuiltinFunction(eval),
       Read -> LispBuiltinFunction(read),
       Lambda -> LambdaSymbol,
