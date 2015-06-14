@@ -117,7 +117,7 @@ sealed trait LispList extends LispValue {
     }
     
     recurse(this)
-  } 
+  }
   
   def size: Int = this match {
     case NilLispList => 0
@@ -243,3 +243,5 @@ object SomeModule {
   
   def unapply(module: SomeModule) = Some(module.filePath, module.submodules, module.environment)
 }
+
+case class LispRecur(args: LispList) extends LispValue

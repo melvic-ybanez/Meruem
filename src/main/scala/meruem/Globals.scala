@@ -88,6 +88,7 @@ object Globals {
       Let -> LetSymbol,
       FilesReadLines -> LispBuiltinFunction(readLines),
       FilesWrite -> LispBuiltinFunction(write),
+      TailRec -> TailRecSymbol,
       Recur -> LispBuiltinFunction(recur)
     ), 
     NilEnvironment

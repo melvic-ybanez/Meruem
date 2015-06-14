@@ -30,7 +30,7 @@ object Utils {
 
   def macroExpand(lval: LispValue)(implicit env: Environment): LispValue = lval match {
     case LispDefMacro(func) !: tail =>
-      macroExpand(Evaluate(func.updated(args = tail.map(x => LispList(QuoteSymbol, x)))))
+      macroExpand(Evaluate(func.updated(args = tail.map(LispList(QuoteSymbol, _)))))
     case _ => lval
   }
   
@@ -63,7 +63,7 @@ object Utils {
     }
   
   def isPair(expr: LispValue) = expr match {
-    case ConsLispList(_, ConsLispList(_, NilLispList)) => true
+    case _ !: _ !: NilLispList => true
     case _ => false
   }
   
@@ -136,4 +136,24 @@ object Utils {
   }
   
   def isDefineCommand(str: String) = List(Keywords.Def, Keywords.DefMacro) contains str
+
+  /** Converts the list of tuples (of names and values) into two separate lists.
+    *
+    * @return A LispList of two LispLists. The first list contains the names, 
+    *         and the second list contains the values. If there's at least one 
+    *         value that evalutes to an error, this function returns that error.
+    */
+  def unzip(args: LispList)(implicit env: Environment) = {
+    def unzip(xs: LispList, acc: (LispList, LispList)): LispValue = xs match {
+      case NilLispList => LispList(acc._1.reverse, acc._2.reverse)
+      case ((name: LispSymbol) !: value !: _) !: tail => acc._1.find {
+        _ == name
+      } map { _ =>
+        Errors.alreadyDefined(name)
+      } getOrElse unzip(tail, (name !: acc._1, value !: acc._2))
+      case (lval !: _) !: _ => Errors.invalidType(LispTypeStrings.Symbol, lval)
+    }
+    
+    unzip(args, (NilLispList, NilLispList))
+  }
 }

@@ -2,7 +2,7 @@ package meruem.builtins
 
 import meruem.Constants.LispTypeStrings
 import meruem.Constants._
-import meruem.Implicits.{anyToLispNumber => _, _}
+import meruem.Implicits.{anyToLispNumber => _, lispListToList => _, _}
 import meruem._
 import meruem.Utils._
 import meruem.LispParser._
@@ -60,23 +60,7 @@ object Functions {
   
   def letExpression(args: LispList)(implicit env: Environment) = withPairArgs(args) {
     case (xs: LispList, body) => withPairListArgs(xs) {
-      /** Converts the list of tuples (of names and values) into two separate lists.
-        * 
-        * @return A LispList of two LispLists. The first list contains the names, 
-        *         and the second list contains the values. If there's at least one 
-        *         value that evalutes to an error, this function returns that error.
-        */
-      def unzip(xs: LispList, acc: (LispList, LispList)): LispValue = xs match {
-        case NilLispList => LispList(acc._1, acc._2)
-        case ((name: LispSymbol) !: value !: _) !: tail => acc._1.find { _ == name } map { _ => 
-          Errors.alreadyDefined(name)
-        } getOrElse whenValid(Evaluate(value)) { result =>
-          unzip(tail, (name !: acc._1, result !: acc._2))
-        }
-        case (lval !: _) !: _ => Errors.invalidType(LispTypeStrings.Symbol, lval)
-      }  
-      
-      whenValid(unzip(xs, (NilLispList, NilLispList))) {
+      whenValid(unzip(xs)) {
         case (names: LispList) !: (values: LispList) !: _ => whenValid(lambda(LispList(names, body))) {
           case function: LispLambda => Evaluate(function.updated(args = values))
         }
@@ -85,12 +69,26 @@ object Functions {
     case (lval, _) => Errors.invalidType(LispTypeStrings.List, lval)
   }
   
-  def recur(args: LispList, env: Environment) = checkArgsCount(args)(_ == 3)(args match {
-    case (xs: LispList) !: init !: (lambda: LispLambda) !: _ => 
-      xs.foldLeft(init)((acc, lval) => Evaluate(lambda.updated(args = LispList(acc, lval)))(env))
-    case (_: LispList) !: init !: lval !: _ => Errors.invalidType(LispTypeStrings.Function, lval)(env)
-    case lval !: _ => Errors.invalidType(LispTypeStrings.List, lval)(env)
-  })(env) 
+  def tailRec(args: LispList)(implicit env: Environment): LispValue = withPairArgs(args) {
+    case (args: LispList, expr) => withPairListArgs(args) {
+      whenValid(unzip(args)) { case (params: LispList) !: (inits: LispList) !: _ =>
+        @annotation.tailrec
+        def recurse(args: LispList): LispValue = lambda(LispList(params, expr)) match {
+          case error: LispError => error
+          case llambda: LispLambda =>
+            Evaluate(llambda.updated(args = args)) match {
+              case LispRecur(resultArgs) => recurse(resultArgs.map(LispList(QuoteSymbol, _)))
+              case lval => lval
+            }
+        }
+        
+        recurse(inits)  
+      }
+    }
+    case (lval, _) => Errors.invalidType(LispTypeStrings.List, lval)
+  }
+  
+  def recur(args: LispList, env: Environment) = LispRecur(args)
   
   def head(args: LispList, env: Environment) = withCollArg(args)(_.head)(lstr => LispChar(lstr.value.head))(env)
   

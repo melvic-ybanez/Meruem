@@ -87,7 +87,7 @@ object Constants {
     lazy final val Apply = "apply"
     lazy final val FilesReadLines = s"$Files.read-lines"
     lazy final val FilesWrite = s"$Files.write"
-    lazy final val Recur = "recur"
+    lazy final val TailRec = "tail-rec"
   }
   
   lazy final val VarArgsChar = "&"
@@ -107,6 +107,7 @@ object Constants {
   lazy final val TryCatchSymbol = LispSymbol(Keywords.TryCatch)
   lazy final val ApplySymbol = LispSymbol(FunctionNames.Apply)
   lazy final val LetSymbol = LispSymbol(Keywords.Let)
+  lazy final val TailRecSymbol = LispSymbol(FunctionNames.TailRec)
   
   object Keywords {
     lazy final val Def = "def"
@@ -119,6 +120,7 @@ object Constants {
     lazy final val TryCatch = "try-catch"
     lazy final val Error = "error"
     lazy final val Let = "let"
+    lazy final val Recur = "recur"
   }
   
   object BuiltinModuleNames {
