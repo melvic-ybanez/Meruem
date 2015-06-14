@@ -15,6 +15,13 @@
 (defun odd? (n) (if (= n 0) false (even? (- n 1))))
 
 (defmacro or (& xs)
-  (if (empty? xs) nil
-    `(tail-rec ((xs1 ',xs))
-       (let ((h (head xs1))) (if h h (recur (tail xs1)))))))
+  `(tail-rec ((xs ',xs) (acc nil))
+     (if (empty? xs) acc 
+       (let ((h (eval (head xs)))) 
+         (if h h (recur (tail xs) h))))))
+         
+(defmacro and (& xs)
+  `(tail-rec ((xs ',xs) (acc true))
+     (if (empty? xs) acc
+       (let ((h (eval (head xs)))) 
+         (if h (recur (tail xs) h) h)))))
