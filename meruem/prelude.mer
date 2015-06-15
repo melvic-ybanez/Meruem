@@ -5,10 +5,13 @@
 
 (defun lazy (expr) (lambda () ,expr))
 
-(defun size (xs)
-  (if (= xs ()) 0 (+ 1 (size (tail xs)))))
+(defun identity (x) x)
   
-(defun empty? (xs) (= (size xs) 0))
+(import "lists")
+
+(def empty? lists.empty?)
+
+(def size lists.size)
 
 (defun even? (n) (if (= n 0) true  (odd? (- n 1))))
   
@@ -25,3 +28,5 @@
      (if (empty? xs) acc
        (let ((h (eval (head xs)))) 
          (if h (recur (tail xs) h) h)))))
+         
+(defun != (& xs) (not (apply = xs)))

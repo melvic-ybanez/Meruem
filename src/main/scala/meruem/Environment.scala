@@ -4,6 +4,8 @@ package meruem
  * Created by ybamelcash on 4/26/2015.
  */
 
+import scala.collection.JavaConverters._
+
 import java.io.File
 import java.nio.file.Paths
 
@@ -22,7 +24,7 @@ trait Environment {
     case error: LispError => NilModule
   }
 
-  def get(key: LispSymbol): LispValue =  {
+  def get(key: LispSymbol): LispValue = {
     def recurse(env: Environment): LispValue = env match {
       case NilEnvironment => Errors.unboundSymbol(key)(this)
       case SomeEnvironment(valueMap, parent) => valueMap.getOrElse(key.value, recurse(env.parent))
@@ -46,8 +48,16 @@ trait Environment {
                 case _: LispError => error
                 case lval => lval
               }
-          } getOrElse error
-        } else error
+          } getOrElse error 
+        } else {
+          // The symbol probably belongs to one of the preloaded modules. So prepend their paths to it.
+          Settings.preloads.asScala.foldLeft[LispValue](error) { (lval, path) =>
+            lval match {
+              case error: LispError => get(LispSymbol(path + ModuleSeparator + key.value))
+              case lval => lval
+            }
+          }
+        }
       case lval => lval
     }
   }

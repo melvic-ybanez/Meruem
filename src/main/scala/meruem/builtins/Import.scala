@@ -107,9 +107,7 @@ object Import {
             case Left(error) =>
               Globals.modules.clear()
               error
-            case Right(modules) =>
-              module.submodules ++= modules
-              module
+            case Right(modules) => module
           }
         }
       } else Errors.fileNotFound(modulePath, args)
