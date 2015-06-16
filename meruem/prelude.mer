@@ -16,13 +16,13 @@
 (defun odd? (n) (if (= n 0) false (even? (- n 1))))
          
 (defmacro or (& xs)
-  `(apply cond (lists.map ',xs (lambda (x) `(,x ,x)))))         
+  `(apply cond (',lists.map ',xs (lambda (x) `(,x ,x)))))
          
 (defmacro and (& xs)
   `(tail-rec ((xs ',xs) (acc true))
      (if (empty? xs) acc
-       (let ((h (eval (head xs)))) 
-         (if h (recur (tail xs) h) h)))))
+       (let ((and:h (eval (head xs)))) 
+         (if and:h (recur (tail xs) and:h) and:h)))))
          
 (defun != (& xs) (not (apply = xs)))
 

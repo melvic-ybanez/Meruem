@@ -26,7 +26,7 @@ object LispParser extends JavaTokenParsers {
   
   def nil: Parser[LispAtom[Nothing]] = positioned(Keywords.LNil.r ^^ (_ => LispNil))
   
-  def symbol: Parser[LispSymbol] = positioned("""[a-zA-Z0-9_+\-\*\/=<>!@#\$%\^&*\|\?\.]+""".r ^^ (sym => LispSymbol(sym)))
+  def symbol: Parser[LispSymbol] = positioned("""[a-zA-Z0-9_+\-\*\/=<>!@:#\$%\^&*\|\?\.]+""".r ^^ (sym => LispSymbol(sym)))
   
   def character: Parser[LispChar] = positioned("""\\.""".r ^^ (c => LispChar(c.tail.head)))
   

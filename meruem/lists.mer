@@ -34,3 +34,12 @@
   
 (defun reverse (xs)
   (fold-left xs () (lambda (acc x) (cons x acc))))
+  
+(defun take (xs n)
+  (if (or (= n 0) (empty? xs)) ()
+    (cons (head xs) (take (tail xs) (- n 1)))))
+    
+(defun take-while (xs f)
+  (if (empty? xs) xs
+    (let ((x (head xs)))
+      (if (f x) (cons x (take-while (tail xs) f)) ()))))    

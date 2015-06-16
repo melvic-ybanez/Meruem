@@ -14,10 +14,8 @@ object Functions {
   def defmacro(args: LispList)(implicit env: Environment) = checkArgsCount(args)(_ == 3)(args match {
     case (name: LispSymbol) !: params !: body !:  _ =>
       whenValid(lambda(params !: body !: NilLispList)) {
-        case lambda: LispLambda => env.whenNotdefined(name) {
-          whenValid(LispDefMacro(lambda)) { func =>
-            LispDef(env += (name, func))
-          }
+        case llambda: LispLambda => env.whenNotdefined(name) {
+          LispDef(env += (name, LispDefMacro(llambda)))
         }
       }
     case name !: _ => Errors.invalidType(LispTypeStrings.Symbol, name)

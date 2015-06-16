@@ -53,7 +53,10 @@ trait Environment {
           // The symbol probably belongs to one of the preloaded modules. So prepend their paths to it.
           Settings.preloads.asScala.foldLeft[LispValue](error) { (lval, path) =>
             lval match {
-              case error: LispError => get(LispSymbol(path + ModuleSeparator + key.value))
+              case _: LispError => get(LispSymbol(path + ModuleSeparator + key.value)) match {
+                case _: LispError => error
+                case lval => lval
+              }
               case lval => lval
             }
           }
