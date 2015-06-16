@@ -5,6 +5,10 @@
 
 (defun lazy (expr) (lambda () ,expr))
 
+(defun truthy? (expr) (and (!= expr false) (!= expr nil)))
+
+(defun falsy? (expr) (not (true? expr)))
+
 (defun identity (x) x)
 
 (defun even? (n) (if (= n 0) true  (odd? (- n 1))))
@@ -21,6 +25,17 @@
          (if h (recur (tail xs) h) h)))))
          
 (defun != (& xs) (not (apply = xs)))
+
+(defun >=< (xs f)
+  (truthy? 
+    (tail-rec ((xs (tail xs)) (acc (head xs)))
+      (if (empty? xs) acc
+        (let ((x (head xs)))
+          (if (f acc x) (recur (tail xs) x) false))))))
+
+(defun >= (& xs) (>=< xs (lambda (acc x) (or (> acc x) (= acc x)))))
+          
+(defun <= (& xs) (>=< xs (lambda (acc x) (or (< acc x) (= acc x)))))          
 
 (import "lists")
 

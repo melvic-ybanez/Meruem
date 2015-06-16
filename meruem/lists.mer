@@ -24,3 +24,6 @@
     (if (empty? xs) nil
       (let ((x (head xs))) 
         (if (f x) x (recur (tail xs)))))))
+
+(defun exists? (xs f)
+  (!= (find xs f) nil))
