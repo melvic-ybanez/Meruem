@@ -6,22 +6,13 @@
 (defun lazy (expr) (lambda () ,expr))
 
 (defun identity (x) x)
-  
-(import "lists")
-
-(def empty? lists.empty?)
-
-(def size lists.size)
 
 (defun even? (n) (if (= n 0) true  (odd? (- n 1))))
   
 (defun odd? (n) (if (= n 0) false (even? (- n 1))))
-
+         
 (defmacro or (& xs)
-  `(tail-rec ((xs ',xs) (acc nil))
-     (if (empty? xs) acc 
-       (let ((h (eval (head xs)))) 
-         (if h h (recur (tail xs) h))))))
+  `(apply cond (lists.map ',xs (lambda (x) `(,x ,x)))))         
          
 (defmacro and (& xs)
   `(tail-rec ((xs ',xs) (acc true))
@@ -30,3 +21,9 @@
          (if h (recur (tail xs) h) h)))))
          
 (defun != (& xs) (not (apply = xs)))
+
+(import "lists")
+
+(def size lists.size)
+
+(def empty? lists.empty?)

@@ -112,18 +112,22 @@ object Functions {
     })
   }
   
-  def cond(args: LispList)(implicit env: Environment) = withPairListArgs(args) {
-    def recurse(llist: LispList): LispValue = llist match {
-      case NilLispList => LispNil    // if all conditions yield false, return nil
-      case (condition !: result !: _) !: tail =>
-        whenValid(Evaluate(condition)(env)) { res =>
-          if (res) whenValid(Evaluate(result)(env))(res => res)
-          else recurse(tail)
-        }
+  def cond(args: LispList)(implicit env: Environment) = args match {
+    case NilLispList => LispNil
+    case _ => withPairListArgs(args) {
+      def recurse(llist: LispList): LispValue = llist match {
+        case NilLispList => LispNil // if all conditions yield false, return nil
+        case (condition !: result !: _) !: tail =>
+          whenValid(Evaluate(condition)(env)) { res =>
+            if (res) whenValid(Evaluate(result)(env))(res => res)
+            else recurse(tail)
+          }
+      }
+
+      recurse(args)
     }
-    
-    recurse(args)
   }
+    
   
   def quote(args: LispList) = args match {
     case NilLispList => NilLispList

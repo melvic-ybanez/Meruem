@@ -1,9 +1,23 @@
 (import "prelude")
 
 (defun size (xs)
-  (if (= xs ()) 0 (+ 1 (size (tail xs)))))
+  (cond ((= xs ()) 0) ((= xs "") 0) (true (+ 1 (size (tail xs))))))
 
 (defun empty? (xs) (= (size xs) 0))
+
+(defun fold-left (xs init-value f)
+  (tail-rec ((xs xs) (acc init-value))
+    (if (empty? xs) acc
+      (recur (tail xs) (f acc (head xs))))))
+      
+(defun reverse (xs)
+  (fold-left xs () (lambda (acc x) (cons x acc))))
+  
+(defun fold-right (xs init-value f) 
+  (reverse (fold-left xs init-value (lambda (acc x) (f x acc)))))  
+      
+(defun map (xs f)
+  (fold-right xs () (lambda (x acc) (cons (f x) acc))))
 
 (defun find (xs f)
   (tail-rec ((xs xs))
