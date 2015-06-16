@@ -5,19 +5,23 @@
 
 (defun empty? (xs) (= (size xs) 0))
 
+(defun concat (xs ys) 
+  (fold-left (reverse xs) ys (lambda (acc x) (cons x acc))))
+
 (defun fold-left (xs init-value f)
   (tail-rec ((xs xs) (acc init-value))
     (if (empty? xs) acc
       (recur (tail xs) (f acc (head xs))))))
-      
-(defun reverse (xs)
-  (fold-left xs () (lambda (acc x) (cons x acc))))
   
 (defun fold-right (xs init-value f) 
   (reverse (fold-left xs init-value (lambda (acc x) (f x acc)))))  
       
 (defun map (xs f)
   (fold-right xs () (lambda (x acc) (cons (f x) acc))))
+  
+(defun filter (xs f)
+  (fold-right xs () 
+    (lambda (x acc) (if (f x) (cons x acc) acc))))
 
 (defun find (xs f)
   (tail-rec ((xs xs))
@@ -27,3 +31,6 @@
 
 (defun exists? (xs f)
   (!= (find xs f) nil))
+  
+(defun reverse (xs)
+  (fold-left xs () (lambda (acc x) (cons x acc))))

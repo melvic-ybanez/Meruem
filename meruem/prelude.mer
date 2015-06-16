@@ -42,3 +42,5 @@
 (def size lists.size)
 
 (def empty? lists.empty?)
+
+(def ++ lists.concat)
