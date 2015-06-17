@@ -39,7 +39,19 @@
   (if (or (= n 0) (empty? xs)) ()
     (cons (head xs) (take (tail xs) (- n 1)))))
     
+(defun drop (xs n)
+  (if (or (= n 0) (empty? xs)) xs
+    (drop (tail xs) (- n 1))))    
+    
+(defun subset (xs i j)
+  (take (drop xs i) (+ i j)))
+    
 (defun take-while (xs f)
   (if (empty? xs) xs
     (let ((x (head xs)))
       (if (f x) (cons x (take-while (tail xs) f)) ()))))    
+      
+(defun drop-while (xs f)
+  (if (or (empty? xs) (not (f (head xs)))) xs
+    (drop-while (tail xs) f)))      
+      
