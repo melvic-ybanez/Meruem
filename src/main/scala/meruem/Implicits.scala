@@ -4,7 +4,7 @@ package meruem
  * Created by ybamelcash on 5/22/2015.
  */
 object Implicits {
-  implicit def stringToLispString(str: String): LispString = LispString(str)
+  implicit def stringToLispSymbol(str: String): LispSymbol = LispSymbol(str)
   
   implicit def lispValueToBool(lval: LispValue): Boolean = lval.isTrue
   

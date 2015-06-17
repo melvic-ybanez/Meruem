@@ -1,7 +1,9 @@
+(defmacro defun (name args body) `(def ,name (lambda ,args ,body)))
+
+(import "lists")
+
 (defmacro if (predicate do-if-true do-if-false)
   `(cond (,predicate ,do-if-true) (true ,do-if-false)))
-  
-(defmacro defun (name args body) `(def ,name (lambda ,args ,body)))
 
 (defun lazy (expr) (lambda () ,expr))
 
@@ -35,9 +37,16 @@
 
 (defun >= (& xs) (>=< xs (lambda (acc x) (or (> acc x) (= acc x)))))
           
-(defun <= (& xs) (>=< xs (lambda (acc x) (or (< acc x) (= acc x)))))          
+(defun <= (& xs) (>=< xs (lambda (acc x) (or (< acc x) (= acc x)))))      
+    
+(defun to-list (xs) (lists.fold-right xs () cons))
 
-(import "lists")
+(defun to-empty (xs)
+  (let ((input-type (type xs)))
+    (if (= input-type 'String) ""
+      (if (= input-type 'List) () nil))))
+      
+(defun str (& xs) (lists.fold-left xs "" (lambda (acc x) (++ acc (to-string x)))))      
 
 (def size lists.size)
 

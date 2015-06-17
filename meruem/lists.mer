@@ -16,8 +16,7 @@
 (defun fold-right (xs init-value f) 
   (reverse (fold-left xs init-value (lambda (acc x) (f x acc)))))  
       
-(defun map (xs f)
-  (fold-right xs () (lambda (x acc) (cons (f x) acc))))
+(defun map (xs f) (fold-right xs () (lambda (x acc) (cons (f x) acc))))
   
 (defun filter (xs f)
   (fold-right xs () 
@@ -29,22 +28,19 @@
       (let ((x (head xs))) 
         (if (f x) x (recur (tail xs)))))))
 
-(defun exists? (xs f)
-  (!= (find xs f) nil))
+(defun exists? (xs f) (!= (find xs f) nil))
   
-(defun reverse (xs)
-  (fold-left xs () (lambda (acc x) (cons x acc))))
+(defun reverse (xs) (fold-left xs () (lambda (acc x) (cons x acc))))
   
 (defun take (xs n)
-  (if (or (= n 0) (empty? xs)) ()
+  (if (or (= n 0) (empty? xs)) (to-empty xs)
     (cons (head xs) (take (tail xs) (- n 1)))))
     
 (defun drop (xs n)
   (if (or (= n 0) (empty? xs)) xs
     (drop (tail xs) (- n 1))))    
     
-(defun subset (xs i j)
-  (take (drop xs i) (+ i j)))
+(defun subset (xs i j) (take (drop xs i) (+ i j)))
     
 (defun take-while (xs f)
   (if (empty? xs) xs
@@ -55,3 +51,6 @@
   (if (or (empty? xs) (not (f (head xs)))) xs
     (drop-while (tail xs) f)))      
       
+(defun starts-with (xs ys) (= (take xs (size ys)) ys))      
+  
+(defun ends-with (xs ys) (= (drop xs (- (size xs) (size ys))) ys))

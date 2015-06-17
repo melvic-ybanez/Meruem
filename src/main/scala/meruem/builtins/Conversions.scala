@@ -16,6 +16,7 @@ case object Conversions {
                  (l: String => A)
                  (implicit env: Environment): LispValue = withSingleArg(args) {
     case LispString(str) => LispNumber(l(str))
+      
     case atom: LispAtom[_] => whenNumber(atom)(f)(g)(h)(k)
     case lval => Errors.invalidType(LispTypeStrings.Number, lval)
   }

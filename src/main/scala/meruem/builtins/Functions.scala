@@ -184,7 +184,7 @@ object Functions {
     case _: LispBoolean => LispTypeStrings.Boolean
     case error: LispError => error
     case lval => Errors.unrecognizedType(lval)(env)
-  } (env)
+  } (env) 
   
   def tryCatch(args: LispList)(implicit env: Environment): LispValue = checkArgsCount(args)(size => size == 2 || size == 3) {
     args match {
