@@ -1,5 +1,7 @@
 package meruem.builtins
 
+import java.util.UUID
+
 import meruem.Constants.LispTypeStrings
 import meruem.Constants._
 import meruem.Implicits.{anyToLispNumber => _, lispListToList => _, _}
@@ -24,6 +26,11 @@ object Functions {
   def getMacro(args: LispList, env: Environment) = withSingleArg(args) {
     case lmacro: LispDefMacro => lmacro 
     case _ => LispNil
+  } (env)
+  
+  def gensym(args: LispList, env: Environment) = checkArgsCount(args)(_ == 0) {
+    val uuid = UUID.randomUUID.toString
+    LispSymbol(s"G_$uuid")
   } (env)
 
   def lambda(args: LispList)(implicit env: Environment): LispValue = withPairArgs(args) {

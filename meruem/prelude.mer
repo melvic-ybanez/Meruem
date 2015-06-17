@@ -21,10 +21,11 @@
   `(apply cond (',lists.map ',xs (lambda (x) `(,x ,x)))))
          
 (defmacro and (& xs)
-  `(tail-rec ((xs ',xs) (acc true))
-     (if (empty? xs) acc
-       (let ((and:h (eval (head xs)))) 
-         (if and:h (recur (tail xs) and:h) and:h)))))
+  (let ((h (gensym)))
+    `(tail-rec ((xs ',xs) (acc true))
+       (if (empty? xs) acc
+         (let ((,h (eval (head xs)))) 
+           (if ,h (recur (tail xs) ,h) ,h))))))
          
 (defun != (& xs) (not (apply = xs)))
 

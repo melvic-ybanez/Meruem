@@ -86,12 +86,16 @@ object Globals {
       FilesReadLines -> LispBuiltinFunction(readLines),
       FilesWrite -> LispBuiltinFunction(write),
       TailRec -> TailRecSymbol,
-      Recur -> LispBuiltinFunction(recur)
+      Recur -> LispBuiltinFunction(recur),
+      Gensym -> LispBuiltinFunction(gensym)
     ), 
     NilEnvironment
   )
   
-  lazy val module = SomeModule(Settings.libLocation + java.io.File.separator + Settings.languageName + " Global", mutable.MutableList(), environment)
+  lazy val module = SomeModule(
+    Settings.libLocation + java.io.File.separator + Settings.languageName + " Global", 
+    mutable.MutableList(), 
+    environment)
   
   val modules = mutable.MutableList[Module]()
 }
