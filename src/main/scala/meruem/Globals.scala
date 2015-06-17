@@ -87,7 +87,8 @@ object Globals {
       FilesWrite -> LispBuiltinFunction(write),
       TailRec -> TailRecSymbol,
       Recur -> LispBuiltinFunction(recur),
-      Gensym -> LispBuiltinFunction(gensym)
+      Gensym -> LispBuiltinFunction(gensym),
+      FilesList -> LispBuiltinFunction(listFiles)
     ), 
     NilEnvironment
   )

@@ -3,10 +3,13 @@ package meruem.builtins.io
 import java.io.BufferedReader
 import java.nio.file.{Path, Paths, Files}
 import java.nio.charset.Charset
+import java.util.stream.Collectors
+import scala.collection.JavaConverters._
 
 import meruem.Constants.LispTypeStrings
 import meruem._
 import meruem.Utils._
+import meruem.Implicits.listToLispList
 
 import resource._
 
@@ -76,9 +79,13 @@ object File {
         }
         writeToFile.opt.getOrElse(LispError("Unable to write to file: " + filePath, args)(env))
       case LispString(_) !: LispString(_) !: lval !: _ => error(lval)
-      case LispString(_) !: lval !: _ => error(lval)
+      case LispString(_) !: lval !: _ => error(lval) 
       case lval !: _ => error(lval)
     }
+  } (env)
+  
+  def listFiles(args: LispList, env: Environment) = withFile(args) { path => 
+    Files.newDirectoryStream(path).asScala.map(path => LispString(path.toString)).toList
   } (env)
   
   def withFile(args: LispList)(f: Path => LispValue)(implicit env: Environment) = withStringArg(args)(path =>

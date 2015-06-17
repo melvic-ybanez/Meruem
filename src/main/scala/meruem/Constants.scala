@@ -83,6 +83,7 @@ object Constants {
     lazy final val FilesSize = s"$Files.size"
     lazy final val FilesIsDirectory = s"$Files.directory?"
     lazy final val FilesIsHidden = s"$Files.hidden?"
+    lazy final val FilesList = s"$Files.list"
     lazy final val Apply = "apply"
     lazy final val FilesReadLines = s"$Files.read-lines"
     lazy final val FilesWrite = s"$Files.write"
