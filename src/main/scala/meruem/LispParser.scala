@@ -47,6 +47,8 @@ object LispParser extends JavaTokenParsers {
   
   def meruem: Parser[LispList] = positioned(rep(expression) ^^ (x => x))
   
+  override protected val whiteSpace = """(\s|;.*)+""".r
+  
   lazy val doublePointRegexString = """-?(\d+(\.\d*)|\d*\.\d+)([eE][+-]?\d+)?"""
 
   object Suffixes {

@@ -67,9 +67,10 @@ object Import {
 
           Globals.modules += module
           callingModule.submodules += module
-
-          def exprs = Utils.read(meruem, Source.fromFile(extendedFilePath).mkString)(identity) match {
-            case llist: LispList => llist
+          
+          def returnError(error: LispError) = {
+            Globals.modules.clear()
+            error
           }
 
           def evalExprs(exprs: LispList, modules: LispList): Either[LispError, LispList] = exprs match {
@@ -103,11 +104,12 @@ object Import {
             }
           }
 
-          evalExprs(exprs, NilLispList) match {
-            case Left(error) =>
-              Globals.modules.clear()
-              error
-            case Right(modules) => module
+          Utils.read(meruem, Source.fromFile(extendedFilePath).mkString)(identity) match {
+            case error: LispError => returnError(error)
+            case exprs: LispList => evalExprs(exprs, NilLispList) match {
+              case Left(error) => returnError(error)
+              case Right(modules) => module
+            }
           }
         }
       } else Errors.fileNotFound(modulePath, args)
