@@ -22,10 +22,18 @@ import scala.io.Source
  * Created by ybamelcash on 5/28/2015.
  */
 object Import {
-  def apply(args: LispList)(implicit callingEnv: Environment): LispValue = withStringArg(args) { filePath =>
+  def apply(args: LispList)(implicit callingEnv: Environment) = doImport(args)
+  
+  private def doImport(args: LispList)
+           (implicit callingEnv: Environment, 
+            isRelative: Boolean = true): LispValue = withStringArg(args) { filePath =>
     val callingModule = callingEnv.module
-    val callingModuleParentPath = Paths.get(callingModule.filePath).getParent
-    val modulePath = callingModuleParentPath + File.separator + filePath.replace(ModuleSeparator, File.separator)
+    val callingModuleParentPath = Option( 
+      if (isRelative) Paths.get(callingModule.filePath).getParent
+      else Paths.get(Settings.libLocation).getParent)
+    val modulePath = Paths.get(
+      callingModuleParentPath.map(_ + File.separator).getOrElse("") + 
+      filePath.replace(ModuleSeparator, File.separator)).normalize().toString
     
     if (Files.isDirectory(Paths.get(modulePath))) {
       val paths = Files.newDirectoryStream(Paths.get(modulePath)).asScala.toList.filter { path =>
@@ -104,7 +112,12 @@ object Import {
             }
           }
 
-          Utils.read(meruem, Source.fromFile(extendedFilePath).mkString)(identity) match {
+          // Create the import string. e.g '(import "prelude.mer")'
+          val preloadString = 
+            if (filePath == Globals.preloadedString) ""
+            else s"""$OpenParen${Keywords.Import} "${Globals.preloadedString}"$CloseParen"""
+
+          Utils.read(meruem, preloadString + Source.fromFile(extendedFilePath).mkString)(identity) match {
             case error: LispError => returnError(error)
             case exprs: LispList => evalExprs(exprs, NilLispList) match {
               case Left(error) => returnError(error)
@@ -112,7 +125,8 @@ object Import {
             }
           }
         }
-      } else Errors.fileNotFound(modulePath, args)
+      } else if (isRelative) doImport(args)(callingEnv, false)
+      else Errors.fileNotFound(modulePath, args)
     }  
   }
 }

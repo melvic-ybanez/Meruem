@@ -1,5 +1,3 @@
-(import "prelude")
-
 (defun size (xs)
   (cond ((= xs ()) 0) ((= xs "") 0) (true (+ 1 (size (tail xs))))))
 

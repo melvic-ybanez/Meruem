@@ -14,7 +14,7 @@ case object Settings {
   
   val languageName = config.getString("language.name")
   
-  val preloads = config.getStringList("modules.preloaded")
+  val preloaded = config.getString("modules.preloaded")
   val mainFunction = config.getString("modules.main-function")
   val libLocation = config.getString("modules.lib-location")
   val fileExtendsion = config.getString("modules.file-extension")

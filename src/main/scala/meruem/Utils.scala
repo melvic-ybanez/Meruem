@@ -2,7 +2,7 @@ package meruem
 
 import java.nio.file.{Paths, Path}
 
-import scala.util.parsing.combinator.Parsers
+import scala.collection.JavaConverters._
 
 import meruem.Constants._
 import meruem.Implicits._

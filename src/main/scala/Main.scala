@@ -7,24 +7,32 @@ import java.io.File
 import scala.collection.JavaConverters._
 
 import meruem.Constants._
-import meruem.Environment._
+import meruem.Utils._
 import meruem._
+import builtins._
 
-import io.StdIn.readLine
+import scala.io.StdIn.readLine
 import scala.collection.mutable
 
 object Main {
   def main(args: Array[String]): Unit = {
-    val importExprs = Settings.preloads.asScala.map { module =>
-      // Create the import string. e.g '(import "prelude.mer")'
-      s"""$OpenParen${Keywords.Import} "$module"$CloseParen"""
-    }.mkString
-
     Globals.environment += (ModuleSymbol, Globals.module)
     
-    Utils.evalExpression(importExprs, Globals.environment) match {
-      case error: LispError => throw new InstantiationException(error.toString)
-      case SomeModule(_, _, env) => repl(env)
+    args match {
+      case Array() => 
+        val importExpr = LispList(LispString(Globals.preloadedString))
+        Import(importExpr)(Globals.environment) match {
+          case error: LispError => throw new InstantiationException(error.toString)
+          case SomeModule(_, _, env) => repl(env)
+        }
+      case Array(mainFile) =>Import(LispString(mainFile) !: NilLispList)(Globals.environment) match {
+          case error: LispError => throw new InstantiationException(error.value)
+          case SomeModule(_, _, env) => env.get(MainSymbol) match {
+            case error: LispError => throw new InstantiationException(error.value)
+            case lval => Evaluate(lval)(env)
+          }
+        } 
+      case Array(_, _, _*) => throw new InstantiationException("Invalid number of arguments")
     }
   } 
 

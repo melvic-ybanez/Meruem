@@ -93,10 +93,7 @@ object Globals {
     NilEnvironment
   )
   
-  lazy val module = SomeModule(
-    Settings.libLocation + java.io.File.separator + Settings.languageName + " Global", 
-    mutable.MutableList(), 
-    environment)
-  
+  lazy val module = SomeModule(Settings.languageName + " Global", mutable.MutableList(), environment)
   val modules = mutable.MutableList[Module]()
+  val preloadedString = Settings.libLocation + ModuleSeparator + Settings.preloaded
 }

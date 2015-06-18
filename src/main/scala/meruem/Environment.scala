@@ -39,8 +39,13 @@ trait Environment {
         if (key.value.contains(ModuleSeparator)) {
           val values = key.value.split(s"""\\$ModuleSeparator""")
           val modulePath = values.init.mkString(File.separator)
-          module.submodules.find {
-            case SomeModule(filePath, _, _) => filePath == Paths.get(filePath).getParent + File.separator + modulePath
+          val mod = module
+          mod.submodules.find {
+            case SomeModule(filePath, _, _) =>
+              val relativeParent = Option(Paths.get(mod.filePath).getParent).getOrElse("")
+              val libLocParent = Option(Paths.get(Settings.libLocation).getParent).getOrElse("")
+              filePath == relativeParent + File.separator + modulePath || 
+                filePath == libLocParent + File.separator + modulePath
           } map {
             case SomeModule(filePath, _, environment) =>
               val function = values.last
@@ -49,17 +54,9 @@ trait Environment {
                 case lval => lval
               }
           } getOrElse error 
-        } else {
-          // The symbol probably belongs to one of the preloaded modules. So prepend their paths to it.
-          Settings.preloads.asScala.foldLeft[LispValue](error) { (lval, path) =>
-            lval match {
-              case _: LispError => get(LispSymbol(path + ModuleSeparator + key.value)) match {
-                case _: LispError => error
-                case lval => lval
-              }
-              case lval => lval
-            }
-          }
+        } else get(LispSymbol(Globals.preloadedString + ModuleSeparator + key.value)) match {
+          case _: LispError => error
+          case lval => lval
         }
       case lval => lval
     }
