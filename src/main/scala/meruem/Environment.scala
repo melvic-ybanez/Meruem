@@ -19,7 +19,7 @@ trait Environment {
   def += (key: LispSymbol, lvalue: LispValue): Environment
   def hasSymbol(key: LispSymbol): Boolean
   
-  def module: Module = get(ModuleSymbol) match {
+  def module(): Module = get(ModuleSymbol) match {
     case mod: Module => mod
     case error: LispError => NilModule
   }
@@ -39,13 +39,14 @@ trait Environment {
         if (key.value.contains(ModuleSeparator)) {
           val values = key.value.split(s"""\\$ModuleSeparator""")
           val modulePath = values.init.mkString(File.separator)
-          val mod = module
+          val mod = module()
           mod.submodules.find {
             case SomeModule(filePath, _, _) =>
-              val relativeParent = Option(Paths.get(mod.filePath).getParent).getOrElse("")
-              val libLocParent = Option(Paths.get(Settings.libLocation).getParent).getOrElse("")
-              filePath == relativeParent + File.separator + modulePath || 
-                filePath == libLocParent + File.separator + modulePath
+              val relativeParent = Option(Paths.get(mod.filePath).getParent).map(_ + File.separator).getOrElse("")
+              val libLocParent = Option(Paths.get(Settings.libLocation).getParent).map(_ + File.separator).getOrElse("")
+              filePath == relativeParent + modulePath || 
+                filePath == libLocParent + modulePath ||
+                filePath == Settings.libLocation + File.separator + modulePath 
           } map {
             case SomeModule(filePath, _, environment) =>
               val function = values.last

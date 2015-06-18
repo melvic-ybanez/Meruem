@@ -114,7 +114,7 @@ object Import {
 
           // Create the import string. e.g '(import "prelude.mer")'
           val preloadString = 
-            if (filePath == Globals.preloadedString) ""
+            if (filePath == Globals.preloadedString) "" 
             else s"""$OpenParen${Keywords.Import} "${Globals.preloadedString}"$CloseParen"""
 
           Utils.read(meruem, preloadString + Source.fromFile(extendedFilePath).mkString)(identity) match {
