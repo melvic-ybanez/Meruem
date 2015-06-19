@@ -4,6 +4,7 @@
 
 import meruem.Constants._
 import meruem._
+import meruem.Implicits.listToLispList
 import meruem.builtins._
 
 import scala.io.StdIn.readLine
@@ -12,24 +13,24 @@ object Main {
   def main(args: Array[String]): Unit = {
     Globals.environment += (ModuleSymbol, Globals.module)
     
-    args match {
-      case Array() => 
-        val importExpr = LispList(LispString(Globals.preloadedString))
-        Import(importExpr)(Globals.environment) match {
-          case error: LispError => throw new InstantiationException(error.toString)
-          case SomeModule(_, _, env) => repl(env)
-        }
-      case Array(mainFile) => Import(LispString(mainFile) !: NilLispList)(Globals.environment) match {
-        case error: LispError => throw new InstantiationException(error.value)
-        case SomeModule(_, _, env) => env.get(MainSymbol) match {
-          case error: LispError => throw new InstantiationException(error.value)
-          case lval => Evaluate(lval)(env) match {
-            case error: LispError => println(error)
+    if (args.isEmpty) {
+      val importExpr = LispList(LispString(Globals.preloadedString))
+      Import(importExpr)(Globals.environment) match {
+        case error: LispError => throwError(error.toString)
+        case SomeModule(_, _, env) => repl(env)
+      }
+    } else Import(LispString(args.head) !: NilLispList)(Globals.environment) match {
+      case error: LispError => throwError(error.value)
+      case SomeModule(_, _, env) => env.get(MainSymbol) match {
+        case error: LispError => throwError(error.value)
+        case mainFunc: LispLambda => 
+          val largs = LispList(QuoteSymbol, args.tail.map(LispString).toList) !: NilLispList
+          Evaluate(mainFunc.updated(args = largs))(env) match {
+            case error: LispError => throwError(error.value)
             case _ => 
           }
-        }
-      } 
-      case Array(_, _, _*) => throw new InstantiationException("Invalid number of arguments")
+        case lval => throwError("Invalid format for main: " + lval)
+      }
     }
   } 
 
@@ -42,4 +43,6 @@ object Main {
       println(Utils.evalExpression(input, env))
       repl(env)
   }
+  
+  def throwError(msg: String) = throw new InstantiationException(msg)
 }
