@@ -40,7 +40,10 @@ object Main {
       println("Bye!")
       sys.exit(0)
     case input =>
-      println(Utils.evalExpression(input, env))
+      Utils.evalExpression(input, env) match {
+        case LispChar(c) => println("\\" + c)
+        case lval => println(lval)
+      }
       repl(env)
   }
   

@@ -1,6 +1,7 @@
 (defmacro defun (name args body) `(def ,name (lambda ,args ,body)))
 
 (import "lists")
+(import "io")
 
 (defmacro if (predicate do-if-true do-if-false)
   `(cond (,predicate ,do-if-true) (true ,do-if-false)))
@@ -53,8 +54,15 @@
 
 (defun dec (x) (- x 1))
 
+
+; ===========================================================
+; These are the aliases of some of the most common functions
+; ===========================================================
+
 (def size lists.size)
 
 (def empty? lists.empty?)
 
 (def ++ lists.concat)
+
+(def println io.println)

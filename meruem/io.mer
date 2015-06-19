@@ -1,0 +1,11 @@
+(defun println (expr) (print (str expr "\n")))
+
+(defun read-int () (read-num to-int))
+
+(defun read-long () (read-num to-long))
+
+(defun read-float () (read-num to-float))
+
+(defun read-double () (read-num to-double))
+
+(defun read-num (f) (f (read-line)))

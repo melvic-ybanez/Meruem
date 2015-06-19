@@ -103,6 +103,7 @@ object Constants {
     lazy final val MathPow = s"$Math.pow"
     lazy final val MathRandom = s"$Math.random"
     lazy final val MathSqrt = s"$Math.sqrt"
+    lazy final val ToChar = "to-char"
   }
   
   lazy final val VarArgsChar = "&"

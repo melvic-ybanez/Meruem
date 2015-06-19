@@ -99,7 +99,8 @@ object Globals {
       MathLog -> LispBuiltinFunction(floor),
       MathLog10 -> LispBuiltinFunction(log10),
       MathRandom -> LispBuiltinFunction(random),
-      MathSqrt -> LispBuiltinFunction(sqrt)
+      MathSqrt -> LispBuiltinFunction(sqrt),
+      ToChar -> LispBuiltinFunction(toChar)
     ), 
     NilEnvironment
   )

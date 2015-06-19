@@ -81,11 +81,11 @@ object Utils {
     }
   
   def whenNumber[A](lval: LispValue)
-                    (f: Int => A)
-                    (g: Long => A)
-                    (h: Float => A)
-                    (k: Double => A)
-                    (implicit env: Environment): LispValue = lval match {
+                   (f: Int => A)
+                   (g: Long => A)
+                   (h: Float => A)
+                   (k: Double => A)
+                   (implicit env: Environment): LispValue = lval match {
     case LispInt(x) => f(x)
     case LispLong(x) => g(x)
     case LispFloat(x) => h(x)
@@ -99,8 +99,8 @@ object Utils {
     })
   
   def withPairArgs(args: LispList)
-                 (f: (LispValue, LispValue) => LispValue)
-                 (implicit env: Environment): LispValue = checkArgsCount(args)(_ == 2)(args match {
+                  (f: (LispValue, LispValue) => LispValue)
+                  (implicit env: Environment): LispValue = checkArgsCount(args)(_ == 2)(args match {
     case expr1 !: expr2 !: _ => f(expr1, expr2) 
   }) 
   

@@ -53,6 +53,8 @@ object Errors {
   
   def unrecognizedType(lval: LispValue)(implicit env: Environment) = LispError("Unrecognized Type: " + lval, lval)
   
+  def numberFormat(lval: LispValue)(implicit env: Environment) = LispError("Number format error: " + lval, lval)
+  
   object Exceptions {
     def invalidNumberType(any: Any) = throw new IllegalArgumentException("Invalid number type " + any)
   }
