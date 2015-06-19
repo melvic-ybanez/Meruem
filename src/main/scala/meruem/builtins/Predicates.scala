@@ -1,7 +1,7 @@
 package meruem.builtins
 
-import meruem._
 import meruem.Utils._
+import meruem._
 
 /**
  * Created by ybamelcash on 5/26/2015.

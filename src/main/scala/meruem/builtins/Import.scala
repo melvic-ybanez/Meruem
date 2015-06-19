@@ -1,20 +1,15 @@
 package meruem.builtins
 
 import java.io.File
-
-import scala.collection.JavaConverters._
-
 import java.nio.file._
 
-import meruem.Constants.{LispTypeStrings, Keywords, ModuleSymbol}
-import meruem.{LispValue, LispNil, NilEnvironment, LispList}
+import meruem.Constants.{Keywords, ModuleSymbol, _}
 import meruem.Utils._
-import meruem.Constants._
-import meruem._
 import meruem.builtins.Functions._
-import meruem.Implicits.lispListToList
+import meruem.{LispList, LispNil, LispValue, _}
 import meruem.LispParser._
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.io.Source
 

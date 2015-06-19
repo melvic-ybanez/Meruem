@@ -1,18 +1,17 @@
 package meruem
 
+import meruem.Constants.FunctionNames._
+import meruem.Constants.Keywords._
+import meruem.Constants._
 import meruem.builtins.Arithmetics._
+import meruem.builtins.Conversions._
 import meruem.builtins.Functions._
-import meruem.builtins.Import
 import meruem.builtins.Predicates._
 import meruem.builtins.Relational._
-import meruem.builtins.Conversions._
-import meruem.builtins.io.{Path, Std, File}
-import Std._
-import Path._
-import File._
-import meruem.Constants._
-import FunctionNames._
-import Keywords._
+import meruem.builtins.io.File._
+import meruem.builtins.io.Path._
+import meruem.builtins.io.Std._
+import meruem.builtins.io.{File, Path, Std}
 
 import scala.collection.mutable
 

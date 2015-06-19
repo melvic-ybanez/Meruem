@@ -1,14 +1,10 @@
 package meruem
 
-import java.nio.file.{Paths, Path}
-
-import scala.collection.JavaConverters._
-
 import meruem.Constants._
 import meruem.Implicits._
 import meruem.LispParser._
 
-import scala.util.parsing.input.{NoPosition, CharSequenceReader, CharArrayReader}
+import scala.util.parsing.input.CharArrayReader
 
 /**
  * Created by ybamelcash on 4/27/2015.

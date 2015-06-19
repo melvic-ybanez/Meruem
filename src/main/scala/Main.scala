@@ -2,17 +2,11 @@
  * Created by ybamelcash on 4/27/2015.
  */
 
-import java.io.File
-
-import scala.collection.JavaConverters._
-
 import meruem.Constants._
-import meruem.Utils._
 import meruem._
-import builtins._
+import meruem.builtins._
 
 import scala.io.StdIn.readLine
-import scala.collection.mutable
 
 object Main {
   def main(args: Array[String]): Unit = {

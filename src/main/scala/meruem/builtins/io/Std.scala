@@ -2,7 +2,6 @@ package meruem.builtins.io
 
 import meruem.Utils._
 import meruem._
-import meruem.builtins.io
 
 /**
  * Created by ybamelcash on 6/5/2015.

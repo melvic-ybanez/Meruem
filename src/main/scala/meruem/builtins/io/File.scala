@@ -1,17 +1,15 @@
 package meruem.builtins.io
 
-import java.io.BufferedReader
-import java.nio.file.{Path, Paths, Files}
 import java.nio.charset.Charset
-import java.util.stream.Collectors
-import scala.collection.JavaConverters._
+import java.nio.file.{Files, Path, Paths}
 
 import meruem.Constants.LispTypeStrings
-import meruem._
-import meruem.Utils._
 import meruem.Implicits.listToLispList
-
+import meruem.Utils._
+import meruem._
 import resource._
+
+import scala.collection.JavaConverters._
 
 /**
  * Created by ybamelcash on 6/8/2015.

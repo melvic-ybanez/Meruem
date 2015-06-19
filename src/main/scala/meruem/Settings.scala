@@ -1,6 +1,6 @@
 package meruem
 
-import com.typesafe.config.{ConfigFactory, Config}
+import com.typesafe.config.ConfigFactory
 
 /**
  * Created by ybamelcash on 5/21/2015.

@@ -1,6 +1,6 @@
 package meruem.builtins.io
 
-import java.nio.file.{Path, LinkOption, Paths}
+import java.nio.file.{Path, Paths}
 
 import meruem.Constants.LispTypeStrings
 import meruem.Utils._

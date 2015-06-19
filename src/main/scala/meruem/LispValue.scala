@@ -2,11 +2,11 @@ package meruem
 
 import java.io.File
 
+import meruem.Constants._
 import meruem.Implicits._
 import meruem.Utils._
-import meruem.Constants._
 
-import scala.util.parsing.input.{NoPosition, Position, Positional}
+import scala.util.parsing.input.Positional
 
 /**
  * Created by ybamelcash on 4/26/2015.

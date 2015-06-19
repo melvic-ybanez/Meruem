@@ -1,8 +1,8 @@
 package meruem.builtins
 
-import meruem._
+import meruem.Constants.LispTypeStrings
 import meruem.Implicits._
-import Constants.LispTypeStrings
+import meruem._
 
 /**
  * Created by ybamelcash on 4/28/2015.

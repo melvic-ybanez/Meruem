@@ -4,7 +4,7 @@ package meruem
  * Created by ybamelcash on 4/27/2015.
  */
 object Constants {
-  import BuiltinModuleNames._
+  import meruem.Constants.BuiltinModuleNames._
   
   object LispTypeStrings {
     lazy final val LispValue = "LispValue"

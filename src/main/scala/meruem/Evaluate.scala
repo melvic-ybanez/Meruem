@@ -1,10 +1,9 @@
 package meruem
 
+import meruem.Constants._
 import meruem.Utils._
 import meruem.builtins.Functions._
 import meruem.builtins.Import
-import meruem.builtins.io.File._
-import meruem.Constants._
 import org.apache.commons.lang.StringEscapeUtils
 
 /**

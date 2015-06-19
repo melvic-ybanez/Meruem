@@ -2,11 +2,10 @@ package meruem.builtins
 
 import java.util.UUID
 
-import meruem.Constants.LispTypeStrings
-import meruem.Constants._
+import meruem.Constants.{LispTypeStrings, _}
 import meruem.Implicits.{anyToLispNumber => _, lispListToList => _, _}
-import meruem._
 import meruem.Utils._
+import meruem._
 import meruem.LispParser._
 
 /**

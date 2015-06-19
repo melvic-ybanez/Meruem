@@ -4,13 +4,11 @@ package meruem
  * Created by ybamelcash on 4/26/2015.
  */
 
-import scala.collection.JavaConverters._
-
 import java.io.File
 import java.nio.file.Paths
 
-import Environment._
-import Constants._
+import meruem.Constants._
+import meruem.Environment._
 
 trait Environment {
   def parent: Environment
