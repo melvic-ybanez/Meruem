@@ -19,13 +19,16 @@ object Main {
           case error: LispError => throw new InstantiationException(error.toString)
           case SomeModule(_, _, env) => repl(env)
         }
-      case Array(mainFile) =>Import(LispString(mainFile) !: NilLispList)(Globals.environment) match {
+      case Array(mainFile) => Import(LispString(mainFile) !: NilLispList)(Globals.environment) match {
+        case error: LispError => throw new InstantiationException(error.value)
+        case SomeModule(_, _, env) => env.get(MainSymbol) match {
           case error: LispError => throw new InstantiationException(error.value)
-          case SomeModule(_, _, env) => env.get(MainSymbol) match {
-            case error: LispError => throw new InstantiationException(error.value)
-            case lval => Evaluate(lval)(env)
+          case lval => Evaluate(lval)(env) match {
+            case error: LispError => println(error)
+            case _ => 
           }
-        } 
+        }
+      } 
       case Array(_, _, _*) => throw new InstantiationException("Invalid number of arguments")
     }
   } 

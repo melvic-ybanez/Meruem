@@ -49,6 +49,10 @@
       
 (defun str (& xs) (lists.fold-left xs "" (lambda (acc x) (++ acc (to-string x)))))      
 
+(defun inc (x) (+ x 1))
+
+(defun dec (x) (- x 1))
+
 (def size lists.size)
 
 (def empty? lists.empty?)

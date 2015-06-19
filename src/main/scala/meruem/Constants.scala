@@ -89,6 +89,20 @@ object Constants {
     lazy final val FilesWrite = s"$Files.write"
     lazy final val TailRec = "tail-rec"
     lazy final val Gensym = "gensym"
+    lazy final val MathPI = s"$Math.Pi"
+    lazy final val MathCos = s"$Math.cos"
+    lazy final val MathSin = s"$Math.sin"
+    lazy final val MathTan = s"$Math.tan"
+    lazy final val MathCeil = s"$Math.ceil"
+    lazy final val MathExp = s"$Math.exp"
+    lazy final val MathFloor = s"$Math.floor"
+    lazy final val MathLog = s"$Math.log"
+    lazy final val MathLog10 = s"$Math.log10"
+    lazy final val MathMax = s"$Math.max"
+    lazy final val MathMin = s"$Math.min"
+    lazy final val MathPow = s"$Math.pow"
+    lazy final val MathRandom = s"$Math.random"
+    lazy final val MathSqrt = s"$Math.sqrt"
   }
   
   lazy final val VarArgsChar = "&"
@@ -131,5 +145,6 @@ object Constants {
   object BuiltinModuleNames {
     lazy final val Paths = "paths"
     lazy final val Files = "files"
+    lazy final val Math = "math"
   }
 }

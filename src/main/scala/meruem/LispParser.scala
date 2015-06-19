@@ -57,8 +57,8 @@ object LispParser extends JavaTokenParsers {
   lazy val doublePointRegexString = """-?(\d+(\.\d*)|\d*\.\d+)([eE][+-]?\d+)?"""
 
   object Suffixes {
-    lazy final val FloatRegex = "@[fF]"
-    lazy final val DoubleRegex = "@[dD]"
-    lazy final val LongRegex = "@[lL]"
+    lazy final val FloatRegex = "(@[fF])"
+    lazy final val DoubleRegex = "(@[dD])"
+    lazy final val LongRegex = "(@[lL])"
   }
 } 

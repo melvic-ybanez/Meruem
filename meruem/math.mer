@@ -1,0 +1,9 @@
+(defun abs (n) (if (< n 0) (- n) n))
+
+(defun min (x y) (if (<= x y) x y))
+
+(defun max (x y) (if (>= x y) x y))
+
+(defun pow (base exp) 
+  (tail-rec { exp exp result 1 }
+    (if (= exp 0) result (recur (dec exp) (* result base)))))

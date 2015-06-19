@@ -8,6 +8,7 @@ import meruem.builtins.Conversions._
 import meruem.builtins.Functions._
 import meruem.builtins.Predicates._
 import meruem.builtins.Relational._
+import meruem.builtins.Math._
 import meruem.builtins.io.File._
 import meruem.builtins.io.Path._
 import meruem.builtins.io.Std._
@@ -87,7 +88,18 @@ object Globals {
       TailRec -> TailRecSymbol,
       Recur -> LispBuiltinFunction(recur),
       Gensym -> LispBuiltinFunction(gensym),
-      FilesList -> LispBuiltinFunction(listFiles)
+      FilesList -> LispBuiltinFunction(listFiles),
+      MathPI -> LispDouble(Math.PI),
+      MathCos -> LispBuiltinFunction(cos),
+      MathSin -> LispBuiltinFunction(sin),
+      MathTan -> LispBuiltinFunction(tan),
+      MathCeil -> LispBuiltinFunction(ceil),
+      MathExp -> LispBuiltinFunction(exp),
+      MathFloor -> LispBuiltinFunction(floor),
+      MathLog -> LispBuiltinFunction(floor),
+      MathLog10 -> LispBuiltinFunction(log10),
+      MathRandom -> LispBuiltinFunction(random),
+      MathSqrt -> LispBuiltinFunction(sqrt)
     ), 
     NilEnvironment
   )
