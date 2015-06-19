@@ -1,5 +1,0 @@
-(import "meruem.lists")
-
-(def bar (or 1 2 (1 2)))
-
-(def main (print bar))

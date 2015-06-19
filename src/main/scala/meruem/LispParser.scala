@@ -40,8 +40,12 @@ object LispParser extends JavaTokenParsers {
   
   def list: Parser[LispList] = positioned(OpenParen ~> rep(expression) <~ CloseParen ^^ (x => x))
   
+  def pairList: Parser[LispList] = positioned(PairListOpenParen ~> rep(repN(2, expression)) <~ PairListCloseParen ^^ { 
+    _.map { case h :: t :: _ => LispList(h, t) }
+  })
+  
   def expression: Parser[LispValue] = positioned((float | double | long | integer | boolean | nil | 
-      symbol | character | string | quote | quasiquote | unquote | list) ^^ {
+      symbol | character | string | quote | quasiquote | unquote | list | pairList) ^^ {
     case lval: LispValue => lval
   })
   

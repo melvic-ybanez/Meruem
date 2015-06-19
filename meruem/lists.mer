@@ -7,7 +7,7 @@
   (fold-left (reverse xs) ys (lambda (acc x) (cons x acc))))
 
 (defun fold-left (xs init-value f)
-  (tail-rec ((xs xs) (acc init-value))
+  (tail-rec { xs xs acc init-value } 
     (if (empty? xs) acc
       (recur (tail xs) (f acc (head xs))))))
   

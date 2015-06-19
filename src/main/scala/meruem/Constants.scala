@@ -95,6 +95,8 @@ object Constants {
   lazy final val OpenParen = "("
   lazy final val CloseParen = ")"
   lazy final val ModuleSeparator = "."
+  lazy final val PairListOpenParen = "{"
+  lazy final val PairListCloseParen = "}"
   
   lazy final val QuoteSymbol = LispSymbol(FunctionNames.Quote)
   lazy final val CondSymbol = LispSymbol(FunctionNames.Cond)
@@ -109,7 +111,7 @@ object Constants {
   lazy final val ApplySymbol = LispSymbol(FunctionNames.Apply)
   lazy final val LetSymbol = LispSymbol(Keywords.Let)
   lazy final val TailRecSymbol = LispSymbol(FunctionNames.TailRec)
-  lazy final val MainSymbol = LispSymbol(Keywords.Main)
+  lazy final val MainSymbol = LispSymbol(Settings.mainFunction)
   
   object Keywords {
     lazy final val Def = "def"
@@ -124,7 +126,6 @@ object Constants {
     lazy final val Let = "let"
     lazy final val Recur = "recur"
     lazy final val LNil = "nil"
-    lazy final val Main = "main"
   }
   
   object BuiltinModuleNames {
