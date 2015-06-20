@@ -41,7 +41,10 @@ object Main {
       sys.exit(0)
     case input =>
       Utils.evalExpression(input, env) match {
+        // Characters and Strings should be displayed differently   
         case LispChar(c) => println("\\" + c)
+        case LispString(str) => println("\"" + str + "\"")
+          
         case lval => println(lval)
       }
       repl(env)

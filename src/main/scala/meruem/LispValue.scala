@@ -67,13 +67,9 @@ object LispNumber {
 
 case class LispBoolean(value: Boolean) extends LispAtom[Boolean]
 
-case class LispChar(value: Char) extends LispAtom[Char] {
-  override def toString = raw"""$value"""
-}
+case class LispChar(value: Char) extends LispAtom[Char] 
 
-case class LispString(value: String) extends LispAtom[String] {
-  override def toString = raw""""$value""""
-}
+case class LispString(value: String) extends LispAtom[String]
 
 case object LispNil extends LispAtom[Nothing] {
   def value = throw new NullPointerException("reading from nil")
