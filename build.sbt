@@ -10,4 +10,6 @@ libraryDependencies ++= Seq(
   "commons-lang" % "commons-lang" % "2.6",
   "com.jsuereth" %% "scala-arm" % "1.4"
 )
+
+assemblyJarName in assembly := "meruem.jar"
     

@@ -7,7 +7,7 @@
 		revision="1.0"
 		conf="runtime-internal"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
-		date="20150619182548"/>
+		date="20150725203247"/>
 	<dependencies>
 		<module organisation="com.jsuereth" name="scala-arm_2.11">
 			<revision name="1.4" status="release" pubdate="20140430122655" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://jsuereth.com/scala-arm" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="4">

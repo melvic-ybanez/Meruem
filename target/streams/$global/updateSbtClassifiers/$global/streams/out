@@ -84,6 +84,10 @@
 [debug] == resolving dependencies org.scala-lang#scala-compiler;2.10.4->org.scala-lang#scala-reflect;2.10.4 [compile->compile]
 [debug] == resolving dependencies org.scala-lang#scala-reflect;2.10.4->org.scala-lang#scala-library;2.10.4 [runtime->runtime(*)]
 [debug] == resolving dependencies org.scala-lang#scala-reflect;2.10.4->org.scala-lang#scala-library;2.10.4 [runtime->compile]
+[debug] == resolving dependencies org.scala-lang#scala-compiler;2.10.4->org.scala-lang#scala-reflect;2.10.4 [compile->default(compile)]
+[debug] == resolving dependencies org.scala-lang#scala-compiler;2.10.4->org.scala-lang#scala-reflect;2.10.4 [compile->runtime]
+[debug] == resolving dependencies org.scala-lang#scala-compiler;2.10.4->org.scala-lang#scala-reflect;2.10.4 [compile->compile]
+[debug] == resolving dependencies org.scala-lang#scala-compiler;2.10.4->org.scala-lang#scala-reflect;2.10.4 [compile->master]
 [debug] == resolving dependencies org.scala-lang#scala-compiler;2.10.4->org.scala-lang#scala-library;2.10.4 [runtime->runtime(*)]
 [debug] == resolving dependencies org.scala-lang#scala-compiler;2.10.4->org.scala-lang#scala-library;2.10.4 [runtime->compile]
 [debug] == resolving dependencies org.scala-lang#scala-compiler;2.10.4->org.scala-lang#scala-reflect;2.10.4 [runtime->runtime(*)]
@@ -567,10 +571,49 @@
 [debug] == resolving dependencies org.scala-sbt#precompiled-2_9_3;0.13.5->org.scala-lang#scala-library;2.10.4 [compile->compile]
 [debug] == resolving dependencies org.scala-sbt#precompiled-2_9_3;0.13.5->org.scala-lang#scala-library;2.10.4 [compile->master]
 [debug] == resolving dependencies org.scala-sbt#precompiled-2_9_3;0.13.5->org.scala-sbt#interface;0.13.5 [compile->default(compile)]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->com.eed3si9n#sbt-assembly;0.13.0 [default->default(compile)]
+[info] Resolving com.eed3si9n#sbt-assembly;0.13.0 ...
+[debug] sbt-chain: Checking cache for: dependency: com.eed3si9n#sbt-assembly;0.13.0 {default=[default(compile)]}
+[debug] sbt-chain: module revision found in cache: com.eed3si9n#sbt-assembly;0.13.0
+[debug] 	typesafe-ivy-releases: revision in cache: com.eed3si9n#sbt-assembly;0.13.0
+[debug] 	found com.eed3si9n#sbt-assembly;0.13.0 in sbt-chain
+[debug] 	[0.13.0] com.eed3si9n#sbt-assembly;0.13.0
+[debug] == resolving dependencies com.eed3si9n#sbt-assembly;0.13.0->org.scalactic#scalactic_2.10;2.2.1 [compile->default(compile)]
+[info] Resolving org.scalactic#scalactic_2.10;2.2.1 ...
+[debug] sbt-chain: Checking cache for: dependency: org.scalactic#scalactic_2.10;2.2.1 {compile=[default(compile)]}
+[debug] sbt-chain: module revision found in cache: org.scalactic#scalactic_2.10;2.2.1
+[debug] 	typesafe-ivy-releases: revision in cache: org.scalactic#scalactic_2.10;2.2.1
+[debug] 	found org.scalactic#scalactic_2.10;2.2.1 in sbt-chain
+[debug] == resolving dependencies com.eed3si9n#sbt-assembly;0.13.0->org.scalactic#scalactic_2.10;2.2.1 [compile->runtime]
+[debug] == resolving dependencies com.eed3si9n#sbt-assembly;0.13.0->org.scalactic#scalactic_2.10;2.2.1 [compile->compile]
+[debug] == resolving dependencies org.scalactic#scalactic_2.10;2.2.1->org.scala-lang#scala-library;2.10.4 [compile->master(*)]
+[debug] == resolving dependencies org.scalactic#scalactic_2.10;2.2.1->org.scala-lang#scala-library;2.10.4 [compile->compile(*)]
+[debug] == resolving dependencies org.scalactic#scalactic_2.10;2.2.1->org.scala-lang#scala-reflect;2.10.4 [compile->master(*)]
+[debug] == resolving dependencies org.scalactic#scalactic_2.10;2.2.1->org.scala-lang#scala-reflect;2.10.4 [compile->compile(*)]
+[debug] == resolving dependencies org.scalactic#scalactic_2.10;2.2.1->org.scala-lang#scala-library;2.10.4 [runtime->runtime(*)]
+[debug] == resolving dependencies org.scalactic#scalactic_2.10;2.2.1->org.scala-lang#scala-library;2.10.4 [runtime->compile]
+[debug] == resolving dependencies org.scalactic#scalactic_2.10;2.2.1->org.scala-lang#scala-reflect;2.10.4 [runtime->runtime(*)]
+[debug] == resolving dependencies org.scalactic#scalactic_2.10;2.2.1->org.scala-lang#scala-reflect;2.10.4 [runtime->compile]
+[debug] == resolving dependencies com.eed3si9n#sbt-assembly;0.13.0->org.scalactic#scalactic_2.10;2.2.1 [compile->master]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scalactic#scalactic_2.10;2.2.1 [default->default(compile)]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scalactic#scalactic_2.10;2.2.1 [default->runtime]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scalactic#scalactic_2.10;2.2.1 [default->compile]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scalactic#scalactic_2.10;2.2.1 [default->master]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scala-lang#scala-library;2.10.4 [default->default(compile)]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scala-lang#scala-library;2.10.4 [default->runtime]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scala-lang#scala-library;2.10.4 [default->compile]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scala-lang#scala-library;2.10.4 [default->master]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scala-lang#scala-reflect;2.10.4 [default->default(compile)]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scala-lang#scala-reflect;2.10.4 [default->runtime]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scala-lang#scala-reflect;2.10.4 [default->compile]
+[debug] == resolving dependencies meruem#meruem$sbt_2.11;1.0->org.scala-lang#scala-reflect;2.10.4 [default->master]
 [debug] 	resolved ivy file produced in cache
 [debug] :: downloading artifacts ::
 [debug] 	[NOT REQUIRED] org.scala-sbt#sbt;0.13.5!sbt.jar
+[debug] 	[NOT REQUIRED] com.eed3si9n#sbt-assembly;0.13.0!sbt-assembly.jar
+[debug] 	[NOT REQUIRED] org.scalactic#scalactic_2.10;2.2.1!scalactic_2.10.jar(bundle)
 [debug] 	[NOT REQUIRED] org.scala-lang#scala-library;2.10.4!scala-library.jar
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-reflect;2.10.4!scala-reflect.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#main;0.13.5!main.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#compiler-interface;0.13.5!compiler-interface-bin.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#compiler-interface;0.13.5!compiler-interface-src.jar
@@ -599,7 +642,6 @@
 [debug] 	[NOT REQUIRED] org.scala-sbt#tracking;0.13.5!tracking.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#testing;0.13.5!testing.jar
 [debug] 	[NOT REQUIRED] org.scala-lang#scala-compiler;2.10.4!scala-compiler.jar
-[debug] 	[NOT REQUIRED] org.scala-lang#scala-reflect;2.10.4!scala-reflect.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#control;0.13.5!control.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#collections;0.13.5!collections.jar
 [debug] 	[NOT REQUIRED] jline#jline;2.11!jline.jar
@@ -615,9 +657,9 @@
 [debug] 	[NOT REQUIRED] org.scala-sbt#test-agent;0.13.5!test-agent.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#test-interface;1.0!test-interface.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#apply-macro;0.13.5!apply-macro.jar
-[debug] :: resolution report :: resolve 14112ms :: artifacts dl 181ms
+[debug] :: resolution report :: resolve 1871ms :: artifacts dl 65ms
 [debug] 	report for meruem#meruem$sbt_2.11;1.0 default produced in D:\melvic\Meruem\target\resolution-cache\reports\meruem-meruem$sbt_2.11-default.xml
-[debug] 	resolve done (14112ms resolve - 181ms download)
+[debug] 	resolve done (1871ms resolve - 65ms download)
 [debug] Using inline dependencies specified in Scala.
 [debug] :: resolving dependencies :: meruem#meruem$sources_2.11;1.0
 [debug] 	confs: [default]
@@ -913,6 +955,22 @@
 [debug] sbt-chain: module revision found in cache: org.scala-sbt#precompiled-2_9_3;0.13.5
 [debug] 	typesafe-ivy-releases: revision in cache: org.scala-sbt#precompiled-2_9_3;0.13.5
 [debug] 	found org.scala-sbt#precompiled-2_9_3;0.13.5 in sbt-chain
+[debug] == resolving dependencies meruem#meruem$sources_2.11;1.0->com.eed3si9n#sbt-assembly;0.13.0 [default->default(compile)]
+[info] Resolving com.eed3si9n#sbt-assembly;0.13.0 ...
+[debug] sbt-chain: Checking cache for: dependency: com.eed3si9n#sbt-assembly;0.13.0 {default=[default(compile)]}
+[debug] sbt-chain: module revision found in cache: com.eed3si9n#sbt-assembly;0.13.0
+[debug] 	typesafe-ivy-releases: revision in cache: com.eed3si9n#sbt-assembly;0.13.0
+[debug] 	found com.eed3si9n#sbt-assembly;0.13.0 in sbt-chain
+[debug] 	[0.13.0] com.eed3si9n#sbt-assembly;0.13.0
+[debug] == resolving dependencies meruem#meruem$sources_2.11;1.0->org.scalactic#scalactic_2.10;2.2.1 [default->default(compile)]
+[info] Resolving org.scalactic#scalactic_2.10;2.2.1 ...
+[debug] sbt-chain: Checking cache for: dependency: org.scalactic#scalactic_2.10;2.2.1 {default=[default(compile)]}
+[debug] sbt-chain: module revision found in cache: org.scalactic#scalactic_2.10;2.2.1
+[debug] 	typesafe-ivy-releases: revision in cache: org.scalactic#scalactic_2.10;2.2.1
+[debug] 	found org.scalactic#scalactic_2.10;2.2.1 in sbt-chain
+[debug] == resolving dependencies meruem#meruem$sources_2.11;1.0->org.scalactic#scalactic_2.10;2.2.1 [default->runtime]
+[debug] == resolving dependencies meruem#meruem$sources_2.11;1.0->org.scalactic#scalactic_2.10;2.2.1 [default->compile]
+[debug] == resolving dependencies meruem#meruem$sources_2.11;1.0->org.scalactic#scalactic_2.10;2.2.1 [default->master]
 [debug] 	resolved ivy file produced in cache
 [debug] :: downloading artifacts ::
 [debug] 	[NOT REQUIRED] org.scala-sbt#sbt;0.13.5!sbt.jar(src)
@@ -959,6 +1017,8 @@
 [debug] 	[NOT REQUIRED] org.scala-sbt#precompiled-2_8_2;0.13.5!precompiled-2_8_2.jar(src)
 [debug] 	[NOT REQUIRED] org.scala-sbt#precompiled-2_9_2;0.13.5!precompiled-2_9_2.jar(src)
 [debug] 	[NOT REQUIRED] org.scala-sbt#precompiled-2_9_3;0.13.5!precompiled-2_9_3.jar(src)
-[debug] :: resolution report :: resolve 551ms :: artifacts dl 1150ms
+[debug] 	[NOT REQUIRED] com.eed3si9n#sbt-assembly;0.13.0!sbt-assembly.jar(src)
+[debug] 	[NOT REQUIRED] org.scalactic#scalactic_2.10;2.2.1!scalactic_2.10.jar(src)
+[debug] :: resolution report :: resolve 342ms :: artifacts dl 58ms
 [debug] 	report for meruem#meruem$sources_2.11;1.0 default produced in D:\melvic\Meruem\target\resolution-cache\reports\meruem-meruem$sources_2.11-default.xml
-[debug] 	resolve done (551ms resolve - 1150ms download)
+[debug] 	resolve done (342ms resolve - 58ms download)

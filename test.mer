@@ -1,1 +1,1 @@
-(defun main (args) (print args))
+(defun main (args) (print \h))

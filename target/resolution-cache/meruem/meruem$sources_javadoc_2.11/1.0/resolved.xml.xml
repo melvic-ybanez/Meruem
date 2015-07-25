@@ -4,7 +4,7 @@
 		module="meruem$sources_javadoc_2.11"
 		revision="1.0"
 		status="integration"
-		publication="20150619182548"
+		publication="20150725203247"
 	/>
 	<configurations>
 		<conf name="compile" visibility="public" description=""/>

@@ -4,7 +4,7 @@
 		module="meruem$sources_2.11"
 		revision="1.0"
 		status="integration"
-		publication="20150619182544"
+		publication="20150725203246"
 	/>
 	<configurations>
 		<conf name="default" visibility="public" description=""/>
@@ -143,6 +143,12 @@
 		</dependency>
 		<dependency org="org.scala-sbt" name="precompiled-2_9_3" rev="0.13.5" transitive="false" conf="default->default(compile)">
 			<artifact name="precompiled-2_9_3" type="src" ext="jar" conf="sources" e:classifier="sources"/>
+		</dependency>
+		<dependency org="com.eed3si9n" name="sbt-assembly" rev="0.13.0" transitive="false" conf="default->default(compile)" scalaVersion="2.10" sbtVersion="0.13">
+			<artifact name="sbt-assembly" type="src" ext="jar" conf="sources" e:classifier="sources"/>
+		</dependency>
+		<dependency org="org.scalactic" name="scalactic_2.10" rev="2.2.1" transitive="false" conf="default->default(compile)">
+			<artifact name="scalactic_2.10" type="src" ext="jar" conf="sources" e:classifier="sources"/>
 		</dependency>
 	</dependencies>
 </ivy-module>
