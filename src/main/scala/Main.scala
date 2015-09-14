@@ -32,7 +32,7 @@ object Main {
         case lval => throwError("Invalid format for main: " + lval)
       }
     }
-  } 
+  }
 
   // READ-EVAL-PRINT-LOOP
   def repl(env: Environment): Unit = readLine("meruem> ") match {
