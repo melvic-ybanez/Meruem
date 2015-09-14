@@ -27,16 +27,16 @@ object Import {
       if (isRelative) Paths.get(callingModule.filePath).getParent
       else Paths.get(Settings.libLocation).getParent)
     val modulePath = Paths.get(
-      callingModuleParentPath.map(_ + File.separator).getOrElse("") + 
-      filePath.replace(ModuleSeparator, File.separator)).normalize().toString
+      callingModuleParentPath.map(_ + File.separator).getOrElse("")).resolve(
+        filePath.replace(ModuleSeparator, File.separator)).normalize().toString
     
     if (Files.isDirectory(Paths.get(modulePath))) {
       val paths = Files.newDirectoryStream(Paths.get(modulePath)).asScala.toList.filter { path =>
         // Get all the files that are not directories and end with the correct file extension. 
-        !Files.isDirectory(path) && path.toString.toLowerCase.endsWith(Settings.fileExtendsion)
+        !Files.isDirectory(path) && path.toString.toLowerCase.endsWith(Settings.fileExtension)
       } map { path =>
         // Remove the file extension
-        Paths.get(path.toString.dropRight(Settings.fileExtendsion.length))
+        Paths.get(path.toString.dropRight(Settings.fileExtension.length))
       }
       
       def recurse(paths: List[Path], modules: LispList): Either[LispError, LispList] = paths match {
@@ -53,7 +53,7 @@ object Import {
         case Right(modules) => modules
       }
     } else {
-      val extendedFilePath = modulePath + Settings.fileExtendsion
+      val extendedFilePath = modulePath + Settings.fileExtension
       
       if (Files.exists(Paths.get(extendedFilePath))) {
         def moduleExists(module: Module) = module.filePath == modulePath

@@ -1,5 +1,7 @@
 package meruem
 
+import java.io.File
+
 import meruem.Constants._
 import meruem.Implicits._
 import meruem.LispParser._
@@ -151,5 +153,11 @@ object Utils {
     }
     
     unzip(args, (NilLispList, NilLispList))
+  }
+
+  def filePathToModulePath(pathString: String) = {
+    val filePaths = pathString.split(s"""\\${File.separator}""")
+    val modulePath = filePaths.mkString(ModuleSeparator)
+    modulePath
   }
 }

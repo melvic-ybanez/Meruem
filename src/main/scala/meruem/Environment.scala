@@ -42,9 +42,9 @@ trait Environment {
             case SomeModule(filePath, _, _) =>
               val relativeParent = Option(Paths.get(mod.filePath).getParent).map(_ + File.separator).getOrElse("")
               val libLocParent = Option(Paths.get(Settings.libLocation).getParent).map(_ + File.separator).getOrElse("")
-              filePath == relativeParent + modulePath || 
-                filePath == libLocParent + modulePath ||
-                filePath == Settings.libLocation + File.separator + modulePath 
+              filePath == Paths.get(relativeParent).resolve(modulePath).toString ||
+                filePath == Paths.get(libLocParent).resolve(modulePath).toString ||
+                filePath == Paths.get(Settings.libLocation).resolve(modulePath).toString
           } map {
             case SomeModule(filePath, _, environment) =>
               val function = values.last

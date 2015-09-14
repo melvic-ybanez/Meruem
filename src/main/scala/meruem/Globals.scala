@@ -107,5 +107,5 @@ object Globals {
   
   lazy val module = SomeModule(Settings.languageName + " Global", mutable.MutableList(), environment)
   val modules = mutable.MutableList[Module]()
-  val preloadedString = Settings.libLocation + ModuleSeparator + Settings.preloaded
+  val preloadedString = Utils.filePathToModulePath(Settings.libLocation) + ModuleSeparator + Settings.preloaded
 }
