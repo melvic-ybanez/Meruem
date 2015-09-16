@@ -10,7 +10,7 @@
 
 (defun truthy? (expr) (and (!= expr false) (!= expr nil)))
 
-(defun falsy? (expr) (not (true? expr)))
+(defun falsy? (expr) (not (truthy? expr)))
 
 (defun identity (x) x)
 
