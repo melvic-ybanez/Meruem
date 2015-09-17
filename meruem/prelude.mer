@@ -6,7 +6,7 @@
 (defmacro if (predicate do-if-true do-if-false)
   `(cond (,predicate ,do-if-true) (true ,do-if-false)))
 
-(defun lazy (expr) (lambda () ,expr))
+(defmacro lazy (expr) `(lambda () ,expr))
 
 (defun truthy? (expr) (and (!= expr false) (!= expr nil)))
 
