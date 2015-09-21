@@ -1,0 +1,8 @@
+(defun fac (n)
+  (if (= n 0)
+    1
+    (* n (fac (dec n)))))
+
+(defun main (args)
+  (println (fac
+             (to-int (head args)))))
