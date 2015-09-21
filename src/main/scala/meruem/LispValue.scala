@@ -13,6 +13,7 @@ import scala.util.parsing.input.Positional
  */
 sealed trait LispValue extends Positional {
   def isTrue = this match {
+    case LispError(_, _) => false
     case LispBoolean(false) | LispNil => false
     case _ => true
   }

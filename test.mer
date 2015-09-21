@@ -1,1 +1,0 @@
-(defun main (args) (print \h))
