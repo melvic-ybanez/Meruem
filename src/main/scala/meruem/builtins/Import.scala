@@ -17,19 +17,30 @@ import scala.io.Source
  * Created by ybamelcash on 5/28/2015.
  */
 object Import {
-  def apply(args: LispList)(implicit callingEnv: Environment) = doImport(args)
-  
-  private def doImport(args: LispList)
-           (implicit callingEnv: Environment, 
-            isRelative: Boolean = true): LispValue = withStringArg(args) { filePath =>
-    val callingModule = callingEnv.module
-    val callingModuleParentPath = Option( 
-      if (isRelative) Paths.get(callingModule.filePath).getParent
-      else Paths.get(Settings.libLocation).getParent)
-    val modulePath = Paths.get(
-      callingModuleParentPath.map(_ + File.separator).getOrElse("")).resolve(
-        filePath.replace(ModuleSeparator, File.separator)).normalize().toString
+  def apply(args: LispList)(implicit callingEnv: Environment) = withStringArg(args) { filePath =>
+    def newArg(path: String) = {
+      val newPath = Paths.get(path).resolve(filePath).toString
+      val newArg = filePathToModulePath(newPath)
+      LispList(LispString(newArg))
+    }
     
+    // If the path isn't absolute, try making it relative to the current directory.
+    // If it still fails, try making it relative to MERUEM_HOME.
+    // If it still fails, return an error.
+    doImport(args) match {
+      case LispError(_, _) => doImport(newArg(System.getProperty("user.dir"))) match {
+        case LispError(_, _) => doImport(newArg(Paths.get(Settings.libLocation).toString))
+        case lval => lval
+      }
+      case lval => lval
+    }
+  }
+  
+private def doImport(args: LispList)
+           (implicit callingEnv: Environment): LispValue = withStringArg(args) { filePath =>
+    val callingModule = callingEnv.module
+    val modulePath = Paths.get(filePath.replace(ModuleSeparator, File.separator)).normalize.toString
+      
     if (Files.isDirectory(Paths.get(modulePath))) {
       val paths = Files.newDirectoryStream(Paths.get(modulePath)).asScala.toList.filter { path =>
         // Get all the files that are not directories and end with the correct file extension. 
@@ -120,8 +131,7 @@ object Import {
             }
           }
         }
-      } else if (isRelative) doImport(args)(callingEnv, false)
-      else Errors.fileNotFound(modulePath, args)
+      } else Errors.fileNotFound(modulePath, args)
     }  
   }
 }
