@@ -21,14 +21,20 @@
     (lambda (x acc) (if (f x) (cons x acc) acc))))
 
 (defun find (xs f)
-  (tail-rec ((xs xs))
+  (tail-rec { xs xs }
     (if (empty? xs) nil
-      (let ((x (head xs))) 
+      (let { x (head xs) }
         (if (f x) x (recur (tail xs)))))))
 
 (defun exists? (xs f) (!= (find xs f) nil))
+
+(defun contains? (xs x) (exists? xs (lambda (e) (= x e))))
   
 (defun reverse (xs) (fold-left xs () (lambda (acc x) (cons x acc))))
+
+(defun last (xs) (head (reverse xs)))
+
+(defun init (xs) (reverse (tail (reverse xs))))
   
 (defun take (xs n)
   (if (or (= n 0) (empty? xs)) (to-empty xs)
