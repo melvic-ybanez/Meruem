@@ -31,6 +31,8 @@
 (defun reverse (xs) (fold-left xs () (lambda (acc x) (cons x acc))))
 
 (defun last (xs) (head (reverse xs)))
+
+(defun init (xs) (reverse (tail (reverse xs))))
   
 (defun take (xs n)
   (if (or (= n 0) (empty? xs)) (to-empty xs)
