@@ -4,6 +4,7 @@ import java.nio.charset.Charset
 import java.nio.file.{Files, Path, Paths}
 
 import meruem.Constants.LispTypeStrings
+import meruem.Constants.QuoteSymbol
 import meruem.Implicits.listToLispList
 import meruem.Utils._
 import meruem._
@@ -46,9 +47,8 @@ object File {
       val path = Paths.get(strPath)
       val readFile = managed(Files.newBufferedReader(path, Charset.forName(charset))) map { reader =>
         def recurse(acc: LispValue): LispValue = Option(reader.readLine) map { line =>
-          Evaluate(lambda.updated(args = LispList(acc, LispString(line))))(env) match {
+          Evaluate(lambda.updated(args = LispList(LispList(QuoteSymbol, acc), LispString(line))))(env) match {
             case error: LispError => error
-            case LispNil => acc
             case result => recurse(result)
           }
         } getOrElse acc

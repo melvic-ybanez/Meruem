@@ -27,6 +27,10 @@ object Import {
     // If the path isn't absolute, try making it relative to the current directory.
     // If it still fails, try making it relative to MERUEM_HOME.
     // If it still fails, return an error.
+    // Warning: This implementation has an issue --- if there's an error in the source 
+    // file this problem would think the file doesn't exist and would try the user.dir
+    // and libLocation before throwing an error. One way to fix it is to make the error
+    // messages type safe so we can determine via pattern matching the type of errors.
     doImport(args) match {
       case LispError(_, _) => doImport(newArg(System.getProperty("user.dir"))) match {
         case LispError(_, _) => doImport(newArg(Paths.get(Settings.libLocation).toString))
