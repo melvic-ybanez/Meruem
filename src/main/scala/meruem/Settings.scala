@@ -12,11 +12,13 @@ import com.typesafe.config.ConfigFactory
 case object Settings {
   val config = ConfigFactory.load()
   
-  config.checkValid(ConfigFactory.defaultReference(), "language")
+  config.checkValid(ConfigFactory.defaultReference(), "project")
   config.checkValid(ConfigFactory.defaultReference(), "modules")
   config.checkValid(ConfigFactory.defaultReference(), "commands")
   
-  val languageName = config.getString("language.name")
+  val languageName = config.getString("project.name")
+  val version = config.getString("project.version")
+  val projectType = config.getString("project.type")
   
   val preloaded = config.getString("modules.preloaded")
   val mainFunction = config.getString("modules.main-function")

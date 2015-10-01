@@ -18,8 +18,8 @@ object Main {
       Import(importExpr)(Globals.environment) match {
         case error: LispError => throwError(error.toString)
         case SomeModule(_, _, env) => 
-          println("A Capstone Project presented to the Faculty of the")
-          println("College of Computer Studies, University of Cebu")
+          println("Welcome to " + Settings.languageName + " " + Settings.version)
+          println(Settings.projectType)
           repl(env)
       }
     } else Import(LispString(args.head) !: NilLispList)(Globals.environment) match {
