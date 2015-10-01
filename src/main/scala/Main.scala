@@ -17,7 +17,10 @@ object Main {
       val importExpr = LispList(LispString(Globals.preloadedString))
       Import(importExpr)(Globals.environment) match {
         case error: LispError => throwError(error.toString)
-        case SomeModule(_, _, env) => repl(env)
+        case SomeModule(_, _, env) => 
+          println("Welcome to " + Settings.languageName + " " + Settings.version)
+          println(Settings.projectType)
+          repl(env)
       }
     } else Import(LispString(args.head) !: NilLispList)(Globals.environment) match {
       case error: LispError => throwError(error.value)
