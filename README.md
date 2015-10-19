@@ -12,3 +12,8 @@ The [interpreter](https://github.com/melvic-ybanez/Meruem/tree/master/src/main/s
 ####REPL
 Like most (if not all) of the Lisps out there, Meruem has a REPL (Read-Eval-Print-Loop) on which you can easily evaluate expressions and get their results immediately.
 
+####Download
+You can download the latest releases here: https://github.com/melvic-ybanez/Meruem/releases
+
+####Tutorial
+You can learn the basics of the Meruem programming language by reading the [Introduction to Functional Programming in Meruem](https://github.com/melvic-ybanez/programming_in_meruem).
